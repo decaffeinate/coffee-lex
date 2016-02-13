@@ -1,0 +1,42 @@
+{
+  "name": "coffee-lex",
+  "version": "1.0.0",
+  "description": "Stupid lexer for CoffeeScript.",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "rollup -c rollup.config.es.js && rollup -c rollup.config.umd.js",
+    "flow": "flow check --all",
+    "pretest": "npm run flow",
+    "test": "mocha --compilers js:babel-register",
+    "prepublish": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decaffeinate/coffee-lex.git"
+  },
+  "keywords": [
+    "coffee",
+    "coffeescript",
+    "lex",
+    "parse"
+  ],
+  "files": [
+    "dist"
+  ],
+  "author": "Brian Donovan <me@brian-donovan.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/decaffeinate/coffee-lex/issues"
+  },
+  "homepage": "https://github.com/decaffeinate/coffee-lex",
+  "devDependencies": {
+    "babel-plugin-syntax-class-properties": "^6.5.0",
+    "babel-plugin-syntax-flow": "^6.5.0",
+    "babel-plugin-transform-class-properties": "^6.5.0",
+    "babel-plugin-transform-flow-strip-types": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-es2015-rollup": "^1.1.1",
+    "babel-register": "^6.5.1",
+    "mocha": "^2.4.5"
+  }
+}
