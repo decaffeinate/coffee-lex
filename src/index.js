@@ -451,7 +451,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
       case UNKNOWN:
         // ¯\_(ツ)_/¯
-        index++;
+        index = source.length;
         break;
 
       default:
