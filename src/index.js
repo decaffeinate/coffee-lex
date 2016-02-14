@@ -41,7 +41,7 @@ export class SourceTokenList {
    */
   map<T>(mapper: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => T): Array<T> {
     let result = [];
-    this.forEach((token, index, list) => result.push(mapper(token, index, list)));
+    this.forEach((token, index, list) => { result.push(mapper(token, index, list)); });
     return result;
   }
 
