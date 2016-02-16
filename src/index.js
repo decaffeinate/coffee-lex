@@ -227,12 +227,12 @@ export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
 export const DOT = new SourceType('DOT');
 export const DSTRING = new SourceType('DSTRING');
-// export const ELSE = new SourceType('ELSE');
+export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
 export const FUNCTION = new SourceType('FUNCTION');
 export const HERECOMMENT = new SourceType('HERECOMMENT');
 export const HEREGEXP = new SourceType('HEREGEXP');
-// export const IF = new SourceType('IF');
+export const IF = new SourceType('IF');
 export const INTERPOLATION_START = new SourceType('INTERPOLATION_START');
 export const INTERPOLATION_END = new SourceType('INTERPOLATION_END');
 export const JS = new SourceType('JS');
@@ -250,16 +250,15 @@ export const RPAREN = new SourceType('RPAREN');
 export const SEMICOLON = new SourceType('SEMICOLON');
 export const SPACE = new SourceType('SPACE');
 export const SSTRING = new SourceType('SSTRING');
+export const SWITCH = new SourceType('SWITCH');
 export const TDSTRING = new SourceType('TDSTRING');
-// export const THEN = new SourceType('THEN');
+export const THEN = new SourceType('THEN');
 export const TSSTRING = new SourceType('TSSTRING');
 export const UNKNOWN = new SourceType('UNKNOWN');
+export const WHEN = new SourceType('WHEN');
 export const WORD = new SourceType('WORD');
 
 // FIXME: They're not really the same.
-export const IF = WORD;
-export const THEN = WORD;
-export const ELSE = WORD;
 export const IDENTIFIER = WORD;
 export const EXISTENCE = OPERATOR;
 export const THIS = WORD;
@@ -351,8 +350,13 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case FUNCTION:
         case AT:
         case SEMICOLON:
+        case IF:
+        case ELSE:
+        case THEN:
         case REGEXP:
         case INTERPOLATION_START:
+        case SWITCH:
+        case WHEN:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
           } else if (consumeNewline()) {
@@ -406,7 +410,36 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume('`')) {
             setType(JS);
           } else if (consume(IDENTIFIER_PATTERN)) {
-            setType(WORD);
+            let prev = locations[locations.length - 1];
+            if (prev && prev.type === DOT) {
+              setType(IDENTIFIER);
+            } else {
+              let raw = source.slice(start, index);
+              switch (raw) {
+                case 'if':
+                  setType(IF);
+                  break;
+
+                case 'else':
+                  setType(ELSE);
+                  break;
+
+                case 'then':
+                  setType(THEN);
+                  break;
+
+                case 'switch':
+                  setType(SWITCH);
+                  break;
+
+                case 'when':
+                  setType(WHEN);
+                  break;
+
+                default:
+                  setType(IDENTIFIER);
+              }
+            }
           } else if (consume(NUMBER_PATTERN)) {
             setType(NUMBER);
           } else if (consumeAny(OPERATORS)) {

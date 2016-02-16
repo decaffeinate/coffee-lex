@@ -33,9 +33,11 @@ import lex, {
   SEMICOLON,
   SPACE,
   SSTRING,
+  SWITCH,
   TDSTRING,
   THEN,
   TSSTRING,
+  WHEN,
 } from '../src/index.js';
 
 describe('lex', () => {
@@ -512,7 +514,7 @@ describe('stream', () => {
     )
   );
 
-  it('identifies keywords', () =>
+  it('identifies keywords for conditionals', () =>
     checkLocations(
       stream(`if a then b else c`),
       [
@@ -528,6 +530,46 @@ describe('stream', () => {
         new SourceLocation(SPACE, 16),
         new SourceLocation(IDENTIFIER, 17),
         new SourceLocation(EOF, 18)
+      ]
+    )
+  );
+
+  it('identifies keywords for switch', () =>
+    checkLocations(
+      stream(`switch a\n  when b\n    c\n  else d`),
+      [
+        new SourceLocation(SWITCH, 0),
+        new SourceLocation(SPACE, 6),
+        new SourceLocation(IDENTIFIER, 7),
+        new SourceLocation(NEWLINE, 8),
+        new SourceLocation(SPACE, 9),
+        new SourceLocation(WHEN, 11),
+        new SourceLocation(SPACE, 15),
+        new SourceLocation(IDENTIFIER, 16),
+        new SourceLocation(NEWLINE, 17),
+        new SourceLocation(SPACE, 18),
+        new SourceLocation(IDENTIFIER, 22),
+        new SourceLocation(NEWLINE, 23),
+        new SourceLocation(SPACE, 24),
+        new SourceLocation(ELSE, 26),
+        new SourceLocation(SPACE, 30),
+        new SourceLocation(IDENTIFIER, 31),
+        new SourceLocation(EOF, 32)
+      ]
+    )
+  );
+
+  it('identifies identifiers with keyword names', () =>
+    checkLocations(
+      stream(`s.else(0)`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(DOT, 1),
+        new SourceLocation(IDENTIFIER, 2),
+        new SourceLocation(LPAREN, 6),
+        new SourceLocation(NUMBER, 7),
+        new SourceLocation(RPAREN, 8),
+        new SourceLocation(EOF, 9)
       ]
     )
   );
