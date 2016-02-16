@@ -222,11 +222,17 @@ export class SourceType {
 }
 
 export const AT = new SourceType('AT');
+export const COLON = new SourceType('COLON');
+export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
+export const DOT = new SourceType('DOT');
 export const DSTRING = new SourceType('DSTRING');
+// export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
+export const FUNCTION = new SourceType('FUNCTION');
 export const HERECOMMENT = new SourceType('HERECOMMENT');
 export const HEREGEXP = new SourceType('HEREGEXP');
+// export const IF = new SourceType('IF');
 export const INTERPOLATION_START = new SourceType('INTERPOLATION_START');
 export const INTERPOLATION_END = new SourceType('INTERPOLATION_END');
 export const JS = new SourceType('JS');
@@ -245,17 +251,67 @@ export const SEMICOLON = new SourceType('SEMICOLON');
 export const SPACE = new SourceType('SPACE');
 export const SSTRING = new SourceType('SSTRING');
 export const TDSTRING = new SourceType('TDSTRING');
+// export const THEN = new SourceType('THEN');
 export const TSSTRING = new SourceType('TSSTRING');
 export const UNKNOWN = new SourceType('UNKNOWN');
 export const WORD = new SourceType('WORD');
 
+// FIXME: They're not really the same.
+export const IF = WORD;
+export const THEN = WORD;
+export const ELSE = WORD;
+export const IDENTIFIER = WORD;
+export const EXISTENCE = OPERATOR;
+export const THIS = WORD;
+export const SUPER = WORD;
+export const BOOL = WORD;
+export const NULL = WORD;
+export const UNDEFINED = WORD;
+export const PROTO = OPERATOR;
+
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
  */
+const STRING = [SSTRING, DSTRING, TSSTRING, TDSTRING];
+const CALLABLE = [
+  IDENTIFIER, RPAREN, RBRACKET, EXISTENCE, AT, THIS, SUPER
+];
+const INDEXABLE = CALLABLE.concat([
+  NUMBER, ...STRING, REGEXP,
+  BOOL, NULL, UNDEFINED, RBRACE, PROTO
+]);
+const NOT_REGEXP = INDEXABLE; // .concat(['++', '--'])
+
 const IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[$\w\x7f-\uffff])+)/;
 const NUMBER_PATTERN = /^0b[01]+|^0o[0-7]+|^0x[\da-f]+|^\d*\.?\d+(?:e[+-]?\d+)?/i;
-const OPERATOR_PATTERN = /^[-=|+*\/\\%<>&^!?\.,:]+/;
 const SPACE_PATTERN = /^[^\n\r\S]+/;
+const COMMENT_PATTERN = /^###([^#][\s\S]*?)(?:###[^\n\S]*|###$)|^(?:\s*#(?!##[^#]).*)+/;
+const REGEXP_PATTERN = /^\/(?!\/)((?:[^[\/\n\\]|\\[^\n]|\[(?:\\[^\n]|[^\]\n\\])*\])*)(\/)?/;
+
+const OPERATORS = [
+  // equality
+  '===', '==', '!==', '!=',
+  // assignment
+  '=',
+  '+=', '-=', '/=', '*=', '%=', '%%=',
+  '||=', '&&=', '^=',
+  '?=',
+  '|=', '&=', '~=',
+  // increment/decrement
+  '++', '--',
+  // math
+  '+', '-', '/', '*', '%', '%%',
+  // logical
+  '||', '&&', '^', '!',
+  // existence
+  '?',
+  // bitwise
+  '|', '&', '~', '<<', '>>>', '>>',
+  // comparison
+  '<=', '<', '>=', '>',
+  // prototype access
+  '::',
+];
 
 /**
  * Provides a stream of source type change locations.
@@ -265,213 +321,216 @@ export function stream(source: string, index: number=0): () => SourceLocation {
   let interpolationStack = ([]: Array<SourceType>);
   let braceStack = [];
   let start = index;
+  let locations = [];
   return function step(): SourceLocation {
-    start = index;
     let lastLocation = location;
+    let shouldStepAgain = false;
 
-    if (index >= source.length) {
-      setType(EOF);
-    }
+    do {
+      start = index;
+      if (index >= source.length) {
+        setType(EOF);
+      }
 
-    switch (location.type) {
-      case NORMAL:
-      case SPACE:
-      case WORD:
-      case NUMBER:
-      case OPERATOR:
-      case LPAREN:
-      case RPAREN:
-      case LBRACE:
-      case RBRACE:
-      case LBRACKET:
-      case RBRACKET:
-      case NEWLINE:
-      case AT:
-      case SEMICOLON:
-      case INTERPOLATION_START:
-        if (consume(SPACE_PATTERN)) {
-          setType(SPACE);
-        } else if (consumeNewline()) {
-          setType(NEWLINE);
-        } else if (consume('"""')) {
-          setType(TDSTRING);
-        } else if (consume('"')) {
-          setType(DSTRING);
-        } else if (consume('\'\'\'')) {
-          setType(TSSTRING);
-        } else if (consume('\'')) {
-          setType(SSTRING);
-        } else if (consume('###')) {
-          setType(HERECOMMENT);
-        } else if (consume('#')) {
-          setType(COMMENT);
-        } else if (consume('///')) {
-          setType(HEREGEXP);
-        } else if (consume('(')) {
-          setType(LPAREN);
-        } else if (consume(')')) {
-          setType(RPAREN);
-        } else if (consume('[')) {
-          setType(LBRACKET);
-        } else if (consume(']')) {
-          setType(RBRACKET);
-        } else if (consume('{')) {
-          braceStack.push(start);
-          setType(LBRACE);
-        } else if (consume('}')) {
-          if (braceStack.length === 0) {
-            popInterpolation();
+      switch (location.type) {
+        case NORMAL:
+        case SPACE:
+        case WORD:
+        case DOT:
+        case NUMBER:
+        case OPERATOR:
+        case COMMA:
+        case LPAREN:
+        case RPAREN:
+        case LBRACE:
+        case RBRACE:
+        case LBRACKET:
+        case RBRACKET:
+        case NEWLINE:
+        case COLON:
+        case FUNCTION:
+        case AT:
+        case SEMICOLON:
+        case REGEXP:
+        case INTERPOLATION_START:
+          if (consume(SPACE_PATTERN)) {
+            setType(SPACE);
+          } else if (consumeNewline()) {
+            setType(NEWLINE);
+          } else if (consume('.')) {
+            setType(DOT);
+          } else if (consume('"""')) {
+            setType(TDSTRING);
+          } else if (consume('"')) {
+            setType(DSTRING);
+          } else if (consume('\'\'\'')) {
+            setType(TSSTRING);
+          } else if (consume('\'')) {
+            setType(SSTRING);
+          } else if (consume(/^###[^#]/)) {
+            setType(HERECOMMENT);
+          } else if (consume('#')) {
+            setType(COMMENT);
+          } else if (consume('///')) {
+            setType(HEREGEXP);
+          } else if (consume('(')) {
+            setType(LPAREN);
+          } else if (consume(')')) {
+            setType(RPAREN);
+          } else if (consume('[')) {
+            setType(LBRACKET);
+          } else if (consume(']')) {
+            setType(RBRACKET);
+          } else if (consume('{')) {
+            braceStack.push(start);
+            setType(LBRACE);
+          } else if (consume('}')) {
+            if (braceStack.length === 0) {
+              popInterpolation();
+            } else {
+              braceStack.pop();
+              setType(RBRACE);
+            }
+          } else if (consumeAny(['->', '=>'])) {
+            setType(FUNCTION);
+          } else if (consumeRegexp()) {
+            setType(REGEXP);
+          } else if (consume(':')) {
+            setType(COLON);
+          } else if (consume(',')) {
+            setType(COMMA);
+          } else if (consume('@')) {
+            setType(AT);
+          } else if (consume(';')) {
+            setType(SEMICOLON);
+          } else if (consume('`')) {
+            setType(JS);
+          } else if (consume(IDENTIFIER_PATTERN)) {
+            setType(WORD);
+          } else if (consume(NUMBER_PATTERN)) {
+            setType(NUMBER);
+          } else if (consumeAny(OPERATORS)) {
+            setType(OPERATOR);
           } else {
-            braceStack.pop();
-            setType(RBRACE);
+            setType(UNKNOWN);
           }
-        } else if (!match(/^\/=?\s/) && consume('/')) {
-          setType(REGEXP);
-        } else if (consume('@')) {
-          setType(AT);
-        } else if (consume(';')) {
-          setType(SEMICOLON);
-        } else if (consume('`')) {
-          setType(JS);
-        } else if (consume(IDENTIFIER_PATTERN)) {
-          setType(WORD);
-        } else if (consume(NUMBER_PATTERN)) {
-          setType(NUMBER);
-        } else if (consume(OPERATOR_PATTERN)) {
-          setType(OPERATOR);
-        } else {
-          setType(UNKNOWN);
-        }
-        break;
+          break;
 
-      case SSTRING:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('\'')) {
-          setType(NORMAL);
-        } else {
-          index++;
-        }
-        break;
+        case SSTRING:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('\'')) {
+            setType(NORMAL);
+          } else {
+            index++;
+          }
+          break;
 
-      case DSTRING:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('"')) {
-          setType(NORMAL);
-        } else if (consume('#{')) {
-          pushInterpolation();
-        } else {
-          index++;
-        }
-        break;
+        case DSTRING:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('"')) {
+            setType(NORMAL);
+          } else if (consume('#{')) {
+            pushInterpolation();
+          } else {
+            index++;
+          }
+          break;
 
-      case COMMENT:
-        if (consumeNewline()) {
-          setType(NEWLINE);
-        } else {
-          index++;
-        }
-        break;
+        case COMMENT:
+          if (consumeNewline()) {
+            setType(NEWLINE);
+          } else {
+            index++;
+          }
+          break;
 
-      case HERECOMMENT:
-        if (consume('###')) {
-          setType(NORMAL);
-        } else {
-          index++;
-        }
-        break;
+        case HERECOMMENT:
+          if (consume('###')) {
+            setType(NORMAL);
+          } else {
+            index++;
+          }
+          break;
 
-      case TSSTRING:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('\'\'\'')) {
-          setType(NORMAL);
-        } else {
-          index++;
-        }
-        break;
+        case TSSTRING:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('\'\'\'')) {
+            setType(NORMAL);
+          } else {
+            index++;
+          }
+          break;
 
-      case TDSTRING:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('"""')) {
-          setType(NORMAL);
-        } else if (consume('#{')) {
-          pushInterpolation();
-        } else {
-          index++;
-        }
-        break;
+        case TDSTRING:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('"""')) {
+            setType(NORMAL);
+          } else if (consume('#{')) {
+            pushInterpolation();
+          } else {
+            index++;
+          }
+          break;
 
-      case INTERPOLATION_END:
-        setType(interpolationStack.pop());
-        break;
+        case INTERPOLATION_END:
+          setType(interpolationStack.pop());
+          break;
 
-      case REGEXP:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('/')) {
-          while (consumeAny(REGEXP_FLAGS));
-          setType(NORMAL);
-        } else {
-          index++;
-        }
-        break;
+        case HEREGEXP:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('///')) {
+            while (consumeAny(REGEXP_FLAGS));
+            setType(NORMAL);
+          } else {
+            index++;
+          }
+          break;
 
-      case HEREGEXP:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('///')) {
-          while (consumeAny(REGEXP_FLAGS));
-          setType(NORMAL);
-        } else {
-          index++;
-        }
-        break;
+        case JS:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('`')) {
+            setType(NORMAL);
+          } else {
+            index++;
+          }
+          break;
 
-      case JS:
-        if (consume('\\')) {
-          index++;
-        } else if (consume('`')) {
-          setType(NORMAL);
-        } else {
-          index++;
-        }
-        break;
+        case EOF:
+          if (braceStack.length !== 0) {
+            throw new Error(
+              `unexpected EOF while looking for '}' to match '{' ` +
+              `at ${braceStack[braceStack.length - 1]}`
+            );
+          }
+          break;
 
-      case EOF:
-        if (braceStack.length !== 0) {
-          throw new Error(
-            `unexpected EOF while looking for '}' to match '{' ` +
-            `at ${braceStack[braceStack.length - 1]}`
-          );
-        }
-        break;
+        case UNKNOWN:
+          // ¯\_(ツ)_/¯
+          index = source.length;
+          break;
 
-      case UNKNOWN:
-        // ¯\_(ツ)_/¯
-        index = source.length;
-        break;
+        default:
+          throw new Error(`unknown source type at offset ${location.index}: ${location.type.name}`);
+      }
 
-      default:
-        throw new Error(`unknown source type at offset ${location.index}: ${location.type.name}`);
-    }
+      shouldStepAgain = (
+        // Don't report on going back to "normal" source code.
+        location.type === NORMAL ||
+        // Don't report if nothing has changed, unless we're at the end.
+        (
+          location === lastLocation &&
+          location.type !== EOF
+        )
+      );
+    } while (shouldStepAgain);
 
-    let shouldSkipToNextStep = (
-      // Don't report on going back to "normal" source code.
-      location.type === NORMAL ||
-      // Don't report if nothing has changed, unless we're at the end.
-      (
-        location === lastLocation &&
-        location.type !== EOF
-      )
-    );
-
-    if (shouldSkipToNextStep) {
-      return step();
-    }
-
+    locations.push(location);
     return location;
   };
 
@@ -480,9 +539,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
   }
 
   function consume(value: string|RegExp): boolean {
-    let matchedLength = match(value);
-    if (matchedLength > 0) {
-      index += matchedLength;
+    let matchData = match(value);
+    if (matchData) {
+      index += matchData[0].length;
       return true;
     } else {
       return false;
@@ -493,17 +552,44 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     return consumeAny(['\n', '\r\n', '\r']);
   }
 
+  function consumeRegexp(): boolean {
+    let matchData = match(REGEXP_PATTERN);
+    if (!matchData) {
+      return false;
+    }
+    let [ regex, body, closed ] = matchData;
+    let prev = locations[locations.length - 1];
+    if (prev) {
+      let spaced = false;
+      if (prev.type === SPACE) {
+        spaced = true;
+        prev = locations[locations.length - 2];
+      }
+      if (spaced && CALLABLE.indexOf(prev.type) >= 0) {
+        if (!closed || /^\/=?\s/.test(regex)) {
+          return false;
+        }
+      } else if (NOT_REGEXP.indexOf(prev.type) >= 0) {
+        return false;
+      }
+    }
+    if (!closed) {
+      throw new Error('missing / (unclosed regex)');
+    }
+    index += regex.length;
+    return true;
+  }
+
   function setType(newType: SourceType) {
     location = new SourceLocation(newType, start);
   }
 
-  function match(value: string|RegExp): number {
+  function match(value: string|RegExp): ?Array<string> {
     if (typeof value === 'string') {
       let matches = source.slice(index, index + value.length) === value;
-      return matches ? value.length : 0;
+      return matches ? [value] : null;
     } else {
-      let match = source.slice(index).match(value);
-      return match ? match[0].length : 0;
+      return source.slice(index).match(value);
     }
   }
 
