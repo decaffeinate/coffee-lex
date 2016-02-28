@@ -1,5 +1,6 @@
-import type { SourceType } from '../src/index.js';
-import { SourceLocation, SourceToken, SourceTokenList } from '../src/index.js';
+import SourceLocation from '../src/SourceLocation.js';
+import SourceToken from '../src/SourceToken.js';
+import SourceTokenList from '../src/SourceTokenList.js';
 import { ok, deepEqual, strictEqual } from 'assert';
 import lex, {
   stream,
