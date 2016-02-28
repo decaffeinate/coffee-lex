@@ -30,6 +30,7 @@ import lex, {
   NUMBER,
   OPERATOR,
   PROTO,
+  RANGE,
   RBRACE,
   RBRACKET,
   REGEXP,
@@ -660,6 +661,18 @@ describe('stream', () => {
       [
         new SourceLocation(IDENTIFIER, 0),
         new SourceLocation(PROTO, 1),
+        new SourceLocation(IDENTIFIER, 3),
+        new SourceLocation(EOF, 4)
+      ]
+    )
+  );
+
+  it('identifies inclusive ranges', () =>
+    checkLocations(
+      stream(`a..b`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(RANGE, 1),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]

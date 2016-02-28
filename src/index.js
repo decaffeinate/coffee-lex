@@ -247,6 +247,7 @@ export const NULL = new SourceType('NULL');
 export const NUMBER = new SourceType('NUMBER');
 export const OPERATOR = new SourceType('OPERATOR');
 export const PROTO = new SourceType('PROTO');
+export const RANGE = new SourceType('RANGE');
 export const REGEXP = new SourceType('REGEXP');
 export const RBRACE = new SourceType('RBRACE');
 export const RBRACKET = new SourceType('RBRACKET');
@@ -361,10 +362,13 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case WHEN:
         case EXISTENCE:
         case PROTO:
+        case RANGE:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
           } else if (consumeNewline()) {
             setType(NEWLINE);
+          } else if (consume('...') || consume('..')) {
+            setType(RANGE);
           } else if (consume('.')) {
             setType(DOT);
           } else if (consume('"""')) {
