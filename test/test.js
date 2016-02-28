@@ -5,6 +5,7 @@ import lex, {
   stream,
   consumeStream,
   AT,
+  BOOL,
   COLON,
   COMMA,
   COMMENT,
@@ -12,6 +13,7 @@ import lex, {
   DSTRING,
   ELSE,
   EOF,
+  EXISTENCE,
   FUNCTION,
   HERECOMMENT,
   IDENTIFIER,
@@ -24,8 +26,10 @@ import lex, {
   LPAREN,
   NEWLINE,
   NORMAL,
+  NULL,
   NUMBER,
   OPERATOR,
+  PROTO,
   RBRACE,
   RBRACKET,
   REGEXP,
@@ -33,10 +37,13 @@ import lex, {
   SEMICOLON,
   SPACE,
   SSTRING,
+  SUPER,
   SWITCH,
   TDSTRING,
   THEN,
+  THIS,
   TSSTRING,
+  UNDEFINED,
   WHEN,
 } from '../src/index.js';
 
@@ -570,6 +577,91 @@ describe('stream', () => {
         new SourceLocation(NUMBER, 7),
         new SourceLocation(RPAREN, 8),
         new SourceLocation(EOF, 9)
+      ]
+    )
+  );
+
+  it('identifies `null`', () =>
+    checkLocations(
+      stream(`null`),
+      [
+        new SourceLocation(NULL, 0),
+        new SourceLocation(EOF, 4)
+      ]
+    )
+  );
+
+  it('identifies `undefined`', () =>
+    checkLocations(
+      stream(`undefined`),
+      [
+        new SourceLocation(UNDEFINED, 0),
+        new SourceLocation(EOF, 9)
+      ]
+    )
+  );
+
+  it('identifies `this`', () =>
+    checkLocations(
+      stream(`this`),
+      [
+        new SourceLocation(THIS, 0),
+        new SourceLocation(EOF, 4)
+      ]
+    )
+  );
+
+  it('identifies `super`', () =>
+    checkLocations(
+      stream(`super`),
+      [
+        new SourceLocation(SUPER, 0),
+        new SourceLocation(EOF, 5)
+      ]
+    )
+  );
+
+  it('identifies booleans', () =>
+    checkLocations(
+      stream(`true;false;yes;no;on;off`),
+      [
+        new SourceLocation(BOOL, 0),
+        new SourceLocation(SEMICOLON, 4),
+        new SourceLocation(BOOL, 5),
+        new SourceLocation(SEMICOLON, 10),
+        new SourceLocation(BOOL, 11),
+        new SourceLocation(SEMICOLON, 14),
+        new SourceLocation(BOOL, 15),
+        new SourceLocation(SEMICOLON, 17),
+        new SourceLocation(BOOL, 18),
+        new SourceLocation(SEMICOLON, 20),
+        new SourceLocation(BOOL, 21),
+        new SourceLocation(EOF, 24)
+      ]
+    )
+  );
+
+  it('identifies existence operators', () =>
+    checkLocations(
+      stream(`a?.b`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(EXISTENCE, 1),
+        new SourceLocation(DOT, 2),
+        new SourceLocation(IDENTIFIER, 3),
+        new SourceLocation(EOF, 4)
+      ]
+    )
+  );
+
+  it('identifies proto operators', () =>
+    checkLocations(
+      stream(`a::b`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(PROTO, 1),
+        new SourceLocation(IDENTIFIER, 3),
+        new SourceLocation(EOF, 4)
       ]
     )
   );

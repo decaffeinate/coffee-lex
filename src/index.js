@@ -222,6 +222,7 @@ export class SourceType {
 }
 
 export const AT = new SourceType('AT');
+export const BOOL = new SourceType('BOOL');
 export const COLON = new SourceType('COLON');
 export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
@@ -229,6 +230,7 @@ export const DOT = new SourceType('DOT');
 export const DSTRING = new SourceType('DSTRING');
 export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
+export const EXISTENCE = new SourceType('EXISTENCE');
 export const FUNCTION = new SourceType('FUNCTION');
 export const HERECOMMENT = new SourceType('HERECOMMENT');
 export const HEREGEXP = new SourceType('HEREGEXP');
@@ -241,8 +243,10 @@ export const LBRACKET = new SourceType('LBRACKET');
 export const LPAREN = new SourceType('LPAREN');
 export const NEWLINE = new SourceType('NEWLINE');
 export const NORMAL = new SourceType('NORMAL');
+export const NULL = new SourceType('NULL');
 export const NUMBER = new SourceType('NUMBER');
 export const OPERATOR = new SourceType('OPERATOR');
+export const PROTO = new SourceType('PROTO');
 export const REGEXP = new SourceType('REGEXP');
 export const RBRACE = new SourceType('RBRACE');
 export const RBRACKET = new SourceType('RBRACKET');
@@ -250,23 +254,16 @@ export const RPAREN = new SourceType('RPAREN');
 export const SEMICOLON = new SourceType('SEMICOLON');
 export const SPACE = new SourceType('SPACE');
 export const SSTRING = new SourceType('SSTRING');
+export const SUPER = new SourceType('SUPER');
 export const SWITCH = new SourceType('SWITCH');
 export const TDSTRING = new SourceType('TDSTRING');
 export const THEN = new SourceType('THEN');
+export const THIS = new SourceType('THIS');
 export const TSSTRING = new SourceType('TSSTRING');
+export const UNDEFINED = new SourceType('UNDEFINED');
 export const UNKNOWN = new SourceType('UNKNOWN');
 export const WHEN = new SourceType('WHEN');
-export const WORD = new SourceType('WORD');
-
-// FIXME: They're not really the same.
-export const IDENTIFIER = WORD;
-export const EXISTENCE = OPERATOR;
-export const THIS = WORD;
-export const SUPER = WORD;
-export const BOOL = WORD;
-export const NULL = WORD;
-export const UNDEFINED = WORD;
-export const PROTO = OPERATOR;
+export const IDENTIFIER = new SourceType('IDENTIFIER');
 
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
@@ -334,7 +331,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
       switch (location.type) {
         case NORMAL:
         case SPACE:
-        case WORD:
+        case IDENTIFIER:
         case DOT:
         case NUMBER:
         case OPERATOR:
@@ -348,15 +345,22 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case NEWLINE:
         case COLON:
         case FUNCTION:
+        case THIS:
         case AT:
         case SEMICOLON:
         case IF:
         case ELSE:
         case THEN:
+        case BOOL:
+        case NULL:
+        case UNDEFINED:
         case REGEXP:
         case INTERPOLATION_START:
+        case SUPER:
         case SWITCH:
         case WHEN:
+        case EXISTENCE:
+        case PROTO:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
           } else if (consumeNewline()) {
@@ -399,6 +403,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(FUNCTION);
           } else if (consumeRegexp()) {
             setType(REGEXP);
+          } else if (consume('::')) {
+            setType(PROTO);
           } else if (consume(':')) {
             setType(COLON);
           } else if (consume(',')) {
@@ -407,6 +413,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(AT);
           } else if (consume(';')) {
             setType(SEMICOLON);
+          } else if (consume('?')) {
+            setType(EXISTENCE);
           } else if (consume('`')) {
             setType(JS);
           } else if (consume(IDENTIFIER_PATTERN)) {
@@ -434,6 +442,31 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'when':
                   setType(WHEN);
+                  break;
+
+                case 'null':
+                  setType(NULL);
+                  break;
+
+                case 'undefined':
+                  setType(UNDEFINED);
+                  break;
+
+                case 'this':
+                  setType(THIS);
+                  break;
+
+                case 'super':
+                  setType(SUPER);
+                  break;
+
+                case 'true':
+                case 'false':
+                case 'yes':
+                case 'no':
+                case 'on':
+                case 'off':
+                  setType(BOOL);
                   break;
 
                 default:
