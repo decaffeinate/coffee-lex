@@ -2,7 +2,8 @@
   "name": "coffee-lex",
   "version": "1.0.0",
   "description": "Stupid lexer for CoffeeScript.",
-  "main": "src/index.js",
+  "main": "dist/coffee-lex.umd.js",
+  "jsnext:main": "dist/coffee-lex.es.js",
   "scripts": {
     "build": "rollup -c rollup.config.es.js && rollup -c rollup.config.umd.js",
     "flow": "flow check --all",
