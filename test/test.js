@@ -10,6 +10,7 @@ import lex, {
   COMMA,
   COMMENT,
   CONTINUATION,
+  DELETE,
   DOT,
   DSTRING,
   ELSE,
@@ -636,6 +637,20 @@ describe('stream', () => {
       [
         new SourceLocation(SUPER, 0),
         new SourceLocation(EOF, 5)
+      ]
+    )
+  );
+
+  it('identifies `delete`', () =>
+    checkLocations(
+      stream(`delete a.b`),
+      [
+        new SourceLocation(DELETE, 0),
+        new SourceLocation(SPACE, 6),
+        new SourceLocation(IDENTIFIER, 7),
+        new SourceLocation(DOT, 8),
+        new SourceLocation(IDENTIFIER, 9),
+        new SourceLocation(EOF, 10)
       ]
     )
   );
