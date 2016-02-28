@@ -106,7 +106,7 @@ const OPERATORS = [
   // increment/decrement
   '++', '--',
   // math
-  '+', '-', '/', '*', '%', '%%',
+  '+', '-', '//', '/', '*', '%', '%%',
   // logical
   '||', '&&', '^', '!',
   // existence

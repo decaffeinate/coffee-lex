@@ -742,6 +742,20 @@ describe('stream', () => {
     )
   );
 
+  it('identifies floor division', () =>
+    checkLocations(
+      stream(`7 // 3`),
+      [
+        new SourceLocation(NUMBER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(OPERATOR, 2),
+        new SourceLocation(SPACE, 4),
+        new SourceLocation(NUMBER, 5),
+        new SourceLocation(EOF, 6)
+      ]
+    )
+  );
+
   function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
     let actualLocations = consumeStream(stream);
     deepEqual(actualLocations, expectedLocations);
