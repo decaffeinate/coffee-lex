@@ -9,6 +9,7 @@ import lex, {
   COLON,
   COMMA,
   COMMENT,
+  CONTINUATION,
   DOT,
   DSTRING,
   ELSE,
@@ -675,6 +676,23 @@ describe('stream', () => {
         new SourceLocation(RANGE, 1),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
+      ]
+    )
+  );
+
+  it('identifies line continuations', () =>
+    checkLocations(
+      stream(`a = \\\n  b`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(OPERATOR, 2),
+        new SourceLocation(SPACE, 3),
+        new SourceLocation(CONTINUATION, 4),
+        new SourceLocation(NEWLINE, 5),
+        new SourceLocation(SPACE, 6),
+        new SourceLocation(IDENTIFIER, 8),
+        new SourceLocation(EOF, 9)
       ]
     )
   );

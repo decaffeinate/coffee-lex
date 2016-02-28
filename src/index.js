@@ -226,6 +226,7 @@ export const BOOL = new SourceType('BOOL');
 export const COLON = new SourceType('COLON');
 export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
+export const CONTINUATION = new SourceType('CONTINUATION');
 export const DOT = new SourceType('DOT');
 export const DSTRING = new SourceType('DSTRING');
 export const ELSE = new SourceType('ELSE');
@@ -363,6 +364,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case EXISTENCE:
         case PROTO:
         case RANGE:
+        case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
           } else if (consumeNewline()) {
@@ -481,6 +483,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(NUMBER);
           } else if (consumeAny(OPERATORS)) {
             setType(OPERATOR);
+          } else if (consume('\\')) {
+            setType(CONTINUATION);
           } else {
             setType(UNKNOWN);
           }
