@@ -586,7 +586,7 @@ describe('stream', () => {
     )
   );
 
-  it('identifies identifiers with keyword names', () =>
+  it('identifies identifiers with keyword names after dot access', () =>
     checkLocations(
       stream(`s.else(0)`),
       [
@@ -596,6 +596,18 @@ describe('stream', () => {
         new SourceLocation(LPAREN, 6),
         new SourceLocation(NUMBER, 7),
         new SourceLocation(RPAREN, 8),
+        new SourceLocation(EOF, 9)
+      ]
+    )
+  );
+
+  it('identifies identifiers with keyword names after proto access', () =>
+    checkLocations(
+      stream(`s::delete`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(PROTO, 1),
+        new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 9)
       ]
     )

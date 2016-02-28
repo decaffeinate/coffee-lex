@@ -427,7 +427,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(JS);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prev = locations[locations.length - 1];
-            if (prev && prev.type === DOT) {
+            if (prev && (prev.type === DOT || prev.type === PROTO)) {
               setType(IDENTIFIER);
             } else {
               let raw = source.slice(start, index);
