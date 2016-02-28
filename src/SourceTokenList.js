@@ -53,6 +53,12 @@ export default class SourceTokenList {
    * `endIndex`.
    */
   tokenAtIndex(index: SourceTokenListIndex): ?SourceToken {
+    if (typeof index === 'number') {
+      throw new Error(
+        `to get a token at index ${index}, ` +
+        `use list.tokenAtIndex(list.startIndex.advance(${index}))`
+      );
+    }
     if (index._sourceTokenList !== this) {
       throw new Error('cannot get token in one list using an index from another');
     }
