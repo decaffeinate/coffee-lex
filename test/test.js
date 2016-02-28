@@ -226,6 +226,23 @@ describe('stream', () => {
     )
   );
 
+  it('handles nested string interpolation', () =>
+    checkLocations(
+      stream(`"#{"#{}"}"`),
+      [
+        new SourceLocation(DSTRING, 0),
+        new SourceLocation(INTERPOLATION_START, 1),
+        new SourceLocation(DSTRING, 3),
+        new SourceLocation(INTERPOLATION_START, 4),
+        new SourceLocation(INTERPOLATION_END, 6),
+        new SourceLocation(DSTRING, 7),
+        new SourceLocation(INTERPOLATION_END, 8),
+        new SourceLocation(DSTRING, 9),
+        new SourceLocation(EOF, 10)
+      ]
+    )
+  );
+
   it('identifies integers as numbers', () =>
     checkLocations(
       stream(`10`),
