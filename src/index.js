@@ -12,7 +12,7 @@ export default function lex(source: string): SourceTokenList {
   let tokens = [];
   let pending = new BufferedStream(stream(source));
   do {
-    pending.unshift(...templateLocationsFromStream(pending));
+    pending.unshift(...stringLocationsFromStream(pending));
     location = pending.shift();
     if (previousLocation && previousLocation.type !== SPACE) {
       tokens.push(
@@ -28,7 +28,7 @@ export default function lex(source: string): SourceTokenList {
   return new SourceTokenList(tokens);
 }
 
-function templateLocationsFromStream(stream: BufferedStream): Array<SourceToken> {
+function stringLocationsFromStream(stream: BufferedStream): Array<SourceToken> {
   let startOfStringInterpolation = (
     stream.hasNext(DSTRING, INTERPOLATION_START) ||
     stream.hasNext(TDSTRING, INTERPOLATION_START)
@@ -61,7 +61,7 @@ function templateLocationsFromStream(stream: BufferedStream): Array<SourceToken>
   let insideInterpolation = true;
   while (true) {
     if (insideInterpolation) {
-      result.push(...templateLocationsFromStream(stream));
+      result.push(...stringLocationsFromStream(stream));
     }
     loc = stream.shift();
     if (loc.type === INTERPOLATION_START) {
