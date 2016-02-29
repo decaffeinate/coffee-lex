@@ -20,12 +20,12 @@ let tokens = lex(source);
 
 // Print each token object.
 tokens.forEach(token => console.log(token));
-// SourceToken { type: SourceType { name: 'WORD' }, start: 0, end: 1 }
-// SourceToken { type: SourceType { name: 'OPERATOR' }, start: 1, end: 2 }
+// SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 0, end: 1 }
+// SourceToken { type: SourceType { name: 'EXISTENCE' }, start: 1, end: 2 }
 // SourceToken { type: SourceType { name: 'LPAREN' }, start: 2, end: 3 }
-// SourceToken { type: SourceType { name: 'WORD' }, start: 3, end: 4 }
-// SourceToken { type: SourceType { name: 'OPERATOR' }, start: 4, end: 5 }
-// SourceToken { type: SourceType { name: 'WORD' }, start: 6, end: 7 }
+// SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 3, end: 4 }
+// SourceToken { type: SourceType { name: 'COLON' }, start: 4, end: 5 }
+// SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 6, end: 7 }
 // SourceToken { type: SourceType { name: 'RPAREN' }, start: 7, end: 8 }
 
 // Print tokens along with their source.
@@ -35,12 +35,12 @@ tokens.forEach(token =>
     JSON.stringify(source.slice(token.start, token.end))
   )
 );
-// WORD "a"
-// OPERATOR "?"
+// IDENTIFIER "a"
+// EXISTENCE "?"
 // LPAREN "("
-// WORD "b"
-// OPERATOR ":"
-// WORD "c"
+// IDENTIFIER "b"
+// COLON ":"
+// IDENTIFIER "c"
 // RPAREN ")"
 ```
 
@@ -58,13 +58,13 @@ do {
   location = step();
   console.log(location);
 } while (location.type !== EOF);
-// SourceLocation { type: SourceType { name: 'WORD' }, index: 0 }
-// SourceLocation { type: SourceType { name: 'OPERATOR' }, index: 1 }
+// SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 0 }
+// SourceLocation { type: SourceType { name: 'EXISTENCE' }, index: 1 }
 // SourceLocation { type: SourceType { name: 'LPAREN' }, index: 2 }
-// SourceLocation { type: SourceType { name: 'WORD' }, index: 3 }
-// SourceLocation { type: SourceType { name: 'OPERATOR' }, index: 4 }
+// SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 3 }
+// SourceLocation { type: SourceType { name: 'COLON' }, index: 4 }
 // SourceLocation { type: SourceType { name: 'SPACE' }, index: 5 }
-// SourceLocation { type: SourceType { name: 'WORD' }, index: 6 }
+// SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 6 }
 // SourceLocation { type: SourceType { name: 'RPAREN' }, index: 7 }
 // SourceLocation { type: SourceType { name: 'EOF' }, index: 8 }
 ```
@@ -122,14 +122,13 @@ the official lexer generates for `"a#{b}c"`:
 Here's what coffee-lex generates for the same source:
 
 ```js
-[
-  [ 'DSTRING', 0, 2, '"a' ],
-  [ 'INTERPOLATION_START', 2, 4, '#{' ],
-  [ 'WORD', 4, 5, 'b' ],
-  [ 'INTERPOLATION_END', 5, 6, '}' ],
-  [ 'DSTRING', 6, 8, 'c"' ],
-  [ 'NEWLINE', 8, 9, '\n' ],
-]
+[ SourceToken { type: SourceType { name: 'STRING_START' }, start: 0, end: 1 },
+  SourceToken { type: SourceType { name: 'STRING_CONTENT' }, start: 1, end: 2 },
+  SourceToken { type: SourceType { name: 'INTERPOLATION_START' }, start: 2, end: 4 },
+  SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 4, end: 5 },
+  SourceToken { type: SourceType { name: 'INTERPOLATION_END' }, start: 5, end: 6 },
+  SourceToken { type: SourceType { name: 'STRING_CONTENT' }, start: 6, end: 7 },
+  SourceToken { type: SourceType { name: 'STRING_END' }, start: 7, end: 8 } ]
 ```
 
 ## License
