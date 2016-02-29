@@ -10,9 +10,10 @@ export default function lex(source: string): SourceTokenList {
   let location;
   let previousLocation;
   let tokens = [];
-  let getNextLocation = stream(source);
+  let pending = new BufferedStream(stream(source));
   do {
-    location = getNextLocation();
+    pending.unshift(...templateLocationsFromStream(pending));
+    location = pending.shift();
     if (previousLocation && previousLocation.type !== SPACE) {
       tokens.push(
         new SourceToken(
@@ -25,6 +26,125 @@ export default function lex(source: string): SourceTokenList {
     previousLocation = location;
   } while (location.type !== EOF);
   return new SourceTokenList(tokens);
+}
+
+function templateLocationsFromStream(stream: BufferedStream): Array<SourceToken> {
+  let startOfStringInterpolation = (
+    stream.hasNext(DSTRING, INTERPOLATION_START) ||
+    stream.hasNext(TDSTRING, INTERPOLATION_START)
+  );
+
+  if (!startOfStringInterpolation) {
+    return [];
+  }
+
+  let result = [];
+  let first = stream.shift();
+  let quote = first.type === DSTRING ? '"' : '"""';
+
+  result.push(
+    // "abc#{def}ghi"
+    // ^
+    new SourceLocation(
+      STRING_START,
+      first.index
+    ),
+    // "abc#{def}ghi"
+    //  ^
+    new SourceLocation(
+      STRING_CONTENT,
+      first.index + quote.length
+    )
+  );
+
+  let loc;
+  let insideInterpolation = true;
+  while (true) {
+    if (insideInterpolation) {
+      result.push(...templateLocationsFromStream(stream));
+    }
+    loc = stream.shift();
+    if (loc.type === INTERPOLATION_START) {
+      insideInterpolation = true;
+      result.push(
+        new SourceLocation(
+          loc.type,
+          loc.index
+        )
+      );
+    } else if (loc.type === INTERPOLATION_END) {
+      insideInterpolation = false;
+      result.push(new SourceLocation(
+        loc.type,
+        loc.index
+      ));
+    } else if (loc.type === first.type) {
+      let next = stream.peek();
+      if (next.type === INTERPOLATION_START) {
+        // "abc#{def}ghi#{jkl}mno"
+        //           ^^^
+        result.push(new SourceLocation(
+          STRING_CONTENT,
+          loc.index
+        ));
+      } else {
+        // "abc#{def}ghi#{jkl}mno"
+        //                    ^^^
+        result.push(new SourceLocation(
+          STRING_CONTENT,
+          loc.index
+        ));
+        // "abc#{def}ghi#{jkl}mno"
+        //                       ^
+        result.push(new SourceLocation(
+          STRING_END,
+          next.index - quote.length
+        ));
+        break;
+      }
+    } else {
+      // Anything inside interpolations.
+      result.push(new SourceLocation(
+        loc.type,
+        loc.index
+      ));
+    }
+  }
+
+  return result;
+}
+
+class BufferedStream {
+  pending: Array<SourceLocation> = [];
+
+  constructor(stream: () => SourceLocation) {
+    this._getNextLocation = stream;
+  }
+
+  shift(): SourceLocation {
+    return this.pending.shift() || this._getNextLocation();
+  }
+
+  hasNext(...types: Array<SourceType>): boolean {
+    let locationsToPutBack = [];
+    let result = types.every(type => {
+      let next = this.shift();
+      locationsToPutBack.push(next);
+      return next.type === type;
+    });
+    this.unshift(...locationsToPutBack);
+    return result;
+  }
+
+  peek(): SourceLocation {
+    let result = this.shift();
+    this.unshift(result);
+    return result;
+  }
+
+  unshift(...tokens: Array<SourceLocation>) {
+    this.pending.unshift(...tokens);
+  }
 }
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
@@ -68,6 +188,9 @@ export const SSTRING = new SourceType('SSTRING');
 export const SUPER = new SourceType('SUPER');
 export const SWITCH = new SourceType('SWITCH');
 export const TDSTRING = new SourceType('TDSTRING');
+export const STRING_CONTENT = new SourceType('STRING_CONTENT');
+export const STRING_END = new SourceType('STRING_END');
+export const STRING_START = new SourceType('STRING_START');
 export const THEN = new SourceType('THEN');
 export const THIS = new SourceType('THIS');
 export const TSSTRING = new SourceType('TSSTRING');

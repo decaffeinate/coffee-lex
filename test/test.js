@@ -44,6 +44,9 @@ import lex, {
   SUPER,
   SWITCH,
   TDSTRING,
+  STRING_CONTENT,
+  STRING_END,
+  STRING_START,
   THEN,
   THIS,
   TSSTRING,
@@ -69,6 +72,99 @@ describe('lex', () => {
 
   it('returns a `SourceTokenList`', () =>
     ok(lex('') instanceof SourceTokenList)
+  );
+
+  it('turns string interpolations into cohesive string tokens', () =>
+    deepEqual(
+      lex(`"b#{c}d#{e}f"`).toArray(),
+      [
+        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(STRING_CONTENT, 1, 2),
+        new SourceToken(INTERPOLATION_START, 2, 4),
+        new SourceToken(IDENTIFIER, 4, 5),
+        new SourceToken(INTERPOLATION_END, 5, 6),
+        new SourceToken(STRING_CONTENT, 6, 7),
+        new SourceToken(INTERPOLATION_START, 7, 9),
+        new SourceToken(IDENTIFIER, 9, 10),
+        new SourceToken(INTERPOLATION_END, 10, 11),
+        new SourceToken(STRING_CONTENT, 11, 12),
+        new SourceToken(STRING_END, 12, 13)
+      ]
+    )
+  );
+
+  it('adds empty template content tokens between adjacent interpolations', () =>
+    deepEqual(
+      lex(`"#{a}#{b}"`).toArray(),
+      [
+        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(STRING_CONTENT, 1, 1),
+        new SourceToken(INTERPOLATION_START, 1, 3),
+        new SourceToken(IDENTIFIER, 3, 4),
+        new SourceToken(INTERPOLATION_END, 4, 5),
+        new SourceToken(STRING_CONTENT, 5, 5),
+        new SourceToken(INTERPOLATION_START, 5, 7),
+        new SourceToken(IDENTIFIER, 7, 8),
+        new SourceToken(INTERPOLATION_END, 8, 9),
+        new SourceToken(STRING_CONTENT, 9, 9),
+        new SourceToken(STRING_END, 9, 10)
+      ]
+    )
+  );
+
+  it('turns triple-quoted string interpolations into string tokens', () =>
+    deepEqual(
+      lex(`"""b#{c}d#{e}f"""`).toArray(),
+      [
+        new SourceToken(STRING_START, 0, 3),
+        new SourceToken(STRING_CONTENT, 3, 4),
+        new SourceToken(INTERPOLATION_START, 4, 6),
+        new SourceToken(IDENTIFIER, 6, 7),
+        new SourceToken(INTERPOLATION_END, 7, 8),
+        new SourceToken(STRING_CONTENT, 8, 9),
+        new SourceToken(INTERPOLATION_START, 9, 11),
+        new SourceToken(IDENTIFIER, 11, 12),
+        new SourceToken(INTERPOLATION_END, 12, 13),
+        new SourceToken(STRING_CONTENT, 13, 14),
+        new SourceToken(STRING_END, 14, 17)
+      ]
+    )
+  );
+
+  it('handles nested interpolations', () =>
+    deepEqual(
+      lex(`"#{"#{a}"}"`).toArray(),
+      [
+        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(STRING_CONTENT, 1, 1),
+        new SourceToken(INTERPOLATION_START, 1, 3),
+        new SourceToken(STRING_START, 3, 4),
+        new SourceToken(STRING_CONTENT, 4, 4),
+        new SourceToken(INTERPOLATION_START, 4, 6),
+        new SourceToken(IDENTIFIER, 6, 7),
+        new SourceToken(INTERPOLATION_END, 7, 8),
+        new SourceToken(STRING_CONTENT, 8, 8),
+        new SourceToken(STRING_END, 8, 9),
+        new SourceToken(INTERPOLATION_END, 9, 10),
+        new SourceToken(STRING_CONTENT, 10, 10),
+        new SourceToken(STRING_END, 10, 11)
+      ]
+    )
+  );
+
+  it('handles spaces in string interpolations appropriately', () =>
+    deepEqual(
+      lex(`"#{ a }"`).toArray(),
+      [
+        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(STRING_CONTENT, 1, 1),
+        new SourceToken(INTERPOLATION_START, 1, 3),
+        new SourceToken(IDENTIFIER, 4, 5),
+        new SourceToken(INTERPOLATION_END, 6, 7),
+        new SourceToken(STRING_CONTENT, 7, 7),
+        new SourceToken(STRING_END, 7, 8)
+      ]
+    )
   );
 });
 
