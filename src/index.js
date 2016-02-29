@@ -28,7 +28,7 @@ export default function lex(source: string): SourceTokenList {
   return new SourceTokenList(tokens);
 }
 
-function stringLocationsFromStream(stream: BufferedStream): Array<SourceToken> {
+function stringLocationsFromStream(stream: BufferedStream): Array<SourceLocation> {
   let startOfStringInterpolation = (
     stream.hasNext(DSTRING, INTERPOLATION_START) ||
     stream.hasNext(TDSTRING, INTERPOLATION_START)
@@ -115,6 +115,7 @@ function stringLocationsFromStream(stream: BufferedStream): Array<SourceToken> {
 }
 
 class BufferedStream {
+  _getNextLocation: () => SourceLocation;
   pending: Array<SourceLocation> = [];
 
   constructor(stream: () => SourceLocation) {
