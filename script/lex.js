@@ -23,11 +23,5 @@ if (args.length > 0) {
 }
 
 function run(input) {
-  let tokens = lex(input);
-  let info = tokens.map(token => [
-    token.type.name,
-    token.start,
-    input.slice(token.start, token.end)
-  ]);
-  console.log(JSON.stringify(info, null, 2));
+  console.log(lex(input).toArray());
 }
