@@ -236,6 +236,66 @@ describe('SourceTokenList', () => {
     strictEqual(list.indexOfTokenEndingAtSourceIndex(8), null);      // o
     strictEqual(list.indexOfTokenEndingAtSourceIndex(9), twoIndex);  // <EOF>
   });
+
+  it('allows getting the range of an interpolated string by source index', () => {
+    let list = lex('a = "b#{c}d".length');
+    let expectedStart = list.tokenAtIndex(list.startIndex.advance(2));
+    let expectedEnd = list.tokenAtIndex(list.startIndex.advance(9));
+
+    function assertNullAtSourceIndex(sourceIndex: number) {
+      let index = list.indexOfTokenContainingSourceIndex(sourceIndex);
+      if (!index) {
+        // No token contains this index, so of course it'll be null.
+        return;
+      }
+      strictEqual(
+        list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+          index
+        ),
+        null,
+        `expected no range for source index ${sourceIndex}`
+      );
+    }
+
+    function assertMatchesAtSourceIndex(sourceIndex: number) {
+      let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+        list.indexOfTokenContainingSourceIndex(sourceIndex)
+      );
+      ok(range, `range should not be null for source index ${sourceIndex}`);
+      let [ start, end ] = range;
+      strictEqual(
+        list.tokenAtIndex(start),
+        expectedStart,
+        `wrong start token for source index ${sourceIndex}`
+      );
+      strictEqual(
+        list.tokenAtIndex(end),
+        expectedEnd,
+        `wrong end token for source index ${sourceIndex}`
+      );
+    }
+
+    assertNullAtSourceIndex(0);     // a
+    assertNullAtSourceIndex(1);     // <SPACE>
+    assertNullAtSourceIndex(2);     // =
+    assertNullAtSourceIndex(3);     // <SPACE>
+    assertMatchesAtSourceIndex(4);  // "
+    assertMatchesAtSourceIndex(5);  // b
+    assertMatchesAtSourceIndex(6);  // #
+    assertMatchesAtSourceIndex(7);  // {
+    assertMatchesAtSourceIndex(8);  // c
+    assertMatchesAtSourceIndex(9);  // }
+    assertMatchesAtSourceIndex(10); // d
+    assertMatchesAtSourceIndex(11); // "
+    assertNullAtSourceIndex(12);    // .
+    assertNullAtSourceIndex(13);    // l
+    assertNullAtSourceIndex(14);    // e
+    assertNullAtSourceIndex(15);    // n
+    assertNullAtSourceIndex(16);    // g
+    assertNullAtSourceIndex(17);    // t
+    assertNullAtSourceIndex(18);    // h
+    assertNullAtSourceIndex(19);    // <EOF>
+  });
 });
 
 describe('stream', () => {
