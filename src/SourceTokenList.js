@@ -41,6 +41,19 @@ export default class SourceTokenList {
   }
 
   /**
+   * Filter tokens by a predicate.
+   */
+  filter(predicate: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => boolean): SourceTokenList {
+    let result = [];
+    this.forEach((token, index, list) => {
+      if (predicate(token, index, list)) {
+        result.push(token);
+      }
+    });
+    return new SourceTokenList(result);
+  }
+
+  /**
    * Get a slice of this token list using the given indexes.
    */
   slice(start: SourceTokenListIndex, end: SourceTokenListIndex): SourceTokenList {
