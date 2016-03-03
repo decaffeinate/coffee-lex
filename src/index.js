@@ -359,8 +359,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             if (prev && (prev.type === DOT || prev.type === PROTO)) {
               setType(IDENTIFIER);
             } else {
-              let raw = source.slice(start, index);
-              switch (raw) {
+              switch (consumed()) {
                 case 'if':
                 case 'unless':
                   setType(IF);
@@ -418,7 +417,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume(NUMBER_PATTERN)) {
             setType(NUMBER);
           } else if (consumeAny(OPERATORS)) {
-            if (source.slice(start, index) === '?') {
+            if (consumed() === '?') {
               setType(EXISTENCE);
             } else {
               setType(OPERATOR);
@@ -592,6 +591,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     }
     index += regex.length;
     return true;
+  }
+
+  function consumed() {
+    return source.slice(start, index);
   }
 
   function setType(newType: SourceType) {
