@@ -364,6 +364,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
               let raw = source.slice(start, index);
               switch (raw) {
                 case 'if':
+                case 'unless':
                   setType(IF);
                   break;
 

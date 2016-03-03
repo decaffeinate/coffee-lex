@@ -718,6 +718,20 @@ describe('stream', () => {
     )
   );
 
+  it('identifies keywords for `unless` conditionals', () =>
+    checkLocations(
+      stream(`b unless a`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(IF, 2),
+        new SourceLocation(SPACE, 8),
+        new SourceLocation(IDENTIFIER, 9),
+        new SourceLocation(EOF, 10)
+      ]
+    )
+  );
+
   it('identifies keywords for switch', () =>
     checkLocations(
       stream(`switch a\n  when b\n    c\n  else d`),
