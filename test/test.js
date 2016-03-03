@@ -926,6 +926,20 @@ describe('stream', () => {
     )
   );
 
+  it('identifies compound assignment', () =>
+    checkLocations(
+      stream(`a ?= 3`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(OPERATOR, 2),
+        new SourceLocation(SPACE, 4),
+        new SourceLocation(NUMBER, 5),
+        new SourceLocation(EOF, 6)
+      ]
+    )
+  );
+
   function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
     let actualLocations = consumeStream(stream);
     deepEqual(actualLocations, expectedLocations);

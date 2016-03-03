@@ -352,8 +352,6 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(AT);
           } else if (consume(';')) {
             setType(SEMICOLON);
-          } else if (consume('?')) {
-            setType(EXISTENCE);
           } else if (consume('`')) {
             setType(JS);
           } else if (consume(IDENTIFIER_PATTERN)) {
@@ -420,7 +418,11 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume(NUMBER_PATTERN)) {
             setType(NUMBER);
           } else if (consumeAny(OPERATORS)) {
-            setType(OPERATOR);
+            if (source.slice(start, index) === '?') {
+              setType(EXISTENCE);
+            } else {
+              setType(OPERATOR);
+            }
           } else if (consume('\\')) {
             setType(CONTINUATION);
           } else {
