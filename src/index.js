@@ -406,6 +406,15 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                   setType(BOOL);
                   break;
 
+                case 'and':
+                case 'or':
+                case 'not':
+                case 'is':
+                case 'isnt':
+                case 'instanceof':
+                  setType(OPERATOR);
+                  break;
+
                 case 'delete':
                   setType(DELETE);
                   break;

@@ -940,6 +940,28 @@ describe('stream', () => {
     )
   );
 
+  it('identifies keyword operators', () =>
+    checkLocations(
+      stream(`a and b is c or d`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(OPERATOR, 2),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(IDENTIFIER, 6),
+        new SourceLocation(SPACE, 7),
+        new SourceLocation(OPERATOR, 8),
+        new SourceLocation(SPACE, 10),
+        new SourceLocation(IDENTIFIER, 11),
+        new SourceLocation(SPACE, 12),
+        new SourceLocation(OPERATOR, 13),
+        new SourceLocation(SPACE, 15),
+        new SourceLocation(IDENTIFIER, 16),
+        new SourceLocation(EOF, 17)
+      ]
+    )
+  );
+
   function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
     let actualLocations = consumeStream(stream);
     deepEqual(actualLocations, expectedLocations);
