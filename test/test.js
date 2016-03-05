@@ -37,6 +37,7 @@ import lex, {
   RBRACE,
   RBRACKET,
   REGEXP,
+  RETURN,
   RPAREN,
   SEMICOLON,
   SPACE,
@@ -348,7 +349,7 @@ describe('stream', () => {
     )
   );
 
-  it('identifies words', () =>
+  it('identifies identifiers', () =>
     checkLocations(
       stream(`a`),
       [
@@ -753,6 +754,18 @@ describe('stream', () => {
         new SourceLocation(SPACE, 30),
         new SourceLocation(IDENTIFIER, 31),
         new SourceLocation(EOF, 32)
+      ]
+    )
+  );
+
+  it('identifies `return` as a keyword', () =>
+    checkLocations(
+      stream(`return 0`),
+      [
+        new SourceLocation(RETURN, 0),
+        new SourceLocation(SPACE, 6),
+        new SourceLocation(NUMBER, 7),
+        new SourceLocation(EOF, 8)
       ]
     )
   );

@@ -182,6 +182,7 @@ export const RANGE = new SourceType('RANGE');
 export const REGEXP = new SourceType('REGEXP');
 export const RBRACE = new SourceType('RBRACE');
 export const RBRACKET = new SourceType('RBRACKET');
+export const RETURN = new SourceType('RETURN');
 export const RPAREN = new SourceType('RPAREN');
 export const SEMICOLON = new SourceType('SEMICOLON');
 export const SPACE = new SourceType('SPACE');
@@ -297,6 +298,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case PROTO:
         case RANGE:
         case DELETE:
+        case RETURN:
         case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
@@ -367,6 +369,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'else':
                   setType(ELSE);
+                  break;
+
+                case 'return':
+                  setType(RETURN);
                   break;
 
                 case 'then':
