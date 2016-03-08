@@ -37,6 +37,7 @@ import lex, {
   RBRACE,
   RBRACKET,
   REGEXP,
+  RELATION,
   RETURN,
   RPAREN,
   SEMICOLON,
@@ -971,6 +972,28 @@ describe('stream', () => {
         new SourceLocation(SPACE, 15),
         new SourceLocation(IDENTIFIER, 16),
         new SourceLocation(EOF, 17)
+      ]
+    )
+  );
+
+  it('identifies `in` and `of` as relations', () =>
+    checkLocations(
+      stream(`a in b or c of d`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(RELATION, 2),
+        new SourceLocation(SPACE, 4),
+        new SourceLocation(IDENTIFIER, 5),
+        new SourceLocation(SPACE, 6),
+        new SourceLocation(OPERATOR, 7),
+        new SourceLocation(SPACE, 9),
+        new SourceLocation(IDENTIFIER, 10),
+        new SourceLocation(SPACE, 11),
+        new SourceLocation(RELATION, 12),
+        new SourceLocation(SPACE, 14),
+        new SourceLocation(IDENTIFIER, 15),
+        new SourceLocation(EOF, 16)
       ]
     )
   );
