@@ -168,6 +168,39 @@ describe('lex', () => {
       ]
     )
   );
+
+  it('identifies `not instanceof` as a single operator', () =>
+    deepEqual(
+      lex('a not instanceof b').toArray(),
+      [
+        new SourceToken(IDENTIFIER, 0, 1),
+        new SourceToken(OPERATOR, 2, 16),
+        new SourceToken(IDENTIFIER, 17, 18)
+      ]
+    )
+  );
+
+  it('identifies `not in` as a single operator', () =>
+    deepEqual(
+      lex('a not in b').toArray(),
+      [
+        new SourceToken(IDENTIFIER, 0, 1),
+        new SourceToken(RELATION, 2, 8),
+        new SourceToken(IDENTIFIER, 9, 10)
+      ]
+    )
+  );
+
+  it('identifies `not of` as a single operator', () =>
+    deepEqual(
+      lex('a not of b').toArray(),
+      [
+        new SourceToken(IDENTIFIER, 0, 1),
+        new SourceToken(RELATION, 2, 8),
+        new SourceToken(IDENTIFIER, 9, 10)
+      ]
+    )
+  );
 });
 
 describe('SourceTokenList', () => {

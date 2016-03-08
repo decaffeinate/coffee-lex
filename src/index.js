@@ -12,7 +12,12 @@ export default function lex(source: string): SourceTokenList {
   let tokens = [];
   let pending = new BufferedStream(stream(source));
   do {
-    pending.unshift(...stringLocationsFromStream(pending));
+    pending.unshift(
+      ...stringLocationsFromStream(pending)
+    );
+    pending.unshift(
+      ...combinedLocationsForMultiwordOperators(pending, source)
+    );
     location = pending.shift();
     if (previousLocation && previousLocation.type !== SPACE) {
       tokens.push(
@@ -112,6 +117,42 @@ function stringLocationsFromStream(stream: BufferedStream): Array<SourceLocation
   }
 
   return result;
+}
+
+function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: string): Array<SourceLocation> {
+  if (!stream.hasNext(OPERATOR, SPACE, OPERATOR) && !stream.hasNext(OPERATOR, SPACE, RELATION)) {
+    return [];
+  }
+
+  let not = stream.shift();
+  let space = stream.shift();
+  let operator = stream.shift();
+  let next = stream.peek();
+
+  if (source.slice(not.index, space.index) === 'not') {
+    let op = source.slice(operator.index, next.index);
+    switch (op) {
+      case 'in':
+      case 'of':
+        return [
+          new SourceLocation(
+            RELATION,
+            not.index
+          )
+        ];
+
+      case 'instanceof':
+        return [
+          new SourceLocation(
+            OPERATOR,
+            not.index
+          )
+        ];
+    }
+  }
+
+  // Doesn't match, so put them back.
+  return [not, space, operator];
 }
 
 class BufferedStream {
