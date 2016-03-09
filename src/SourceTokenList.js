@@ -242,7 +242,6 @@ export default class SourceTokenList {
     }
     this._validateIndex(start);
 
-    let { startIndex } = this;
     let i = start;
     do {
       let token = this.tokenAtIndex(i);
@@ -253,7 +252,7 @@ export default class SourceTokenList {
       } else if (i) {
         i = i.previous();
       }
-    } while (i && i !== startIndex);
+    } while (i);
 
     return null;
   }

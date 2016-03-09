@@ -1,6 +1,7 @@
 import SourceLocation from '../src/SourceLocation.js';
 import SourceToken from '../src/SourceToken.js';
 import SourceTokenList from '../src/SourceTokenList.js';
+import { inspect } from 'util';
 import { ok, deepEqual, strictEqual } from 'assert';
 import lex, {
   stream,
@@ -330,6 +331,28 @@ describe('SourceTokenList', () => {
     assertNullAtSourceIndex(17);    // t
     assertNullAtSourceIndex(18);    // h
     assertNullAtSourceIndex(19);    // <EOF>
+  });
+
+  it('can find the containing interpolated string starting at an interpolation boundary', () => {
+    let list = lex('"#{a}b"');
+    let expectedStart = list.startIndex;
+    let expectedEnd = list.endIndex;
+
+    // Go past STRING_START & STRING_CONTENT.
+    let interpolationStart = list.startIndex.advance(2);
+    let interpolationStartToken = list.tokenAtIndex(interpolationStart);
+    strictEqual(
+      interpolationStartToken.type,
+      INTERPOLATION_START,
+      `expected ${inspect(interpolationStartToken)} to have type ` +
+      INTERPOLATION_START.name
+    );
+
+    let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+      interpolationStart
+    );
+    strictEqual(range && range[0], expectedStart);
+    strictEqual(range && range[1], expectedEnd);
   });
 });
 
