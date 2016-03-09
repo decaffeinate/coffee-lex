@@ -9,7 +9,7 @@
     "flow": "flow check --all",
     "pretest": "npm run flow",
     "test": "mocha --compilers js:babel-register",
-    "prepublish": "npm run build"
+    "prepublish": "npm run flow && npm run build"
   },
   "repository": {
     "type": "git",
