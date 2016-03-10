@@ -22,11 +22,11 @@ let tokens = lex(source);
 tokens.forEach(token => console.log(token));
 // SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 0, end: 1 }
 // SourceToken { type: SourceType { name: 'EXISTENCE' }, start: 1, end: 2 }
-// SourceToken { type: SourceType { name: 'LPAREN' }, start: 2, end: 3 }
+// SourceToken { type: SourceType { name: 'CALL_START' }, start: 2, end: 3 }
 // SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 3, end: 4 }
 // SourceToken { type: SourceType { name: 'COLON' }, start: 4, end: 5 }
 // SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 6, end: 7 }
-// SourceToken { type: SourceType { name: 'RPAREN' }, start: 7, end: 8 }
+// SourceToken { type: SourceType { name: 'CALL_END' }, start: 7, end: 8 }
 
 // Print tokens along with their source.
 tokens.forEach(token =>
@@ -37,11 +37,11 @@ tokens.forEach(token =>
 );
 // IDENTIFIER "a"
 // EXISTENCE "?"
-// LPAREN "("
+// CALL_START "("
 // IDENTIFIER "b"
 // COLON ":"
 // IDENTIFIER "c"
-// RPAREN ")"
+// CALL_END ")"
 ```
 
 You can also get more fine control of what you'd like to lex by using the
@@ -60,12 +60,12 @@ do {
 } while (location.type !== EOF);
 // SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 0 }
 // SourceLocation { type: SourceType { name: 'EXISTENCE' }, index: 1 }
-// SourceLocation { type: SourceType { name: 'LPAREN' }, index: 2 }
+// SourceLocation { type: SourceType { name: 'CALL_START' }, index: 2 }
 // SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 3 }
 // SourceLocation { type: SourceType { name: 'COLON' }, index: 4 }
 // SourceLocation { type: SourceType { name: 'SPACE' }, index: 5 }
 // SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 6 }
-// SourceLocation { type: SourceType { name: 'RPAREN' }, index: 7 }
+// SourceLocation { type: SourceType { name: 'CALL_END' }, index: 7 }
 // SourceLocation { type: SourceType { name: 'EOF' }, index: 8 }
 ```
 
