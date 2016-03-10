@@ -8,6 +8,8 @@ import lex, {
   consumeStream,
   AT,
   BOOL,
+  CALL_END,
+  CALL_START,
   COLON,
   COMMA,
   COMMENT,
@@ -199,6 +201,40 @@ describe('lex', () => {
         new SourceToken(IDENTIFIER, 0, 1),
         new SourceToken(RELATION, 2, 8),
         new SourceToken(IDENTIFIER, 9, 10)
+      ]
+    )
+  );
+
+  it('identifies parentheses immediately after callable tokens as CALL_START', () =>
+    deepEqual(
+      lex('a(super(@(b[0](), true&(false), b?())))').toArray(),
+      [
+        new SourceToken(IDENTIFIER, 0, 1),
+        new SourceToken(CALL_START, 1, 2),
+        new SourceToken(SUPER, 2, 7),
+        new SourceToken(CALL_START, 7, 8),
+        new SourceToken(AT, 8, 9),
+        new SourceToken(CALL_START, 9, 10),
+        new SourceToken(IDENTIFIER, 10, 11),
+        new SourceToken(LBRACKET, 11, 12),
+        new SourceToken(NUMBER, 12, 13),
+        new SourceToken(RBRACKET, 13, 14),
+        new SourceToken(CALL_START, 14, 15),
+        new SourceToken(CALL_END, 15, 16),
+        new SourceToken(COMMA, 16, 17),
+        new SourceToken(BOOL, 18, 22),
+        new SourceToken(OPERATOR, 22, 23),
+        new SourceToken(LPAREN, 23, 24),
+        new SourceToken(BOOL, 24, 29),
+        new SourceToken(RPAREN, 29, 30),
+        new SourceToken(COMMA, 30, 31),
+        new SourceToken(IDENTIFIER, 32, 33),
+        new SourceToken(EXISTENCE, 33, 34),
+        new SourceToken(CALL_START, 34, 35),
+        new SourceToken(CALL_END, 35, 36),
+        new SourceToken(CALL_END, 36, 37),
+        new SourceToken(CALL_END, 37, 38),
+        new SourceToken(CALL_END, 38, 39)
       ]
     )
   );
@@ -485,15 +521,14 @@ describe('stream', () => {
 
   it('identifies opening and closing parentheses', () =>
     checkLocations(
-      stream(`a(b())`),
+      stream(`(b)*2`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(LPAREN, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(LPAREN, 3),
-        new SourceLocation(RPAREN, 4),
-        new SourceLocation(RPAREN, 5),
-        new SourceLocation(EOF, 6)
+        new SourceLocation(LPAREN, 0),
+        new SourceLocation(IDENTIFIER, 1),
+        new SourceLocation(RPAREN, 2),
+        new SourceLocation(OPERATOR, 3),
+        new SourceLocation(NUMBER, 4),
+        new SourceLocation(EOF, 5)
       ]
     )
   );
@@ -834,9 +869,9 @@ describe('stream', () => {
         new SourceLocation(IDENTIFIER, 0),
         new SourceLocation(DOT, 1),
         new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(LPAREN, 6),
+        new SourceLocation(CALL_START, 6),
         new SourceLocation(NUMBER, 7),
-        new SourceLocation(RPAREN, 8),
+        new SourceLocation(CALL_END, 8),
         new SourceLocation(EOF, 9)
       ]
     )

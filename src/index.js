@@ -193,6 +193,8 @@ const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 
 export const AT = new SourceType('AT');
 export const BOOL = new SourceType('BOOL');
+export const CALL_END = new SourceType('CALL_END');
+export const CALL_START = new SourceType('CALL_START');
 export const COLON = new SourceType('COLON');
 export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
@@ -293,6 +295,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
   let location = new SourceLocation(NORMAL, index);
   let interpolationStack = ([]: Array<SourceType>);
   let braceStack = [];
+  let parenStack = [];
   let start = index;
   let locations = [];
   return function step(): SourceLocation {
@@ -315,6 +318,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case COMMA:
         case LPAREN:
         case RPAREN:
+        case CALL_START:
+        case CALL_END:
         case LBRACE:
         case RBRACE:
         case LBRACKET:
@@ -366,9 +371,33 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume('///')) {
             setType(HEREGEXP);
           } else if (consume('(')) {
-            setType(LPAREN);
+            if (CALLABLE.indexOf(location.type) >= 0) {
+              parenStack.push(CALL_START);
+              setType(CALL_START);
+            } else {
+              parenStack.push(LPAREN);
+              setType(LPAREN);
+            }
           } else if (consume(')')) {
-            setType(RPAREN);
+            if (parenStack.length === 0) {
+              throw new Error(`unexpected ')' at ${start}`);
+            } else {
+              let lparen = parenStack.pop();
+              switch (lparen) {
+                case LPAREN:
+                  setType(RPAREN);
+                  break;
+
+                case CALL_START:
+                  setType(CALL_END);
+                  break;
+
+                default:
+                  throw new Error(
+                    `unexpected token type for '(' matching ')' at ${start}: ${lparen}`
+                  );
+              }
+            }
           } else if (consume('[')) {
             setType(LBRACKET);
           } else if (consume(']')) {
