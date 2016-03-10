@@ -1,4 +1,4 @@
-# coffee-lex
+# coffee-lex [![Build Status](https://travis-ci.org/decaffeinate/coffee-lex.svg?branch=master)](https://travis-ci.org/decaffeinate/coffee-lex)
 
 Stupid lexer for CoffeeScript.
 
