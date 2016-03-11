@@ -1,6 +1,6 @@
 {
   "name": "coffee-lex",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Stupid lexer for CoffeeScript.",
   "main": "dist/coffee-lex.umd.js",
   "jsnext:main": "dist/coffee-lex.es.js",
