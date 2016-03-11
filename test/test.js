@@ -10,6 +10,7 @@ import lex, {
   BOOL,
   CALL_END,
   CALL_START,
+  CLASS,
   COLON,
   COMMA,
   COMMENT,
@@ -846,6 +847,18 @@ describe('stream', () => {
         new SourceLocation(SPACE, 30),
         new SourceLocation(IDENTIFIER, 31),
         new SourceLocation(EOF, 32)
+      ]
+    )
+  );
+
+  it('identifies `class` as a keyword', () =>
+    checkLocations(
+      stream(`class A`),
+      [
+        new SourceLocation(CLASS, 0),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(IDENTIFIER, 6),
+        new SourceLocation(EOF, 7)
       ]
     )
   );

@@ -195,6 +195,7 @@ export const AT = new SourceType('AT');
 export const BOOL = new SourceType('BOOL');
 export const CALL_END = new SourceType('CALL_END');
 export const CALL_START = new SourceType('CALL_START');
+export const CLASS = new SourceType('CLASS');
 export const COLON = new SourceType('COLON');
 export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
@@ -342,6 +343,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SWITCH:
         case WHEN:
         case EXISTENCE:
+        case CLASS:
         case PROTO:
         case RANGE:
         case DELETE:
@@ -491,6 +493,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                 case 'isnt':
                 case 'instanceof':
                   setType(OPERATOR);
+                  break;
+
+                case 'class':
+                  setType(CLASS);
                   break;
 
                 case 'delete':
