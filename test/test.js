@@ -390,6 +390,46 @@ describe('SourceTokenList', () => {
     strictEqual(range && range[0], expectedStart);
     strictEqual(range && range[1], expectedEnd);
   });
+
+  it('allows comparing indexes', () => {
+    let list = lex('a b');
+    let { startIndex, endIndex } = list;
+
+    ok(
+      startIndex.compare(startIndex) === 0,
+      `indexes should compare to themselves at 0`
+    );
+
+    ok(
+      startIndex.compare(endIndex) > 0,
+      `indexes should compare to those after them at > 0`
+    );
+
+    ok(
+      endIndex.compare(startIndex) < 0,
+      `indexes should compare to those after them at < 0`
+    );
+
+    ok(
+      startIndex.isBefore(endIndex),
+      `#isBefore should be true for indexes in order`
+    );
+
+    ok(
+      !endIndex.isBefore(startIndex),
+      `#isBefore should be false for indexes out of order`
+    );
+
+    ok(
+      endIndex.isAfter(startIndex),
+      `#isAfter should be true for indexes in order`
+    );
+
+    ok(
+      !startIndex.isAfter(endIndex),
+      `#isAfter should be false for indexes out of order`
+    );
+  });
 });
 
 describe('stream', () => {
