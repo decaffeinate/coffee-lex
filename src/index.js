@@ -193,6 +193,7 @@ const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 
 export const AT = new SourceType('AT');
 export const BOOL = new SourceType('BOOL');
+export const BREAK = new SourceType('BREAK');
 export const CALL_END = new SourceType('CALL_END');
 export const CALL_START = new SourceType('CALL_START');
 export const CLASS = new SourceType('CLASS');
@@ -200,6 +201,7 @@ export const COLON = new SourceType('COLON');
 export const COMMA = new SourceType('COMMA');
 export const COMMENT = new SourceType('COMMENT');
 export const CONTINUATION = new SourceType('CONTINUATION');
+export const CONTINUE = new SourceType('CONTINUE');
 export const DELETE = new SourceType('DELETE');
 export const DOT = new SourceType('DOT');
 export const DSTRING = new SourceType('DSTRING');
@@ -342,6 +344,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SUPER:
         case SWITCH:
         case WHEN:
+        case BREAK:
+        case CONTINUE:
         case EXISTENCE:
         case CLASS:
         case PROTO:
@@ -497,6 +501,14 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'class':
                   setType(CLASS);
+                  break;
+
+                case 'break':
+                  setType(BREAK);
+                  break;
+
+                case 'continue':
+                  setType(CONTINUE);
                   break;
 
                 case 'delete':

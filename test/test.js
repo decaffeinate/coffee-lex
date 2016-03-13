@@ -8,6 +8,7 @@ import lex, {
   consumeStream,
   AT,
   BOOL,
+  BREAK,
   CALL_END,
   CALL_START,
   CLASS,
@@ -15,6 +16,7 @@ import lex, {
   COMMA,
   COMMENT,
   CONTINUATION,
+  CONTINUE,
   DELETE,
   DOT,
   DSTRING,
@@ -911,6 +913,19 @@ describe('stream', () => {
         new SourceLocation(SPACE, 6),
         new SourceLocation(NUMBER, 7),
         new SourceLocation(EOF, 8)
+      ]
+    )
+  );
+
+  it('identifies `break` and `continue` as keywords', () =>
+    checkLocations(
+      stream(`break;continue;`),
+      [
+        new SourceLocation(BREAK, 0),
+        new SourceLocation(SEMICOLON, 5),
+        new SourceLocation(CONTINUE, 6),
+        new SourceLocation(SEMICOLON, 14),
+        new SourceLocation(EOF, 15)
       ]
     )
   );
