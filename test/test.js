@@ -23,6 +23,7 @@ import lex, {
   ELSE,
   EOF,
   EXISTENCE,
+  FOR,
   FUNCTION,
   HERECOMMENT,
   IDENTIFIER,
@@ -38,6 +39,7 @@ import lex, {
   NULL,
   NUMBER,
   OPERATOR,
+  OWN,
   PROTO,
   RANGE,
   RBRACE,
@@ -60,6 +62,7 @@ import lex, {
   TSSTRING,
   UNDEFINED,
   WHEN,
+  WHILE,
 } from '../src/index.js';
 
 describe('lex', () => {
@@ -889,6 +892,50 @@ describe('stream', () => {
         new SourceLocation(SPACE, 30),
         new SourceLocation(IDENTIFIER, 31),
         new SourceLocation(EOF, 32)
+      ]
+    )
+  );
+
+  it('identifies keywords for `for` loops', () =>
+    checkLocations(
+      stream(`for own a in b then a`),
+      [
+        new SourceLocation(FOR, 0),
+        new SourceLocation(SPACE, 3),
+        new SourceLocation(OWN, 4),
+        new SourceLocation(SPACE, 7),
+        new SourceLocation(IDENTIFIER, 8),
+        new SourceLocation(SPACE, 9),
+        new SourceLocation(RELATION, 10),
+        new SourceLocation(SPACE, 12),
+        new SourceLocation(IDENTIFIER, 13),
+        new SourceLocation(SPACE, 14),
+        new SourceLocation(THEN, 15),
+        new SourceLocation(SPACE, 19),
+        new SourceLocation(IDENTIFIER, 20),
+        new SourceLocation(EOF, 21)
+      ]
+    )
+  );
+
+  it('identifies keywords for `while` loops', () =>
+    checkLocations(
+      stream(`until a then while b then c`),
+      [
+        new SourceLocation(WHILE, 0),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(IDENTIFIER, 6),
+        new SourceLocation(SPACE, 7),
+        new SourceLocation(THEN, 8),
+        new SourceLocation(SPACE, 12),
+        new SourceLocation(WHILE, 13),
+        new SourceLocation(SPACE, 18),
+        new SourceLocation(IDENTIFIER, 19),
+        new SourceLocation(SPACE, 20),
+        new SourceLocation(THEN, 21),
+        new SourceLocation(SPACE, 25),
+        new SourceLocation(IDENTIFIER, 26),
+        new SourceLocation(EOF, 27)
       ]
     )
   );

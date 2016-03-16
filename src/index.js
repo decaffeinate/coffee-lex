@@ -208,6 +208,7 @@ export const DSTRING = new SourceType('DSTRING');
 export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
 export const EXISTENCE = new SourceType('EXISTENCE');
+export const FOR = new SourceType('FOR');
 export const FUNCTION = new SourceType('FUNCTION');
 export const HERECOMMENT = new SourceType('HERECOMMENT');
 export const HEREGEXP = new SourceType('HEREGEXP');
@@ -223,6 +224,7 @@ export const NORMAL = new SourceType('NORMAL');
 export const NULL = new SourceType('NULL');
 export const NUMBER = new SourceType('NUMBER');
 export const OPERATOR = new SourceType('OPERATOR');
+export const OWN = new SourceType('OWN');
 export const PROTO = new SourceType('PROTO');
 export const RANGE = new SourceType('RANGE');
 export const REGEXP = new SourceType('REGEXP');
@@ -246,6 +248,7 @@ export const TSSTRING = new SourceType('TSSTRING');
 export const UNDEFINED = new SourceType('UNDEFINED');
 export const UNKNOWN = new SourceType('UNKNOWN');
 export const WHEN = new SourceType('WHEN');
+export const WHILE = new SourceType('WHILE');
 export const IDENTIFIER = new SourceType('IDENTIFIER');
 
 /**
@@ -336,6 +339,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case IF:
         case ELSE:
         case THEN:
+        case FOR:
+        case OWN:
+        case WHILE:
         case BOOL:
         case NULL:
         case UNDEFINED:
@@ -451,6 +457,19 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'return':
                   setType(RETURN);
+                  break;
+
+                case 'for':
+                  setType(FOR);
+                  break;
+
+                case 'own':
+                  setType(OWN);
+                  break;
+
+                case 'while':
+                case 'until':
+                  setType(WHILE);
                   break;
 
                 case 'then':
