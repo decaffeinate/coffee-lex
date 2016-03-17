@@ -218,6 +218,7 @@ export const INTERPOLATION_END = new SourceType('INTERPOLATION_END');
 export const JS = new SourceType('JS');
 export const LBRACE = new SourceType('LBRACE');
 export const LBRACKET = new SourceType('LBRACKET');
+export const LOOP = new SourceType('LOOP');
 export const LPAREN = new SourceType('LPAREN');
 export const NEWLINE = new SourceType('NEWLINE');
 export const NORMAL = new SourceType('NORMAL');
@@ -359,6 +360,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case DELETE:
         case RETURN:
         case RELATION:
+        case LOOP:
         case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
@@ -470,6 +472,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                 case 'while':
                 case 'until':
                   setType(WHILE);
+                  break;
+
+                case 'loop':
+                  setType(LOOP);
                   break;
 
                 case 'then':

@@ -33,6 +33,7 @@ import lex, {
   JS,
   LBRACE,
   LBRACKET,
+  LOOP,
   LPAREN,
   NEWLINE,
   NORMAL,
@@ -920,22 +921,26 @@ describe('stream', () => {
 
   it('identifies keywords for `while` loops', () =>
     checkLocations(
-      stream(`until a then while b then c`),
+      stream(`loop then until a then while b then c`),
       [
-        new SourceLocation(WHILE, 0),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(IDENTIFIER, 6),
-        new SourceLocation(SPACE, 7),
-        new SourceLocation(THEN, 8),
-        new SourceLocation(SPACE, 12),
-        new SourceLocation(WHILE, 13),
-        new SourceLocation(SPACE, 18),
-        new SourceLocation(IDENTIFIER, 19),
-        new SourceLocation(SPACE, 20),
-        new SourceLocation(THEN, 21),
-        new SourceLocation(SPACE, 25),
-        new SourceLocation(IDENTIFIER, 26),
-        new SourceLocation(EOF, 27)
+        new SourceLocation(LOOP, 0),
+        new SourceLocation(SPACE, 4),
+        new SourceLocation(THEN, 5),
+        new SourceLocation(SPACE, 9),
+        new SourceLocation(WHILE, 10),
+        new SourceLocation(SPACE, 15),
+        new SourceLocation(IDENTIFIER, 16),
+        new SourceLocation(SPACE, 17),
+        new SourceLocation(THEN, 18),
+        new SourceLocation(SPACE, 22),
+        new SourceLocation(WHILE, 23),
+        new SourceLocation(SPACE, 28),
+        new SourceLocation(IDENTIFIER, 29),
+        new SourceLocation(SPACE, 30),
+        new SourceLocation(THEN, 31),
+        new SourceLocation(SPACE, 35),
+        new SourceLocation(IDENTIFIER, 36),
+        new SourceLocation(EOF, 37)
       ]
     )
   );
