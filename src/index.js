@@ -659,7 +659,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           break;
 
         case UNKNOWN:
-          // ¯\_(ツ)_/¯
+          // Jump to the end.
           index = source.length;
           break;
 
