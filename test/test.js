@@ -11,6 +11,7 @@ import lex, {
   BREAK,
   CALL_END,
   CALL_START,
+  CATCH,
   CLASS,
   COLON,
   COMMA,
@@ -23,6 +24,7 @@ import lex, {
   ELSE,
   EOF,
   EXISTENCE,
+  FINALLY,
   FOR,
   FUNCTION,
   HERECOMMENT,
@@ -59,6 +61,7 @@ import lex, {
   STRING_START,
   THEN,
   THIS,
+  TRY,
   TSSTRING,
   UNDEFINED,
   WHEN,
@@ -1217,6 +1220,30 @@ describe('stream', () => {
         new SourceLocation(SPACE, 14),
         new SourceLocation(IDENTIFIER, 15),
         new SourceLocation(EOF, 16)
+      ]
+    )
+  );
+
+  it('identifies keywords for `try/catch/finally`', () =>
+    checkLocations(
+      stream('try a catch e then b finally c'),
+      [
+        new SourceLocation(TRY, 0),
+        new SourceLocation(SPACE, 3),
+        new SourceLocation(IDENTIFIER, 4),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(CATCH, 6),
+        new SourceLocation(SPACE, 11),
+        new SourceLocation(IDENTIFIER, 12),
+        new SourceLocation(SPACE, 13),
+        new SourceLocation(THEN, 14),
+        new SourceLocation(SPACE, 18),
+        new SourceLocation(IDENTIFIER, 19),
+        new SourceLocation(SPACE, 20),
+        new SourceLocation(FINALLY, 21),
+        new SourceLocation(SPACE, 28),
+        new SourceLocation(IDENTIFIER, 29),
+        new SourceLocation(EOF, 30)
       ]
     )
   );

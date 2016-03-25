@@ -194,6 +194,7 @@ const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 export const AT = new SourceType('AT');
 export const BOOL = new SourceType('BOOL');
 export const BREAK = new SourceType('BREAK');
+export const CATCH = new SourceType('CATCH');
 export const CALL_END = new SourceType('CALL_END');
 export const CALL_START = new SourceType('CALL_START');
 export const CLASS = new SourceType('CLASS');
@@ -208,6 +209,7 @@ export const DSTRING = new SourceType('DSTRING');
 export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
 export const EXISTENCE = new SourceType('EXISTENCE');
+export const FINALLY = new SourceType('FINALLY');
 export const FOR = new SourceType('FOR');
 export const FUNCTION = new SourceType('FUNCTION');
 export const HERECOMMENT = new SourceType('HERECOMMENT');
@@ -245,6 +247,7 @@ export const STRING_END = new SourceType('STRING_END');
 export const STRING_START = new SourceType('STRING_START');
 export const THEN = new SourceType('THEN');
 export const THIS = new SourceType('THIS');
+export const TRY = new SourceType('TRY');
 export const TSSTRING = new SourceType('TSSTRING');
 export const UNDEFINED = new SourceType('UNDEFINED');
 export const UNKNOWN = new SourceType('UNKNOWN');
@@ -349,6 +352,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case REGEXP:
         case INTERPOLATION_START:
         case SUPER:
+        case TRY:
+        case CATCH:
+        case FINALLY:
         case SWITCH:
         case WHEN:
         case BREAK:
@@ -534,6 +540,18 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'continue':
                   setType(CONTINUE);
+                  break;
+
+                case 'try':
+                  setType(TRY);
+                  break;
+
+                case 'catch':
+                  setType(CATCH);
+                  break;
+
+                case 'finally':
+                  setType(FINALLY);
                   break;
 
                 case 'delete':
