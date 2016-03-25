@@ -36,7 +36,6 @@ import lex, {
   LOOP,
   LPAREN,
   NEWLINE,
-  NORMAL,
   NULL,
   NUMBER,
   OPERATOR,
