@@ -244,6 +244,19 @@ describe('lex', () => {
       ]
     )
   );
+
+  it('identifies parentheses immediately after a CALL_END as CALL_START', () =>
+    deepEqual(
+      lex('a()()').toArray(),
+      [
+        new SourceToken(IDENTIFIER, 0, 1),
+        new SourceToken(CALL_START, 1, 2),
+        new SourceToken(CALL_END, 2, 3),
+        new SourceToken(CALL_START, 3, 4),
+        new SourceToken(CALL_END, 4, 5)
+      ]
+    )
+  );
 });
 
 describe('SourceTokenList', () => {
