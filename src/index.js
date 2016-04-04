@@ -279,7 +279,7 @@ const OPERATORS = [
   // assignment
   '=',
   '+=', '-=', '/=', '*=', '%=', '%%=',
-  '||=', '&&=', '^=',
+  '||=', '&&=', '^=', 'or=', 'and=',
   '?=',
   '|=', '&=', '~=', '<<=', '>>>=', '>>=',
   // increment/decrement
@@ -448,6 +448,12 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(SEMICOLON);
           } else if (consume('`')) {
             setType(JS);
+          } else if (consumeAny(OPERATORS)) {
+            if (consumed() === '?') {
+              setType(EXISTENCE);
+            } else {
+              setType(OPERATOR);
+            }
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prev = locations[locations.length - 1];
             if (prev && (prev.type === DOT || prev.type === PROTO)) {
@@ -569,12 +575,6 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             }
           } else if (consume(NUMBER_PATTERN)) {
             setType(NUMBER);
-          } else if (consumeAny(OPERATORS)) {
-            if (consumed() === '?') {
-              setType(EXISTENCE);
-            } else {
-              setType(OPERATOR);
-            }
           } else if (consume('\\')) {
             setType(CONTINUATION);
           } else {

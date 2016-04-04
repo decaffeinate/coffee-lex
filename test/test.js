@@ -1180,6 +1180,20 @@ describe('stream', () => {
     )
   );
 
+  it('identifies compound assignment with word operators', () =>
+    checkLocations(
+      stream(`a or= 3`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(SPACE, 1),
+        new SourceLocation(OPERATOR, 2),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(NUMBER, 6),
+        new SourceLocation(EOF, 7)
+      ]
+    )
+  );
+
   it('identifies keyword operators', () =>
     checkLocations(
       stream(`a and b is c or d`),
