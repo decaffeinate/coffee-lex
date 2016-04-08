@@ -204,6 +204,7 @@ export const COMMENT = new SourceType('COMMENT');
 export const CONTINUATION = new SourceType('CONTINUATION');
 export const CONTINUE = new SourceType('CONTINUE');
 export const DELETE = new SourceType('DELETE');
+export const DO = new SourceType('DO');
 export const DOT = new SourceType('DOT');
 export const DSTRING = new SourceType('DSTRING');
 export const ELSE = new SourceType('ELSE');
@@ -367,6 +368,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case RETURN:
         case RELATION:
         case LOOP:
+        case DO:
         case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
@@ -567,6 +569,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                 case 'in':
                 case 'of':
                   setType(RELATION);
+                  break;
+
+                case 'do':
+                  setType(DO);
                   break;
 
                 default:

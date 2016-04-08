@@ -19,6 +19,7 @@ import lex, {
   CONTINUATION,
   CONTINUE,
   DELETE,
+  DO,
   DOT,
   DSTRING,
   ELSE,
@@ -1258,6 +1259,18 @@ describe('stream', () => {
         new SourceLocation(SPACE, 28),
         new SourceLocation(IDENTIFIER, 29),
         new SourceLocation(EOF, 30)
+      ]
+    )
+  );
+
+  it('identifies `do` as a keyword', () =>
+    checkLocations(
+      stream('do foo'),
+      [
+        new SourceLocation(DO, 0),
+        new SourceLocation(SPACE, 2),
+        new SourceLocation(IDENTIFIER, 3),
+        new SourceLocation(EOF, 6)
       ]
     )
   );
