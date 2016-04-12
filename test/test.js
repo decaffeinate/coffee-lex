@@ -261,6 +261,25 @@ describe('lex', () => {
       ]
     )
   );
+
+  it('identifies closing interpolations inside objects', () =>
+    deepEqual(
+      lex(`{ id: "#{a}" }`).toArray(),
+      [
+        new SourceToken(LBRACE, 0, 1),
+        new SourceToken(IDENTIFIER, 2, 4),
+        new SourceToken(COLON, 4, 5),
+        new SourceToken(STRING_START, 6, 7),
+        new SourceToken(STRING_CONTENT, 7, 7),
+        new SourceToken(INTERPOLATION_START, 7, 9),
+        new SourceToken(IDENTIFIER, 9, 10),
+        new SourceToken(INTERPOLATION_END, 10, 11),
+        new SourceToken(STRING_CONTENT, 11, 11),
+        new SourceToken(STRING_END, 11, 12),
+        new SourceToken(RBRACE, 13, 14)
+      ]
+    )
+  );
 });
 
 describe('SourceTokenList', () => {

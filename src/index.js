@@ -304,7 +304,7 @@ const OPERATORS = [
  */
 export function stream(source: string, index: number=0): () => SourceLocation {
   let location = new SourceLocation(NORMAL, index);
-  let interpolationStack = ([]: Array<SourceType>);
+  let interpolationStack = ([]: Array<{ type: SourceType, braces: Array<number> }>);
   let braceStack = [];
   let parenStack = [];
   let start = index;
@@ -649,7 +649,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           break;
 
         case INTERPOLATION_END:
-          setType(interpolationStack.pop());
+          let { type, braces } = interpolationStack.pop();
+          setType(type);
+          braceStack = braces;
           break;
 
         case HEREGEXP:
@@ -770,8 +772,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
   }
 
   function pushInterpolation() {
-    interpolationStack.push(location.type);
+    interpolationStack.push({ type: location.type, braces: braceStack });
     setType(INTERPOLATION_START);
+    braceStack = [];
   }
 
   function popInterpolation() {
