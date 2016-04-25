@@ -1,3 +1,4 @@
+import BufferedStream from './utils/BufferedStream.js';
 import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';
 import SourceTokenList from './SourceTokenList.js';
@@ -155,39 +156,6 @@ function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: 
   return [not, space, operator];
 }
 
-class BufferedStream {
-  _getNextLocation: () => SourceLocation;
-  pending: Array<SourceLocation> = [];
-
-  constructor(stream: () => SourceLocation) {
-    this._getNextLocation = stream;
-  }
-
-  shift(): SourceLocation {
-    return this.pending.shift() || this._getNextLocation();
-  }
-
-  hasNext(...types: Array<SourceType>): boolean {
-    let locationsToPutBack = [];
-    let result = types.every(type => {
-      let next = this.shift();
-      locationsToPutBack.push(next);
-      return next.type === type;
-    });
-    this.unshift(...locationsToPutBack);
-    return result;
-  }
-
-  peek(): SourceLocation {
-    let result = this.shift();
-    this.unshift(result);
-    return result;
-  }
-
-  unshift(...tokens: Array<SourceLocation>) {
-    this.pending.unshift(...tokens);
-  }
-}
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 
