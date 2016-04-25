@@ -3,6 +3,7 @@ import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';
 import SourceTokenList from './SourceTokenList.js';
 import SourceType from './SourceType.js';
+import tripleQuotedStringSourceLocations from './utils/tripleQuotedStringSourceLocations.js';
 
 /**
  * Generate a list of tokens from CoffeeScript source code.
@@ -13,6 +14,9 @@ export default function lex(source: string): SourceTokenList {
   let tokens = [];
   let pending = new BufferedStream(stream(source));
   do {
+    pending.unshift(
+      ...tripleQuotedStringSourceLocations(source, pending)
+    );
     pending.unshift(
       ...stringLocationsFromStream(pending)
     );
@@ -35,10 +39,7 @@ export default function lex(source: string): SourceTokenList {
 }
 
 function stringLocationsFromStream(stream: BufferedStream): Array<SourceLocation> {
-  let startOfStringInterpolation = (
-    stream.hasNext(DSTRING, INTERPOLATION_START) ||
-    stream.hasNext(TDSTRING, INTERPOLATION_START)
-  );
+  let startOfStringInterpolation = stream.hasNext(DSTRING, INTERPOLATION_START);
 
   if (!startOfStringInterpolation) {
     return [];
@@ -46,7 +47,7 @@ function stringLocationsFromStream(stream: BufferedStream): Array<SourceLocation
 
   let result = [];
   let first = stream.shift();
-  let quote = first.type === DSTRING ? '"' : '"""';
+  let quote = '"';
 
   result.push(
     // "abc#{def}ghi"

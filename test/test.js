@@ -131,19 +131,20 @@ describe('lex', () => {
 
   it('turns triple-quoted string interpolations into string tokens', () =>
     deepEqual(
-      lex(`"""b#{c}d#{e}f"""`).toArray(),
+      lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray(),
       [
         new SourceToken(STRING_START, 0, 3),
-        new SourceToken(STRING_CONTENT, 3, 4),
-        new SourceToken(INTERPOLATION_START, 4, 6),
-        new SourceToken(IDENTIFIER, 6, 7),
-        new SourceToken(INTERPOLATION_END, 7, 8),
-        new SourceToken(STRING_CONTENT, 8, 9),
-        new SourceToken(INTERPOLATION_START, 9, 11),
-        new SourceToken(IDENTIFIER, 11, 12),
-        new SourceToken(INTERPOLATION_END, 12, 13),
-        new SourceToken(STRING_CONTENT, 13, 14),
-        new SourceToken(STRING_END, 14, 17)
+        new SourceToken(STRING_CONTENT, 6, 7),
+        new SourceToken(INTERPOLATION_START, 7, 9),
+        new SourceToken(IDENTIFIER, 9, 10),
+        new SourceToken(INTERPOLATION_END, 10, 11),
+        new SourceToken(STRING_CONTENT, 11, 12),
+        new SourceToken(STRING_CONTENT, 14, 15),
+        new SourceToken(INTERPOLATION_START, 15, 17),
+        new SourceToken(IDENTIFIER, 17, 18),
+        new SourceToken(INTERPOLATION_END, 18, 19),
+        new SourceToken(STRING_CONTENT, 19, 20),
+        new SourceToken(STRING_END, 21, 24)
       ]
     )
   );
@@ -279,6 +280,20 @@ describe('lex', () => {
         new SourceToken(STRING_CONTENT, 11, 11),
         new SourceToken(STRING_END, 11, 12),
         new SourceToken(RBRACE, 13, 14)
+      ]
+    )
+  );
+
+  it('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () =>
+    deepEqual(
+      lex(`foo = '''\n      abc\n\n      def\n      '''`).toArray(),
+      [
+        new SourceToken(IDENTIFIER, 0, 3),
+        new SourceToken(OPERATOR, 4, 5),
+        new SourceToken(STRING_START, 6, 9),
+        new SourceToken(STRING_CONTENT, 16, 21),
+        new SourceToken(STRING_CONTENT, 27, 30),
+        new SourceToken(STRING_END, 37, 40)
       ]
     )
   );
