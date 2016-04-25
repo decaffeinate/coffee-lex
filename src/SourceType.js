@@ -7,4 +7,8 @@ export default class SourceType {
   constructor(name: string) {
     this.name = name;
   }
+  
+  toString(): string {
+    return this.name;
+  }
 }
