@@ -67,6 +67,8 @@ import lex, {
   UNDEFINED,
   WHEN,
   WHILE,
+  YIELD,
+  YIELDFROM,
 } from '../src/index.js';
 
 describe('lex', () => {
@@ -1290,6 +1292,42 @@ describe('stream', () => {
         new SourceLocation(SPACE, 2),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 6)
+      ]
+    )
+  );
+
+  it('identifies `yield` as a keyword', () =>
+    checkLocations(
+      stream('yield foo'),
+      [
+        new SourceLocation(YIELD, 0),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(IDENTIFIER, 6),
+        new SourceLocation(EOF, 9)
+      ]
+    )
+  );
+
+  it('identifies `yield from` as keywords', () =>
+    checkLocations(
+      stream('yield from foo'),
+      [
+        new SourceLocation(YIELD, 0),
+        new SourceLocation(SPACE, 5),
+        new SourceLocation(YIELDFROM, 6),
+        new SourceLocation(SPACE, 10),
+        new SourceLocation(IDENTIFIER, 11),
+        new SourceLocation(EOF, 14)
+      ]
+    )
+  );
+
+  it('identifies `from` as an identifier without yield', () =>
+    checkLocations(
+      stream('from'),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(EOF, 4)
       ]
     )
   );
