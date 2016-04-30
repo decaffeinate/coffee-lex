@@ -255,6 +255,8 @@ export const UNKNOWN = new SourceType('UNKNOWN');
 export const WHEN = new SourceType('WHEN');
 export const WHILE = new SourceType('WHILE');
 export const IDENTIFIER = new SourceType('IDENTIFIER');
+export const YIELD = new SourceType('YIELD');
+export const YIELDFROM = new SourceType('YIELDFROM');
 
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
@@ -369,6 +371,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case RELATION:
         case LOOP:
         case DO:
+        case YIELD:
+        case YIELDFROM:
         case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
@@ -458,8 +462,11 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             }
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prev = locations[locations.length - 1];
+            let preprev = locations[locations.length - 2];
             if (prev && (prev.type === DOT || prev.type === PROTO)) {
               setType(IDENTIFIER);
+            } else if (prev && preprev && (preprev.type === YIELD) && (prev.type === SPACE) && consumed() == 'from') {
+              setType(YIELDFROM);
             } else {
               switch (consumed()) {
                 case 'if':
@@ -575,6 +582,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                   setType(DO);
                   break;
 
+                case 'yield':
+                  setType(YIELD);
+                  break;
+                
                 default:
                   setType(IDENTIFIER);
               }
