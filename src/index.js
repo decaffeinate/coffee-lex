@@ -255,6 +255,8 @@ export const UNKNOWN = new SourceType('UNKNOWN');
 export const WHEN = new SourceType('WHEN');
 export const WHILE = new SourceType('WHILE');
 export const IDENTIFIER = new SourceType('IDENTIFIER');
+export const YIELD = new SourceType('YIELD');
+export const YIELDFROM = new SourceType('YIELDFROM');
 
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
@@ -273,6 +275,7 @@ const IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[$\w\x7f-\uffff])+)/;
 const NUMBER_PATTERN = /^0b[01]+|^0o[0-7]+|^0x[\da-f]+|^\d*\.?\d+(?:e[+-]?\d+)?/i;
 const SPACE_PATTERN = /^[^\n\r\S]+/;
 const REGEXP_PATTERN = /^\/(?!\/)((?:[^[\/\n\\]|\\[^\n]|\[(?:\\[^\n]|[^\]\n\\])*\])*)(\/)?/;
+const YIELDFROM_PATTERN = /^yield[^\n\r\S]+from/;
 
 const OPERATORS = [
   // equality
@@ -369,6 +372,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case RELATION:
         case LOOP:
         case DO:
+        case YIELD:
+        case YIELDFROM:
         case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
@@ -456,6 +461,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             } else {
               setType(OPERATOR);
             }
+          } else if (consume(YIELDFROM_PATTERN)) {
+            setType(YIELDFROM);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prev = locations[locations.length - 1];
             if (prev && (prev.type === DOT || prev.type === PROTO)) {
@@ -575,6 +582,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                   setType(DO);
                   break;
 
+                case 'yield':
+                  setType(YIELD);
+                  break;
+                
                 default:
                   setType(IDENTIFIER);
               }
