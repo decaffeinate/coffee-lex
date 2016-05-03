@@ -14,6 +14,7 @@ export default function tripleQuotedStringSourceLocations(source: string, stream
   let ignoredRanges = new IndexRangeList();
   let firstLocation = stream.shift();
 
+  // Handle the start of the string.
   result.push(new SourceLocation(STRING_START, firstLocation.index));
 
   let leadingMarginStart = firstLocation.index + QUOTE_LENGTH;
@@ -21,33 +22,32 @@ export default function tripleQuotedStringSourceLocations(source: string, stream
 
   ignoredRanges = ignoredRanges.addRange(leadingMarginStart, leadingMarginEnd);
 
+  // Determine whether this string has interpolations.
   if (stream.peek().type === INTERPOLATION_START) {
-    let interpolationDepth = 0;
     let start = null;
+    let done = false;
 
-    for (;;) {
-      let location = stream.shift();
-
+    // We need to copy over the locations, but also keep track of where the
+    // interpolations are so we don't consider them as part of the indents.
+    forEachLocationWithInterpolationDepth(() => done ? null : stream.shift(), (location, depth) => {
       if (location.type === INTERPOLATION_START) {
         result.push(location);
-        if (interpolationDepth === 0) {
+        if (depth === 0) {
           start = location.index;
         }
-        interpolationDepth += 1;
       } else if (location.type === INTERPOLATION_END) {
         result.push(location);
-        interpolationDepth -= 1;
-        if (interpolationDepth === 0 && start !== null) {
+        if (depth === 1 && start !== null) {
           ignoredRanges = ignoredRanges.addRange(start, stream.peek().index);
         }
       } else if (location.type === firstLocation.type) {
-        if (interpolationDepth === 0 && stream.peek().type !== INTERPOLATION_START) {
-          break;
+        if (depth === 0 && stream.peek().type !== INTERPOLATION_START) {
+          done = true;
         }
       } else {
         result.push(location);
       }
-    }
+    });
   }
 
   let trailingMarginEnd = stream.peek().index - QUOTE_LENGTH;
@@ -55,7 +55,12 @@ export default function tripleQuotedStringSourceLocations(source: string, stream
 
   ignoredRanges = ignoredRanges.addRange(trailingMarginStart, trailingMarginEnd);
 
-  let { sharedIndent, indexes } = getIndentInfoForRanges(source, ignoredRanges.invert(leadingMarginStart, trailingMarginEnd));
+  // Determine where the indents are, only looking at the string content parts,
+  // i.e. not the leading or trailing margins or the interpolations.
+  let { sharedIndent, indexes } = getIndentInfoForRanges(
+    source,
+    ignoredRanges.invert(leadingMarginStart, trailingMarginEnd)
+  );
 
   let spaceRanges = new IndexRangeList()
     .addRange(leadingMarginStart, leadingMarginEnd)
@@ -69,35 +74,112 @@ export default function tripleQuotedStringSourceLocations(source: string, stream
     new SourceLocation(STRING_END, trailingMarginEnd)
   );
 
-  let resultIndex = 0;
-
-  spaceRanges.forEach(({ start, end }) => {
-    while (result[resultIndex].index < start) {
-      resultIndex++;
-    }
-    result.splice(resultIndex, 0, new SourceLocation(SPACE, start));
+  spaceRanges.forEach(({ start }) => {
+    result = locationsWithLocationSorted(
+      result,
+      new SourceLocation(SPACE, start)
+    );
   });
 
   let contentRanges = ignoredRanges.invert(leadingMarginStart, trailingMarginEnd);
 
-  if (contentRanges.length === 0) {
-    // It's all content.
-    result.splice(
-      result.length - 1,
-      0,
-      new SourceLocation(STRING_CONTENT, leadingMarginEnd)
+  // Add STIRNG_CONTENT locations for all the places we can tell there should be
+  // ones based on where we stop ignoring content. Note that this does not get
+  // all the content because IndexRangeList merges adjacent ranges, so this
+  // won't add a location between adjacent string interpolations (`}${`).
+  contentRanges.forEach(({ start }) => {
+    result = locationsWithLocationSorted(
+      result,
+      new SourceLocation(STRING_CONTENT, start)
+    );
+  });
+
+  let spaceAfterLeadingMarginRange = spaceRanges.getRangeContainingIndex(leadingMarginEnd);
+  let firstContentStart = spaceAfterLeadingMarginRange ? spaceAfterLeadingMarginRange.end : leadingMarginEnd;
+
+  // Add a location right after the leading margin and any indent that follows.
+  result = locationsWithLocationSorted(
+    result,
+    new SourceLocation(STRING_CONTENT, firstContentStart)
+  );
+
+  let lastInterpolation = null;
+
+  // Add content locations between adjacent interpolations.
+  forEachLocationWithInterpolationDepth(arrayIterator(result), (location, depth, previous) => {
+    if (depth === 0) {
+      if (location.type === INTERPOLATION_START) {
+        if (previous && previous.type === INTERPOLATION_END) {
+          result = locationsWithLocationSorted(
+            result,
+            new SourceLocation(STRING_CONTENT, location.index)
+          );
+        }
+      }
+    }
+
+    if (location.type === INTERPOLATION_END) {
+      lastInterpolation = location;
+    }
+  });
+
+  // Add content location after the last interpolation.
+  if (lastInterpolation) {
+    result = locationsWithLocationSorted(
+      result,
+      new SourceLocation(STRING_CONTENT, lastInterpolation.index + '}'.length)
     );
   }
 
-  resultIndex = 0;
-  contentRanges.forEach(({ start }) => {
-    while (result[resultIndex].index < start) {
-      resultIndex++;
-    }
-    result.splice(resultIndex, 0, new SourceLocation(STRING_CONTENT, start));
+  return result.filter((location, i) => {
+    // Remove duplicate locations, notably STRING_CONTENT.
+    let previous = result[i - 1];
+    return !(previous && previous.type === location.type);
   });
+}
 
-  return result;
+function arrayIterator<T>(array: Array<T>): () => ?T {
+  let i = 0;
+  return () => i < array.length - 1 ? array[i++] : null;
+}
+
+function forEachLocationWithInterpolationDepth(next: () => ?SourceLocation, iterator: (location: SourceLocation, interpolationDepth: number, previous?: ?SourceLocation) => void) {
+  let interpolationDepth = 0;
+  let previous = null;
+
+  for (;;) {
+    let location = next();
+
+    if (!location) {
+      break;
+    }
+
+    iterator(location, interpolationDepth, previous);
+
+    if (location.type === INTERPOLATION_START) {
+      interpolationDepth += 1;
+    } else if (location.type === INTERPOLATION_END) {
+      interpolationDepth -= 1;
+    }
+
+    previous = location;
+  }
+}
+
+function locationsWithLocationSorted(locations: Array<SourceLocation>, location: SourceLocation): Array<SourceLocation> {
+  for (let i = 0; i < locations.length; i++) {
+    let currentLocation = locations[i];
+
+    if (location.index <= currentLocation.index) {
+      return [
+        ...locations.slice(0, i),
+        location,
+        ...locations.slice(i)
+      ];
+    }
+  }
+
+  return [...locations, location];
 }
 
 function getLeadingMarginEnd(source: string, marginStart: number): number {

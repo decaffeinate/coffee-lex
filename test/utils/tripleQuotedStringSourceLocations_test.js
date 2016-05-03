@@ -87,6 +87,61 @@ describe('tripleQuotedStringSourceLocations', () => {
     )
   });
 
+  it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
+    let source = `"""\n#{a}\n"""`;
+    deepEqual(
+      getTripleQuotedStringSemanticRanges(source, bufferedStream(source)),
+      [
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(SPACE, 3),
+        new SourceLocation(STRING_CONTENT, 4),
+        new SourceLocation(INTERPOLATION_START, 4),
+        new SourceLocation(IDENTIFIER, 6),
+        new SourceLocation(INTERPOLATION_END, 7),
+        new SourceLocation(STRING_CONTENT, 8),
+        new SourceLocation(SPACE, 8),
+        new SourceLocation(STRING_END, 9)
+      ]
+    )
+  });
+
+  it('returns an array with empty string content token between adjacent interpolations', () => {
+    let source = `"""#{a}#{b}"""`;
+    deepEqual(
+      getTripleQuotedStringSemanticRanges(source, bufferedStream(source)),
+      [
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 3),
+        new SourceLocation(INTERPOLATION_START, 3),
+        new SourceLocation(IDENTIFIER, 5),
+        new SourceLocation(INTERPOLATION_END, 6),
+        new SourceLocation(STRING_CONTENT, 7),
+        new SourceLocation(INTERPOLATION_START, 7),
+        new SourceLocation(IDENTIFIER, 9),
+        new SourceLocation(INTERPOLATION_END, 10),
+        new SourceLocation(STRING_CONTENT, 11),
+        new SourceLocation(STRING_END, 11)
+      ]
+    )
+  });
+
+  it('consumes only as many locations as it needs', () => {
+    let source = `"""abc""" + 99`;
+    let stream = bufferedStream(source);
+    deepEqual(
+      getTripleQuotedStringSemanticRanges(source, stream),
+      [
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 3),
+        new SourceLocation(STRING_END, 6)
+      ]
+    );
+    deepEqual(
+      stream.peek(),
+      new SourceLocation(SPACE, 9)
+    );
+  });
+
   function bufferedStream(source: string): BufferedStream {
     return new BufferedStream(stream(source));
   }

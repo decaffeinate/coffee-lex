@@ -149,6 +149,21 @@ describe('lex', () => {
     )
   );
 
+  it('turns triple-quoted strings with leading interpolation into string tokens', () =>
+    deepEqual(
+      lex(`"""\n#{a}\n"""`).toArray(),
+      [
+        new SourceToken(STRING_START, 0, 3),
+        new SourceToken(STRING_CONTENT, 4, 4),
+        new SourceToken(INTERPOLATION_START, 4, 6),
+        new SourceToken(IDENTIFIER, 6, 7),
+        new SourceToken(INTERPOLATION_END, 7, 8),
+        new SourceToken(STRING_CONTENT, 8, 8),
+        new SourceToken(STRING_END, 9, 12)
+      ]
+    )
+  );
+
   it('handles nested interpolations', () =>
     deepEqual(
       lex(`"#{"#{a}"}"`).toArray(),

@@ -8,6 +8,18 @@ export default class IndexRangeList {
     this.ranges = ranges;
     this.length = ranges.length;
   }
+  
+  getRangeContainingIndex(index: number): ?Range {
+    for (let i = 0; i < this.ranges.length; i++) {
+      let range = this.ranges[i];
+
+      if (range.start <= index && index < range.end) {
+        return range;
+      }
+    }
+    
+    return null;
+  }
 
   addRange(start: number, end: number): IndexRangeList {
     return new IndexRangeList(rangeListAddingRange(this.ranges, { start, end }));
