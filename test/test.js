@@ -312,6 +312,19 @@ describe('lex', () => {
       ]
     )
   );
+
+  it('@on() is a function call not and not a bool followed by parens', () =>
+    deepEqual(
+      lex(`@on()`).toArray(),
+      [
+        new SourceToken(AT, 0, 1),
+        new SourceToken(IDENTIFIER, 1, 3),
+        new SourceToken(CALL_START, 3, 4),
+        new SourceToken(CALL_END, 4, 5),
+        ]
+    )
+  );
+
 });
 
 describe('SourceTokenList', () => {

@@ -434,7 +434,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(YIELDFROM);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prev = locations[locations.length - 1];
-            if (prev && (prev.type === DOT || prev.type === PROTO)) {
+            if (prev && (prev.type === DOT || prev.type === PROTO || prev.type === AT)) {
               setType(IDENTIFIER);
             } else {
               switch (consumed()) {
@@ -554,7 +554,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                 case 'yield':
                   setType(YIELD);
                   break;
-                
+
                 default:
                   setType(IDENTIFIER);
               }
