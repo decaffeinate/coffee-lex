@@ -40,7 +40,7 @@
     "babel-register": "^6.7.2",
     "flow-bin": "^0.26.0",
     "mocha": "^2.4.5",
-    "rollup": "^0.30.0",
+    "rollup": "^0.31.0",
     "rollup-plugin-babel": "^2.4.0"
   },
   "publishConfig": {
