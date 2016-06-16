@@ -1,0 +1,65 @@
+/* @flow */
+
+declare type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
+
+declare class SourceType {
+  name: string;
+  constructor(name: string): void;
+  toString(): string;
+}
+
+declare class SourceToken {
+  type: SourceType;
+  start: number;
+  end: number;
+  constructor(type: SourceType, start: number, end: number): void;
+}
+
+declare class SourceTokenListIndex {
+  constructor(sourceTokenList: SourceTokenList, index:number): void;
+  advance(offset: number): ?SourceTokenListIndex;
+  next(): ?SourceTokenListIndex;
+  previous(): ?SourceTokenListIndex;
+  isBefore(other: SourceTokenListIndex): boolean;
+  isAfter(other: SourceTokenListIndex): boolean;
+  compare(other: SourceTokenListIndex): number;
+}
+
+declare class SourceTokenList {
+  length: number;
+  startIndex: SourceTokenListIndex;
+  endIndex: SourceTokenListIndex;
+  constructor(tokens: Array<SourceToken>): void;
+  forEach(iterator: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => void): void;
+  map<T>(mapper: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => T): Array<T>;
+  filter(predicate: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => boolean): SourceTokenList;
+  slice(start: SourceTokenListIndex, end: SourceTokenListIndex): SourceTokenList;
+  tokenAtIndex(index: SourceTokenListIndex): ?SourceToken;
+  rangeOfInterpolatedStringTokensContainingTokenIndex(index: SourceTokenListIndex): ?SourceTokenListIndexRange;
+  rangeOfMatchingTokensContainingTokenIndex(startType: SourceType, endType: SourceType, index: SourceTokenListIndex): ?SourceTokenListIndexRange;
+  indexOfTokenContainingSourceIndex(index: number): ?SourceTokenListIndex;
+  indexOfTokenStartingAtSourceIndex(index: number): ?SourceTokenListIndex;
+  indexOfTokenEndingAtSourceIndex(index: number): ?SourceTokenListIndex;
+  indexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start?: ?SourceTokenListIndex): ?SourceTokenListIndex;
+  lastIndexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start?: ?SourceTokenListIndex): ?SourceTokenListIndex;
+  toArray(): Array<SourceToken>;
+}
+
+declare class SourceLocation {
+  type: SourceType;
+  index: number;
+  constructor(type: SourceType, index: number): void;
+}
+
+declare function lex(source: string): SourceTokenList;
+declare function consumeStream(lexer: () => SourceLocation): Array<SourceLocation>;
+
+export {
+  lex as default,
+  consumeStream,
+  SourceLocation,
+  SourceToken,
+  SourceTokenList,
+  SourceTokenListIndex,
+  SourceType,
+};

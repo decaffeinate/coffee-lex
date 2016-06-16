@@ -1,10 +1,21 @@
 import babel from 'rollup-plugin-babel';
+import babelrc from 'babelrc-rollup';
+
+var pkg = require('./package.json');
 
 export default {
   entry: 'src/index.js',
-  plugins: [babel({
-    babelrc: false,
-    presets: ['es2015-rollup'],
-    plugins: ['syntax-flow', 'transform-flow-strip-types', 'syntax-class-properties', 'transform-class-properties']
-  })]
+  plugins: [babel(babelrc())],
+  exports: 'named',
+  targets: [
+    {
+      format: 'es6',
+      dest: pkg['jsnext:main']
+    },
+    {
+      format: 'umd',
+      moduleName: 'coffeelex',
+      dest: pkg['main']
+    }
+  ]
 };
