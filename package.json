@@ -42,7 +42,7 @@
     "babelrc-rollup": "^1.1.0",
     "flow-bin": "^0.26.0",
     "mocha": "^2.4.5",
-    "rollup": "^0.31.0",
+    "rollup": "^0.32.2",
     "rollup-plugin-babel": "^2.4.0"
   },
   "publishConfig": {
