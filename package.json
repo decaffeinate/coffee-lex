@@ -1,6 +1,5 @@
 {
   "name": "coffee-lex",
-  "version": "1.4.3",
   "description": "Stupid lexer for CoffeeScript.",
   "main": "dist/coffee-lex.js",
   "jsnext:main": "dist/coffee-lex.mjs",
@@ -10,7 +9,8 @@
     "flow": "flow check --all",
     "pretest": "npm run flow",
     "test": "mocha",
-    "prepublish": "npm run flow && npm run build"
+    "prepublish": "npm run flow && npm run build",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
@@ -40,12 +40,19 @@
     "babel-preset-es2015-rollup": "^1.1.1",
     "babel-register": "^6.7.2",
     "babelrc-rollup": "^1.1.0",
+    "cz-conventional-changelog": "^1.1.6",
     "flow-bin": "^0.26.0",
     "mocha": "^2.4.5",
     "rollup": "^0.33.0",
-    "rollup-plugin-babel": "^2.4.0"
+    "rollup-plugin-babel": "^2.4.0",
+    "semantic-release": "^4.3.5"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
