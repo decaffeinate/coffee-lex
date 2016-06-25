@@ -9,7 +9,7 @@ export default {
   exports: 'named',
   targets: [
     {
-      format: 'es6',
+      format: 'es',
       dest: pkg['jsnext:main']
     },
     {
