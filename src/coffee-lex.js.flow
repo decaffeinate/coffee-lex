@@ -54,6 +54,75 @@ declare class SourceLocation {
 declare function lex(source: string): SourceTokenList;
 declare function consumeStream(lexer: () => SourceLocation): Array<SourceLocation>;
 
+
+declare var AT: SourceType;
+declare var BOOL: SourceType;
+declare var BREAK: SourceType;
+declare var CATCH: SourceType;
+declare var CALL_END: SourceType;
+declare var CALL_START: SourceType;
+declare var CLASS: SourceType;
+declare var COLON: SourceType;
+declare var COMMA: SourceType;
+declare var COMMENT: SourceType;
+declare var CONTINUATION: SourceType;
+declare var CONTINUE: SourceType;
+declare var DELETE: SourceType;
+declare var DO: SourceType;
+declare var DOT: SourceType;
+declare var DSTRING: SourceType;
+declare var ELSE: SourceType;
+declare var EOF: SourceType;
+declare var EXISTENCE: SourceType;
+declare var FINALLY: SourceType;
+declare var FOR: SourceType;
+declare var FUNCTION: SourceType;
+declare var HERECOMMENT: SourceType;
+declare var HEREGEXP: SourceType;
+declare var IF: SourceType;
+declare var INTERPOLATION_START: SourceType;
+declare var INTERPOLATION_END: SourceType;
+declare var JS: SourceType;
+declare var LBRACE: SourceType;
+declare var LBRACKET: SourceType;
+declare var LOOP: SourceType;
+declare var LPAREN: SourceType;
+declare var NEWLINE: SourceType;
+declare var NORMAL: SourceType;
+declare var NULL: SourceType;
+declare var NUMBER: SourceType;
+declare var OPERATOR: SourceType;
+declare var OWN: SourceType;
+declare var PROTO: SourceType;
+declare var RANGE: SourceType;
+declare var REGEXP: SourceType;
+declare var RBRACE: SourceType;
+declare var RBRACKET: SourceType;
+declare var RELATION: SourceType;
+declare var RETURN: SourceType;
+declare var RPAREN: SourceType;
+declare var SEMICOLON: SourceType;
+declare var SPACE: SourceType;
+declare var SSTRING: SourceType;
+declare var SUPER: SourceType;
+declare var SWITCH: SourceType;
+declare var TDSTRING: SourceType;
+declare var STRING_CONTENT: SourceType;
+declare var STRING_END: SourceType;
+declare var STRING_START: SourceType;
+declare var THEN: SourceType;
+declare var THIS: SourceType;
+declare var TRY: SourceType;
+declare var TSSTRING: SourceType;
+declare var UNDEFINED: SourceType;
+declare var UNKNOWN: SourceType;
+declare var WHEN: SourceType;
+declare var WHILE: SourceType;
+declare var IDENTIFIER: SourceType;
+declare var YIELD: SourceType;
+declare var YIELDFROM: SourceType;
+
+
 export {
   lex as default,
   consumeStream,
@@ -62,4 +131,70 @@ export {
   SourceTokenList,
   SourceTokenListIndex,
   SourceType,
+  AT,
+  BOOL,
+  BREAK,
+  CATCH,
+  CALL_END,
+  CALL_START,
+  CLASS,
+  COLON,
+  COMMA,
+  COMMENT,
+  CONTINUATION,
+  CONTINUE,
+  DELETE,
+  DO,
+  DOT,
+  DSTRING,
+  ELSE,
+  EOF,
+  EXISTENCE,
+  FINALLY,
+  FOR,
+  FUNCTION,
+  HERECOMMENT,
+  HEREGEXP,
+  IF,
+  INTERPOLATION_START,
+  INTERPOLATION_END,
+  JS,
+  LBRACE,
+  LBRACKET,
+  LOOP,
+  LPAREN,
+  NEWLINE,
+  NORMAL,
+  NULL,
+  NUMBER,
+  OPERATOR,
+  OWN,
+  PROTO,
+  RANGE,
+  REGEXP,
+  RBRACE,
+  RBRACKET,
+  RELATION,
+  RETURN,
+  RPAREN,
+  SEMICOLON,
+  SPACE,
+  SSTRING,
+  SUPER,
+  SWITCH,
+  TDSTRING,
+  STRING_CONTENT,
+  STRING_END,
+  STRING_START,
+  THEN,
+  THIS,
+  TRY,
+  TSSTRING,
+  UNDEFINED,
+  UNKNOWN,
+  WHEN,
+  WHILE,
+  IDENTIFIER,
+  YIELD,
+  YIELDFROM,
 };
