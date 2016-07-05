@@ -1,3 +1,5 @@
+/* @flow */
+
 import SourceTokenList from './SourceTokenList.js';
 
 /**

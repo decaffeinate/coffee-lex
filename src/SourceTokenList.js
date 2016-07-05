@@ -1,3 +1,5 @@
+/* @flow */
+
 import SourceToken from './SourceToken.js';
 import SourceTokenListIndex from './SourceTokenListIndex.js';
 import SourceType from './SourceType.js';

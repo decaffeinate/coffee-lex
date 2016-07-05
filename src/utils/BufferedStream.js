@@ -1,3 +1,5 @@
+/* @flow */
+
 import type SourceLocation from '../SourceLocation.js';
 import type SourceType from '../SourceType.js';
 

@@ -1,3 +1,5 @@
+/* @flow */
+
 /**
  * Represents a particular type of CoffeeScript code.
  */

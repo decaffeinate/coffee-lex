@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "rm -rf dist/",
     "build": "rollup -c && cp src/coffee-lex.js.flow dist/",
-    "flow": "flow check --all",
+    "flow": "flow check",
     "pretest": "npm run flow",
     "test": "mocha",
     "prepublish": "npm run flow && npm run build",
@@ -41,7 +41,7 @@
     "babel-register": "^6.7.2",
     "babelrc-rollup": "^1.1.0",
     "cz-conventional-changelog": "^1.1.6",
-    "flow-bin": "^0.26.0",
+    "flow-bin": "^0.28.0",
     "mocha": "^2.4.5",
     "rollup": "^0.33.0",
     "rollup-plugin-babel": "^2.4.0",

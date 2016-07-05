@@ -1,3 +1,5 @@
+/* @flow */
+
 import IndexRangeList from './IndexRangeList.js';
 import SourceLocation from '../SourceLocation.js';
 import type BufferedStream from './BufferedStream.js';

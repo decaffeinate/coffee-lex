@@ -1,3 +1,5 @@
+/* @flow */
+
 import BufferedStream from './utils/BufferedStream.js';
 import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';
@@ -390,7 +392,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 default:
                   throw new Error(
-                    `unexpected token type for '(' matching ')' at ${start}: ${lparen}`
+                    `unexpected token type for '(' matching ')' at ${start}: ${lparen.toString()}`
                   );
               }
             }
