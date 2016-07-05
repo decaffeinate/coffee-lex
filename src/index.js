@@ -390,7 +390,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 default:
                   throw new Error(
-                    `unexpected token type for '(' matching ')' at ${start}: ${lparen}`
+                    `unexpected token type for '(' matching ')' at ${start}: ${lparen.toString()}`
                   );
               }
             }
