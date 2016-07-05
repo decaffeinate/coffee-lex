@@ -1,3 +1,5 @@
+/* @flow */
+
 type Range = { start: number, end: number };
 
 export default class IndexRangeList {

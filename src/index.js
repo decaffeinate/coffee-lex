@@ -1,3 +1,5 @@
+/* @flow */
+
 import BufferedStream from './utils/BufferedStream.js';
 import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';

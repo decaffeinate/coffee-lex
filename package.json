@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "rm -rf dist/",
     "build": "rollup -c && cp src/coffee-lex.js.flow dist/",
-    "flow": "flow check --all",
+    "flow": "flow check",
     "pretest": "npm run flow",
     "test": "mocha",
     "prepublish": "npm run flow && npm run build",

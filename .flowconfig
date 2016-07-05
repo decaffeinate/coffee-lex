@@ -1,11 +1,10 @@
 [ignore]
-.*/rollup\.config.*\.js
-.*/dist/.*
-.*/test/.*
-.*/node_modules/.*
+<PROJECT_ROOT>/rollup\.config.*\.js
+<PROJECT_ROOT>/dist/.*
+<PROJECT_ROOT>/test/.*
+<PROJECT_ROOT>/node_modules/.*
 
 [include]
-./src
 
 [libs]
 
