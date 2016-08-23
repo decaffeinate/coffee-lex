@@ -41,7 +41,7 @@
     "babel-register": "^6.7.2",
     "babelrc-rollup": "^2.0.0",
     "cz-conventional-changelog": "^1.1.6",
-    "flow-bin": "^0.30.0",
+    "flow-bin": "^0.31.0",
     "mocha": "^3.0.0",
     "rollup": "^0.34.1",
     "rollup-plugin-babel": "^2.4.0",
