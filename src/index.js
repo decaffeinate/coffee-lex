@@ -435,7 +435,11 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume(YIELDFROM_PATTERN)) {
             setType(YIELDFROM);
           } else if (consume(IDENTIFIER_PATTERN)) {
-            let prev = locations[locations.length - 1];
+            let prevLocationIndex = locations.length - 1;
+            while (prevLocationIndex > 0 && locations[prevLocationIndex].type === NEWLINE) {
+              prevLocationIndex--;
+            }
+            let prev = locations[prevLocationIndex];
             if (prev && (prev.type === DOT || prev.type === PROTO || prev.type === AT)) {
               setType(IDENTIFIER);
             } else {
