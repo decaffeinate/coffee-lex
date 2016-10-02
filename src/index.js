@@ -87,7 +87,7 @@ function stringLocationsFromStream(stream: BufferedStream): Array<SourceLocation
         loc.type,
         loc.index
       ));
-    } else if (loc.type === first.type) {
+    } else if (!insideInterpolation && loc.type === first.type) {
       let next = stream.peek();
       if (next.type === INTERPOLATION_START) {
         // "abc#{def}ghi#{jkl}mno"
