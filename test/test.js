@@ -1102,6 +1102,23 @@ describe('stream', () => {
     )
   );
 
+  it('identifies identifiers with keyword names after dot access after a newline', () =>
+    checkLocations(
+      stream(`s.
+else(0)`),
+      [
+        new SourceLocation(IDENTIFIER, 0),
+        new SourceLocation(DOT, 1),
+        new SourceLocation(NEWLINE, 2),
+        new SourceLocation(IDENTIFIER, 3),
+        new SourceLocation(CALL_START, 7),
+        new SourceLocation(NUMBER, 8),
+        new SourceLocation(CALL_END, 9),
+        new SourceLocation(EOF, 10)
+      ]
+    )
+  );
+
   it('identifies identifiers with keyword names after proto access', () =>
     checkLocations(
       stream(`s::delete`),
