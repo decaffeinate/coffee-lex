@@ -478,6 +478,31 @@ describe('SourceTokenList', () => {
     strictEqual(range && range[1], expectedEnd);
   });
 
+  it('can determine the interpolated string range with an interior string', () => {
+    let list = lex('"#{"a"}"');
+
+    deepEqual(
+      list.map(t => t.type),
+      [
+        STRING_START,
+        STRING_CONTENT,
+        INTERPOLATION_START,
+        DSTRING,
+        INTERPOLATION_END,
+        STRING_CONTENT,
+        STRING_END,
+      ]
+    );
+
+    // Go past STRING_START & STRING_CONTENT.
+    let interpolationStart = list.startIndex.advance(2);
+    let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+      interpolationStart
+    );
+    strictEqual(range[0], list.startIndex);
+    strictEqual(range[1], list.endIndex);
+  });
+
   it('allows comparing indexes', () => {
     let list = lex('a b');
     let { startIndex, endIndex } = list;
