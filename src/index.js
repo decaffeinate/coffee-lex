@@ -73,7 +73,9 @@ function stringLocationsFromStream(stream: BufferedStream): Array<SourceLocation
       result.push(...stringLocationsFromStream(stream));
     }
     loc = stream.shift();
-    if (loc.type === INTERPOLATION_START) {
+    if (loc.type === EOF) {
+      throw new Error('Reached end of file before finding end of string interpolation.');
+    } if (loc.type === INTERPOLATION_START) {
       insideInterpolation = true;
       result.push(
         new SourceLocation(
