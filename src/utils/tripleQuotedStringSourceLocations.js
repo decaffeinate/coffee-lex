@@ -3,7 +3,7 @@
 import IndexRangeList from './IndexRangeList.js';
 import SourceLocation from '../SourceLocation.js';
 import type BufferedStream from './BufferedStream.js';
-import { INTERPOLATION_START, INTERPOLATION_END, SPACE, STRING_START, STRING_CONTENT, STRING_END, TDSTRING, TSSTRING } from '../index.js';
+import { EOF, INTERPOLATION_START, INTERPOLATION_END, SPACE, STRING_START, STRING_CONTENT, STRING_END, TDSTRING, TSSTRING } from '../index.js';
 
 const QUOTE_LENGTH = 3;
 
@@ -152,8 +152,13 @@ function forEachLocationWithInterpolationDepth(next: () => ?SourceLocation, iter
   for (;;) {
     let location = next();
 
+    // The stream gives a null location to indicate successful completion.
     if (!location) {
       break;
+    }
+
+    if (location.type === EOF) {
+      throw new Error('Reached end of file before finding end of triple-quoted string interpolation.');
     }
 
     iterator(location, interpolationDepth, previous);
