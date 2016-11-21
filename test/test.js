@@ -751,30 +751,6 @@ describe('stream', () => {
     )
   );
 
-  it('identifies CRLF as a newline', () =>
-    checkLocations(
-      stream(`a\r\nb`),
-      [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(NEWLINE, 1),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
-      ]
-    )
-  );
-
-  it('identifies CR as a newline', () =>
-    checkLocations(
-      stream(`a\rb`),
-      [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(NEWLINE, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(EOF, 3)
-      ]
-    )
-  );
-
   it('identifies @', () =>
     checkLocations(
       stream(`@a`),
