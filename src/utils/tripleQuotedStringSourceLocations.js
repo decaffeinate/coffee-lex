@@ -198,14 +198,6 @@ function getLeadingMarginEnd(source: string, marginStart: number): number {
     } else if (char === '\n') {
       // End of the margin.
       return i + '\n'.length;
-    } else if (char === '\r') {
-      if (source.charAt(i + '\r'.length) === '\n') {
-        // Ends with \r\n.
-        return i + '\r\n'.length;
-      } else {
-        // Only ends with \r.
-        return i + '\r'.length;
-      }
     } else {
       // Non-space before a newline, so there is no margin.
       return marginStart;
@@ -222,15 +214,6 @@ function getTrailingMarginStart(source: string, marginEnd: number): number {
     if (char === ' ' || char === '\t') {
       // Just part of the margin.
     } else if (char === '\n') {
-      if (source.charAt(i - '\n'.length) === '\r') {
-        // Starts with \r\n.
-        return i - '\r'.length;
-      } else {
-        // Only ends with \n.
-        return i;
-      }
-    } else if (char === '\r') {
-      // Start of the margin.
       return i;
     } else {
       // Non-space before the ending, so there is no margin.
@@ -250,7 +233,7 @@ function getIndentInfoForRanges(source: string, ranges: IndexRangeList): { share
     for (let i = start; i < end; i++) {
       let char = source[i];
 
-      if (char === '\n' || char === '\r') {
+      if (char === '\n') {
         isAtStartOfLine = true;
       } else if (isAtStartOfLine) {
         isAtStartOfLine = false;

@@ -266,7 +266,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SPACE);
-          } else if (consumeNewline()) {
+          } else if (consume('\n')) {
             setType(NEWLINE);
           } else if (consume('...') || consume('..')) {
             setType(RANGE);
@@ -515,7 +515,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           break;
 
         case COMMENT:
-          if (consumeNewline()) {
+          if (consume('\n')) {
             setType(NEWLINE);
           } else {
             index++;
@@ -624,10 +624,6 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     } else {
       return false;
     }
-  }
-
-  function consumeNewline(): boolean {
-    return consumeAny(['\n', '\r\n', '\r']);
   }
 
   function consumeRegexp(): boolean {

@@ -73,6 +73,10 @@ This function not only lets you control how far into the source you'd like to
 go, it also gives you information about source code that wouldn't become part of
 a token, such as spaces.
 
+Note that the input source code should have only UNIX line endings (LF). If you
+want to process a file with Windows line endings (CRLF), you should convert to
+UNIX line endings first, then use coffee-lex, then convert back if necessary.
+
 ## Why?
 
 The official CoffeeScript lexer does a lot of pre-processing, even with
