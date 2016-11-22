@@ -1426,6 +1426,14 @@ else(0)`),
     }
   });
 
+  it('does not infinite loop on incomplete triple-quoted string interpolations', () => {
+    try {
+      lex('a = """#{');
+    } catch (e) {
+      ok(e.message.indexOf('Reached end of file') > -1);
+    }
+  });
+
   function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
     let actualLocations = consumeStream(stream);
     deepEqual(actualLocations, expectedLocations);
