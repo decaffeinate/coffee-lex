@@ -30,6 +30,8 @@ import lex, {
   FOR,
   FUNCTION,
   HERECOMMENT,
+  HEREGEXP_END,
+  HEREGEXP_START,
   IDENTIFIER,
   IF,
   INTERPOLATION_END,
@@ -939,6 +941,46 @@ describe('stream', () => {
         new SourceLocation(STRING_CONTENT, 12),
         new SourceLocation(SSTRING_END, 15),
         new SourceLocation(EOF, 16)
+      ]
+    )
+  );
+
+  it('identifies simple heregexes', () =>
+    checkLocations(
+      stream(`///abc///g.test 'foo'`),
+      [
+        new SourceLocation(HEREGEXP_START, 0),
+        new SourceLocation(STRING_CONTENT, 3),
+        new SourceLocation(HEREGEXP_END, 6),
+        new SourceLocation(DOT, 10),
+        new SourceLocation(IDENTIFIER, 11),
+        new SourceLocation(SPACE, 15),
+        new SourceLocation(SSTRING_START, 16),
+        new SourceLocation(STRING_CONTENT, 17),
+        new SourceLocation(SSTRING_END, 20),
+        new SourceLocation(EOF, 21)
+      ]
+    )
+  );
+
+  it('identifies heregexes with interpolations', () =>
+    checkLocations(
+      stream(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`),
+      [
+        new SourceLocation(HEREGEXP_START, 0),
+        new SourceLocation(STRING_CONTENT, 3),
+        new SourceLocation(INTERPOLATION_START, 10),
+        new SourceLocation(IDENTIFIER, 12),
+        new SourceLocation(INTERPOLATION_END, 13),
+        new SourceLocation(STRING_CONTENT, 14),
+        new SourceLocation(HEREGEXP_END, 39),
+        new SourceLocation(DOT, 43),
+        new SourceLocation(IDENTIFIER, 44),
+        new SourceLocation(SPACE, 48),
+        new SourceLocation(SSTRING_START, 49),
+        new SourceLocation(STRING_CONTENT, 50),
+        new SourceLocation(SSTRING_END, 53),
+        new SourceLocation(EOF, 54)
       ]
     )
   );
