@@ -21,7 +21,8 @@ import lex, {
   DELETE,
   DO,
   DOT,
-  DSTRING,
+  DSTRING_END,
+  DSTRING_START,
   ELSE,
   EOF,
   EXISTENCE,
@@ -55,14 +56,16 @@ import lex, {
   SPACE,
   SUPER,
   SWITCH,
-  TDSTRING,
+  TDSTRING_END,
+  TDSTRING_START,
   STRING_CONTENT,
-  STRING_END,
-  STRING_START,
+  SSTRING_END,
+  SSTRING_START,
   THEN,
   THIS,
   TRY,
-  TSSTRING,
+  TSSTRING_END,
+  TSSTRING_START,
   UNDEFINED,
   WHEN,
   WHILE,
@@ -94,7 +97,7 @@ describe('lex', () => {
     deepEqual(
       lex(`"b#{c}d#{e}f"`).toArray(),
       [
-        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(DSTRING_START, 0, 1),
         new SourceToken(STRING_CONTENT, 1, 2),
         new SourceToken(INTERPOLATION_START, 2, 4),
         new SourceToken(IDENTIFIER, 4, 5),
@@ -104,7 +107,7 @@ describe('lex', () => {
         new SourceToken(IDENTIFIER, 9, 10),
         new SourceToken(INTERPOLATION_END, 10, 11),
         new SourceToken(STRING_CONTENT, 11, 12),
-        new SourceToken(STRING_END, 12, 13)
+        new SourceToken(DSTRING_END, 12, 13)
       ]
     )
   );
@@ -113,7 +116,7 @@ describe('lex', () => {
     deepEqual(
       lex(`"#{a}#{b}"`).toArray(),
       [
-        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(DSTRING_START, 0, 1),
         new SourceToken(STRING_CONTENT, 1, 1),
         new SourceToken(INTERPOLATION_START, 1, 3),
         new SourceToken(IDENTIFIER, 3, 4),
@@ -123,7 +126,7 @@ describe('lex', () => {
         new SourceToken(IDENTIFIER, 7, 8),
         new SourceToken(INTERPOLATION_END, 8, 9),
         new SourceToken(STRING_CONTENT, 9, 9),
-        new SourceToken(STRING_END, 9, 10)
+        new SourceToken(DSTRING_END, 9, 10)
       ]
     )
   );
@@ -132,7 +135,7 @@ describe('lex', () => {
     deepEqual(
       lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray(),
       [
-        new SourceToken(STRING_START, 0, 3),
+        new SourceToken(TDSTRING_START, 0, 3),
         new SourceToken(STRING_CONTENT, 6, 7),
         new SourceToken(INTERPOLATION_START, 7, 9),
         new SourceToken(IDENTIFIER, 9, 10),
@@ -143,7 +146,7 @@ describe('lex', () => {
         new SourceToken(IDENTIFIER, 17, 18),
         new SourceToken(INTERPOLATION_END, 18, 19),
         new SourceToken(STRING_CONTENT, 19, 20),
-        new SourceToken(STRING_END, 21, 24)
+        new SourceToken(TDSTRING_END, 21, 24)
       ]
     )
   );
@@ -152,13 +155,13 @@ describe('lex', () => {
     deepEqual(
       lex(`"""\n#{a}\n"""`).toArray(),
       [
-        new SourceToken(STRING_START, 0, 3),
+        new SourceToken(TDSTRING_START, 0, 3),
         new SourceToken(STRING_CONTENT, 4, 4),
         new SourceToken(INTERPOLATION_START, 4, 6),
         new SourceToken(IDENTIFIER, 6, 7),
         new SourceToken(INTERPOLATION_END, 7, 8),
         new SourceToken(STRING_CONTENT, 8, 8),
-        new SourceToken(STRING_END, 9, 12)
+        new SourceToken(TDSTRING_END, 9, 12)
       ]
     )
   );
@@ -167,19 +170,19 @@ describe('lex', () => {
     deepEqual(
       lex(`"#{"#{a}"}"`).toArray(),
       [
-        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(DSTRING_START, 0, 1),
         new SourceToken(STRING_CONTENT, 1, 1),
         new SourceToken(INTERPOLATION_START, 1, 3),
-        new SourceToken(STRING_START, 3, 4),
+        new SourceToken(DSTRING_START, 3, 4),
         new SourceToken(STRING_CONTENT, 4, 4),
         new SourceToken(INTERPOLATION_START, 4, 6),
         new SourceToken(IDENTIFIER, 6, 7),
         new SourceToken(INTERPOLATION_END, 7, 8),
         new SourceToken(STRING_CONTENT, 8, 8),
-        new SourceToken(STRING_END, 8, 9),
+        new SourceToken(DSTRING_END, 8, 9),
         new SourceToken(INTERPOLATION_END, 9, 10),
         new SourceToken(STRING_CONTENT, 10, 10),
-        new SourceToken(STRING_END, 10, 11)
+        new SourceToken(DSTRING_END, 10, 11)
       ]
     )
   );
@@ -188,13 +191,13 @@ describe('lex', () => {
     deepEqual(
       lex(`"#{ a }"`).toArray(),
       [
-        new SourceToken(STRING_START, 0, 1),
+        new SourceToken(DSTRING_START, 0, 1),
         new SourceToken(STRING_CONTENT, 1, 1),
         new SourceToken(INTERPOLATION_START, 1, 3),
         new SourceToken(IDENTIFIER, 4, 5),
         new SourceToken(INTERPOLATION_END, 6, 7),
         new SourceToken(STRING_CONTENT, 7, 7),
-        new SourceToken(STRING_END, 7, 8)
+        new SourceToken(DSTRING_END, 7, 8)
       ]
     )
   );
@@ -286,13 +289,13 @@ describe('lex', () => {
         new SourceToken(LBRACE, 0, 1),
         new SourceToken(IDENTIFIER, 2, 4),
         new SourceToken(COLON, 4, 5),
-        new SourceToken(STRING_START, 6, 7),
+        new SourceToken(DSTRING_START, 6, 7),
         new SourceToken(STRING_CONTENT, 7, 7),
         new SourceToken(INTERPOLATION_START, 7, 9),
         new SourceToken(IDENTIFIER, 9, 10),
         new SourceToken(INTERPOLATION_END, 10, 11),
         new SourceToken(STRING_CONTENT, 11, 11),
-        new SourceToken(STRING_END, 11, 12),
+        new SourceToken(DSTRING_END, 11, 12),
         new SourceToken(RBRACE, 13, 14)
       ]
     )
@@ -304,10 +307,10 @@ describe('lex', () => {
       [
         new SourceToken(IDENTIFIER, 0, 3),
         new SourceToken(OPERATOR, 4, 5),
-        new SourceToken(STRING_START, 6, 9),
+        new SourceToken(TSSTRING_START, 6, 9),
         new SourceToken(STRING_CONTENT, 16, 21),
         new SourceToken(STRING_CONTENT, 27, 30),
-        new SourceToken(STRING_END, 37, 40)
+        new SourceToken(TSSTRING_END, 37, 40)
       ]
     )
   );
@@ -460,7 +463,7 @@ describe('SourceTokenList', () => {
     let expectedStart = list.startIndex;
     let expectedEnd = list.endIndex;
 
-    // Go past STRING_START & STRING_CONTENT.
+    // Go past DSTRING_START & STRING_CONTENT.
     let interpolationStart = list.startIndex.advance(2);
     let interpolationStartToken = list.tokenAtIndex(interpolationStart);
     strictEqual(
@@ -483,19 +486,19 @@ describe('SourceTokenList', () => {
     deepEqual(
       list.map(t => t.type),
       [
-        STRING_START,
+        DSTRING_START,
         STRING_CONTENT,
         INTERPOLATION_START,
-        STRING_START,
+        DSTRING_START,
         STRING_CONTENT,
-        STRING_END,
+        DSTRING_END,
         INTERPOLATION_END,
         STRING_CONTENT,
-        STRING_END,
+        DSTRING_END,
       ]
     );
 
-    // Go past STRING_START & STRING_CONTENT.
+    // Go past DSTRING_START & STRING_CONTENT.
     let interpolationStart = list.startIndex.advance(2);
     let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
       interpolationStart
@@ -559,9 +562,9 @@ describe('stream', () => {
     checkLocations(
       stream(`'abc'`),
       [
-        new SourceLocation(STRING_START, 0),
+        new SourceLocation(SSTRING_START, 0),
         new SourceLocation(STRING_CONTENT, 1),
-        new SourceLocation(STRING_END, 4),
+        new SourceLocation(SSTRING_END, 4),
         new SourceLocation(EOF, 5)
       ]
     )
@@ -571,9 +574,9 @@ describe('stream', () => {
     checkLocations(
       stream(`"abc"`),
       [
-        new SourceLocation(STRING_START, 0),
+        new SourceLocation(DSTRING_START, 0),
         new SourceLocation(STRING_CONTENT, 1),
-        new SourceLocation(STRING_END, 4),
+        new SourceLocation(DSTRING_END, 4),
         new SourceLocation(EOF, 5)
       ]
     )
@@ -583,7 +586,9 @@ describe('stream', () => {
     checkLocations(
       stream(`'''abc'''`),
       [
-        new SourceLocation(TSSTRING, 0),
+        new SourceLocation(TSSTRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 3),
+        new SourceLocation(TSSTRING_END, 6),
         new SourceLocation(EOF, 9)
       ]
     )
@@ -593,7 +598,9 @@ describe('stream', () => {
     checkLocations(
       stream(`"""abc"""`),
       [
-        new SourceLocation(TDSTRING, 0),
+        new SourceLocation(TDSTRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 3),
+        new SourceLocation(TDSTRING_END, 6),
         new SourceLocation(EOF, 9)
       ]
     )
@@ -625,13 +632,13 @@ describe('stream', () => {
     checkLocations(
       stream(`"a#{b}c"`),
       [
-        new SourceLocation(STRING_START, 0),
+        new SourceLocation(DSTRING_START, 0),
         new SourceLocation(STRING_CONTENT, 1),
         new SourceLocation(INTERPOLATION_START, 2),
         new SourceLocation(IDENTIFIER, 4),
         new SourceLocation(INTERPOLATION_END, 5),
         new SourceLocation(STRING_CONTENT, 6),
-        new SourceLocation(STRING_END, 7),
+        new SourceLocation(DSTRING_END, 7),
         new SourceLocation(EOF, 8)
       ]
     )
@@ -641,18 +648,18 @@ describe('stream', () => {
     checkLocations(
       stream(`"#{"#{}"}"`),
       [
-        new SourceLocation(STRING_START, 0),
+        new SourceLocation(DSTRING_START, 0),
         new SourceLocation(STRING_CONTENT, 1),
         new SourceLocation(INTERPOLATION_START, 1),
-        new SourceLocation(STRING_START, 3),
+        new SourceLocation(DSTRING_START, 3),
         new SourceLocation(STRING_CONTENT, 4),
         new SourceLocation(INTERPOLATION_START, 4),
         new SourceLocation(INTERPOLATION_END, 6),
         new SourceLocation(STRING_CONTENT, 7),
-        new SourceLocation(STRING_END, 7),
+        new SourceLocation(DSTRING_END, 7),
         new SourceLocation(INTERPOLATION_END, 8),
         new SourceLocation(STRING_CONTENT, 9),
-        new SourceLocation(STRING_END, 9),
+        new SourceLocation(DSTRING_END, 9),
         new SourceLocation(EOF, 10)
       ]
     )
@@ -705,9 +712,9 @@ describe('stream', () => {
         new SourceLocation(IDENTIFIER, 2),
         new SourceLocation(COLON, 3),
         new SourceLocation(SPACE, 4),
-        new SourceLocation(STRING_START, 5),
+        new SourceLocation(SSTRING_START, 5),
         new SourceLocation(STRING_CONTENT, 6),
-        new SourceLocation(STRING_END, 8),
+        new SourceLocation(SSTRING_END, 8),
         new SourceLocation(SPACE, 9),
         new SourceLocation(RBRACE, 10),
         new SourceLocation(EOF, 11)
@@ -729,9 +736,9 @@ describe('stream', () => {
         new SourceLocation(SPACE, 7),
         new SourceLocation(IDENTIFIER, 8),
         new SourceLocation(LBRACKET, 9),
-        new SourceLocation(STRING_START, 10),
+        new SourceLocation(SSTRING_START, 10),
         new SourceLocation(STRING_CONTENT, 11),
-        new SourceLocation(STRING_END, 14),
+        new SourceLocation(SSTRING_END, 14),
         new SourceLocation(RBRACKET, 15),
         new SourceLocation(SPACE, 16),
         new SourceLocation(RBRACKET, 17),
@@ -928,9 +935,9 @@ describe('stream', () => {
         new SourceLocation(DOT, 5),
         new SourceLocation(IDENTIFIER, 6),
         new SourceLocation(SPACE, 10),
-        new SourceLocation(STRING_START, 11),
+        new SourceLocation(SSTRING_START, 11),
         new SourceLocation(STRING_CONTENT, 12),
-        new SourceLocation(STRING_END, 15),
+        new SourceLocation(SSTRING_END, 15),
         new SourceLocation(EOF, 16)
       ]
     )
@@ -1422,7 +1429,7 @@ else(0)`),
       lex('a = """#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
-      ok(e.message.indexOf('Reached end of file') > -1);
+      ok(e.message.indexOf('unexpected EOF while parsing a string') > -1);
     }
   });
 

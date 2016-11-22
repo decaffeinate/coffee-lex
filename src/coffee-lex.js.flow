@@ -23,6 +23,7 @@ declare class SourceTokenListIndex {
   isBefore(other: SourceTokenListIndex): boolean;
   isAfter(other: SourceTokenListIndex): boolean;
   compare(other: SourceTokenListIndex): number;
+  distance(other: SourceTokenListIndex): number;
 }
 
 declare class SourceTokenList {
@@ -70,6 +71,8 @@ declare var CONTINUE: SourceType;
 declare var DELETE: SourceType;
 declare var DO: SourceType;
 declare var DOT: SourceType;
+declare var DSTRING_END: SourceType;
+declare var DSTRING_START: SourceType;
 declare var ELSE: SourceType;
 declare var EOF: SourceType;
 declare var EXISTENCE: SourceType;
@@ -104,14 +107,16 @@ declare var SEMICOLON: SourceType;
 declare var SPACE: SourceType;
 declare var SUPER: SourceType;
 declare var SWITCH: SourceType;
-declare var TDSTRING: SourceType;
+declare var SSTRING_END: SourceType;
+declare var SSTRING_START: SourceType;
 declare var STRING_CONTENT: SourceType;
-declare var STRING_END: SourceType;
-declare var STRING_START: SourceType;
+declare var TDSTRING_END: SourceType;
+declare var TDSTRING_START: SourceType;
 declare var THEN: SourceType;
 declare var THIS: SourceType;
 declare var TRY: SourceType;
-declare var TSSTRING: SourceType;
+declare var TSSTRING_END: SourceType;
+declare var TSSTRING_START: SourceType;
 declare var UNDEFINED: SourceType;
 declare var UNKNOWN: SourceType;
 declare var WHEN: SourceType;
@@ -144,6 +149,8 @@ export {
   DELETE,
   DO,
   DOT,
+  DSTRING_END,
+  DSTRING_START,
   ELSE,
   EOF,
   EXISTENCE,
@@ -178,14 +185,16 @@ export {
   SPACE,
   SUPER,
   SWITCH,
-  TDSTRING,
+  SSTRING_END,
+  SSTRING_START,
   STRING_CONTENT,
-  STRING_END,
-  STRING_START,
+  TDSTRING_END,
+  TDSTRING_START,
+  TSSTRING_END,
+  TSSTRING_START,
   THEN,
   THIS,
   TRY,
-  TSSTRING,
   UNDEFINED,
   UNKNOWN,
   WHEN,

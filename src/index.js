@@ -91,6 +91,8 @@ export const CONTINUE = new SourceType('CONTINUE');
 export const DELETE = new SourceType('DELETE');
 export const DO = new SourceType('DO');
 export const DOT = new SourceType('DOT');
+export const DSTRING_START = new SourceType('DSTRING_START');
+export const DSTRING_END = new SourceType('DSTRING_END');
 export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
 export const EXISTENCE = new SourceType('EXISTENCE');
@@ -125,14 +127,16 @@ export const SEMICOLON = new SourceType('SEMICOLON');
 export const SPACE = new SourceType('SPACE');
 export const SUPER = new SourceType('SUPER');
 export const SWITCH = new SourceType('SWITCH');
-export const TDSTRING = new SourceType('TDSTRING');
+export const SSTRING_START = new SourceType('SSTRING_START');
+export const SSTRING_END = new SourceType('SSTRING_END');
 export const STRING_CONTENT = new SourceType('STRING_CONTENT');
-export const STRING_END = new SourceType('STRING_END');
-export const STRING_START = new SourceType('STRING_START');
+export const TDSTRING_START = new SourceType('TDSTRING_START');
+export const TDSTRING_END = new SourceType('TDSTRING_END');
 export const THEN = new SourceType('THEN');
 export const THIS = new SourceType('THIS');
 export const TRY = new SourceType('TRY');
-export const TSSTRING = new SourceType('TSSTRING');
+export const TSSTRING_START = new SourceType('TSSTRING_START');
+export const TSSTRING_END = new SourceType('TSSTRING_END');
 export const UNDEFINED = new SourceType('UNDEFINED');
 export const UNKNOWN = new SourceType('UNKNOWN');
 export const WHEN = new SourceType('WHEN');
@@ -144,7 +148,7 @@ export const YIELDFROM = new SourceType('YIELDFROM');
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
  */
-const STRING = [STRING_END, TSSTRING, TDSTRING];
+const STRING = [SSTRING_END, DSTRING_END, TSSTRING_END, TDSTRING_END];
 const CALLABLE = [
   IDENTIFIER, CALL_END, RPAREN, RBRACKET, EXISTENCE, AT, THIS, SUPER
 ];
@@ -238,7 +242,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case NULL:
         case UNDEFINED:
         case REGEXP:
-        case STRING_END:
+        case SSTRING_END:
+        case DSTRING_END:
+        case TSSTRING_END:
+        case TDSTRING_END:
         case INTERPOLATION_START:
         case SUPER:
         case TRY:
@@ -269,21 +276,33 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume('.')) {
             setType(DOT);
           } else if (consume('"""')) {
-            setType(TDSTRING);
+            stringStack.push({
+              allowInterpolations: true,
+              endingDelimiter: '"""',
+              endSourceType: TDSTRING_END,
+            });
+            setType(TDSTRING_START);
           } else if (consume('"')) {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '"',
+              endSourceType: DSTRING_END,
             });
-            setType(STRING_START);
+            setType(DSTRING_START);
           } else if (consume('\'\'\'')) {
-            setType(TSSTRING);
+            stringStack.push({
+              allowInterpolations: false,
+              endingDelimiter: '\'\'\'',
+              endSourceType: TSSTRING_END,
+            });
+            setType(TSSTRING_START);
           } else if (consume('\'')) {
             stringStack.push({
               allowInterpolations: false,
               endingDelimiter: '\'',
+              endSourceType: SSTRING_END,
             });
-            setType(STRING_START);
+            setType(SSTRING_START);
           } else if (consume(/^###[^#]/)) {
             setType(HERECOMMENT);
           } else if (consume('#')) {
@@ -496,7 +515,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           }
           break;
 
-        case STRING_START:
+        case SSTRING_START:
+        case DSTRING_START:
+        case TSSTRING_START:
+        case TDSTRING_START:
           setType(STRING_CONTENT);
           break;
 
@@ -510,7 +532,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             index++;
           } else if (consume(stringOptions.endingDelimiter)) {
             stringStack.pop();
-            setType(STRING_END);
+            setType(stringOptions.endSourceType);
           } else if (stringOptions.allowInterpolations && consume('#{')) {
             pushInterpolation();
           } else {
@@ -530,28 +552,6 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case HERECOMMENT:
           if (consume('###')) {
             setType(NORMAL);
-          } else {
-            index++;
-          }
-          break;
-
-        case TSSTRING:
-          if (consume('\\')) {
-            index++;
-          } else if (consume('\'\'\'')) {
-            setType(NORMAL);
-          } else {
-            index++;
-          }
-          break;
-
-        case TDSTRING:
-          if (consume('\\')) {
-            index++;
-          } else if (consume('"""')) {
-            setType(NORMAL);
-          } else if (consume('#{')) {
-            pushInterpolation();
           } else {
             index++;
           }

@@ -3,56 +3,67 @@
 import IndexRangeList from './IndexRangeList.js';
 import SourceLocation from '../SourceLocation.js';
 import type BufferedStream from './BufferedStream.js';
-import { EOF, INTERPOLATION_START, INTERPOLATION_END, SPACE, STRING_START, STRING_CONTENT, STRING_END, TDSTRING, TSSTRING } from '../index.js';
+import {
+  EOF,
+  INTERPOLATION_START,
+  INTERPOLATION_END,
+  SPACE,
+  STRING_CONTENT,
+  TDSTRING_START,
+  TDSTRING_END,
+  TSSTRING_START,
+  TSSTRING_END,
+} from '../index.js';
 
 const QUOTE_LENGTH = 3;
 
 export default function tripleQuotedStringSourceLocations(source: string, stream: BufferedStream): Array<SourceLocation> {
-  if (!stream.hasNext(TSSTRING) && !stream.hasNext(TDSTRING)) {
+  if (!stream.hasNext(TSSTRING_START) && !stream.hasNext(TDSTRING_START)) {
     return [];
   }
 
   let result = [];
   let ignoredRanges = new IndexRangeList();
   let firstLocation = stream.shift();
+  let endSourceType = getEndSourceType(firstLocation.type);
 
   // Handle the start of the string.
-  result.push(new SourceLocation(STRING_START, firstLocation.index));
+  result.push(firstLocation);
 
   let leadingMarginStart = firstLocation.index + QUOTE_LENGTH;
   let leadingMarginEnd = getLeadingMarginEnd(source, leadingMarginStart);
 
   ignoredRanges = ignoredRanges.addRange(leadingMarginStart, leadingMarginEnd);
+  let trailingMarginEnd = null;
+  let start = null;
+  let done = false;
 
-  // Determine whether this string has interpolations.
-  if (stream.peek().type === INTERPOLATION_START) {
-    let start = null;
-    let done = false;
-
-    // We need to copy over the locations, but also keep track of where the
-    // interpolations are so we don't consider them as part of the indents.
-    forEachLocationWithInterpolationDepth(() => done ? null : stream.shift(), (location, depth) => {
-      if (location.type === INTERPOLATION_START) {
-        result.push(location);
-        if (depth === 0) {
-          start = location.index;
-        }
-      } else if (location.type === INTERPOLATION_END) {
-        result.push(location);
-        if (depth === 1 && start !== null) {
-          ignoredRanges = ignoredRanges.addRange(start, stream.peek().index);
-        }
-      } else if (location.type === firstLocation.type) {
-        if (depth === 0 && stream.peek().type !== INTERPOLATION_START) {
-          done = true;
-        }
-      } else {
-        result.push(location);
+  // We need to copy over the locations, but also keep track of where the
+  // interpolations are so we don't consider them as part of the indents.
+  forEachLocationWithInterpolationDepth(() => done ? null : stream.shift(), (location, depth) => {
+    if (location.type === INTERPOLATION_START) {
+      result.push(location);
+      if (depth === 0) {
+        start = location.index;
       }
-    });
-  }
+    } else if (location.type === INTERPOLATION_END) {
+      result.push(location);
+      if (depth === 1 && start !== null) {
+        ignoredRanges = ignoredRanges.addRange(start, stream.peek().index);
+      }
+    } else if (depth === 0 && location.type === STRING_CONTENT) {
+      // Ignore STRING_CONTENT; we'll add more specific ones later.
+    } else if (depth === 0 && location.type === endSourceType) {
+      trailingMarginEnd = location.index;
+      done = true;
+    } else {
+      result.push(location);
+    }
+  });
 
-  let trailingMarginEnd = stream.peek().index - QUOTE_LENGTH;
+  if (trailingMarginEnd === null) {
+    throw new Error('Expected trailingMarginEnd to be set.');
+  }
   let trailingMarginStart = getTrailingMarginStart(source, trailingMarginEnd);
 
   ignoredRanges = ignoredRanges.addRange(trailingMarginStart, trailingMarginEnd);
@@ -71,9 +82,8 @@ export default function tripleQuotedStringSourceLocations(source: string, stream
     spaceRanges = spaceRanges.addRange(index, index + sharedIndent.length);
     ignoredRanges = ignoredRanges.addRange(index, index + sharedIndent.length);
   });
-
   result.push(
-    new SourceLocation(STRING_END, trailingMarginEnd)
+    new SourceLocation(endSourceType, trailingMarginEnd)
   );
 
   spaceRanges.forEach(({ start }) => {
@@ -85,7 +95,7 @@ export default function tripleQuotedStringSourceLocations(source: string, stream
 
   let contentRanges = ignoredRanges.invert(leadingMarginStart, trailingMarginEnd);
 
-  // Add STIRNG_CONTENT locations for all the places we can tell there should be
+  // Add STRING_CONTENT locations for all the places we can tell there should be
   // ones based on where we stop ignoring content. Note that this does not get
   // all the content because IndexRangeList merges adjacent ranges, so this
   // won't add a location between adjacent string interpolations (`}${`).
@@ -173,6 +183,16 @@ function forEachLocationWithInterpolationDepth(next: () => ?SourceLocation, iter
   }
 }
 
+function getEndSourceType(startSourceType) {
+  if (startSourceType === TSSTRING_START) {
+    return TSSTRING_END;
+  } else if (startSourceType === TDSTRING_START) {
+    return TDSTRING_END;
+  } else {
+    throw new Error(`Unexpected start source type: ${startSourceType.toString()}`);
+  }
+}
+
 function locationsWithLocationSorted(locations: Array<SourceLocation>, location: SourceLocation): Array<SourceLocation> {
   for (let i = 0; i < locations.length; i++) {
     let currentLocation = locations[i];
@@ -221,7 +241,7 @@ function getTrailingMarginStart(source: string, marginEnd: number): number {
     }
   }
 
-  throw new Error(`unexpected SOF while looking for stat of margin at offset ${marginEnd}`);
+  throw new Error(`unexpected SOF while looking for start of margin at offset ${marginEnd}`);
 }
 
 function getIndentInfoForRanges(source: string, ranges: IndexRangeList): { sharedIndent: string, indexes: Array<number> } {

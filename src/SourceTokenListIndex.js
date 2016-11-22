@@ -59,6 +59,15 @@ export default class SourceTokenListIndex {
    * if this is less than `other`, and a positive number otherwise.
    */
   compare(other: SourceTokenListIndex): number {
+    return this.distance(other);
+  }
+
+  /**
+   * Returns an int of the relative distance between this index and the other
+   * index (positive if the other one is later, negative if the other one is
+   * earlier).
+   */
+  distance(other: SourceTokenListIndex): number {
     if (other._sourceTokenList !== this._sourceTokenList) {
       throw new Error('cannot compare indexes from different lists');
     }
