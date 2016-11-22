@@ -3,7 +3,7 @@
 import SourceToken from './SourceToken.js';
 import SourceTokenListIndex from './SourceTokenListIndex.js';
 import SourceType from './SourceType.js';
-import { STRING_END, STRING_START } from './index.js';
+import { DSTRING_START, DSTRING_END, TDSTRING_START, TDSTRING_END } from './index.js';
 
 type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
 
@@ -82,11 +82,20 @@ export default class SourceTokenList {
    * the case of nesting.
    */
   rangeOfInterpolatedStringTokensContainingTokenIndex(index: SourceTokenListIndex): ?SourceTokenListIndexRange {
-    return this.rangeOfMatchingTokensContainingTokenIndex(
-      STRING_START,
-      STRING_END,
-      index
-    );
+    let bestRange = null;
+    for (let [startType, endType] of [[DSTRING_START, DSTRING_END], [TDSTRING_START, TDSTRING_END]]) {
+      let range = this.rangeOfMatchingTokensContainingTokenIndex(
+        startType,
+        endType,
+        index
+      );
+      if (bestRange === null || bestRange === undefined ||
+          (range !== null && range !== undefined &&
+            range[0].distance(range[1]) < bestRange[0].distance(bestRange[1]))) {
+        bestRange = range;
+      }
+    }
+    return bestRange;
   }
 
   /**
