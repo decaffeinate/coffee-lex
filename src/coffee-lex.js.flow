@@ -70,7 +70,6 @@ declare var CONTINUE: SourceType;
 declare var DELETE: SourceType;
 declare var DO: SourceType;
 declare var DOT: SourceType;
-declare var DSTRING: SourceType;
 declare var ELSE: SourceType;
 declare var EOF: SourceType;
 declare var EXISTENCE: SourceType;
@@ -103,7 +102,6 @@ declare var RETURN: SourceType;
 declare var RPAREN: SourceType;
 declare var SEMICOLON: SourceType;
 declare var SPACE: SourceType;
-declare var SSTRING: SourceType;
 declare var SUPER: SourceType;
 declare var SWITCH: SourceType;
 declare var TDSTRING: SourceType;
@@ -146,7 +144,6 @@ export {
   DELETE,
   DO,
   DOT,
-  DSTRING,
   ELSE,
   EOF,
   EXISTENCE,
@@ -179,7 +176,6 @@ export {
   RPAREN,
   SEMICOLON,
   SPACE,
-  SSTRING,
   SUPER,
   SWITCH,
   TDSTRING,

@@ -5,7 +5,6 @@ import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';
 import SourceTokenList from './SourceTokenList.js';
 import SourceType from './SourceType.js';
-import stringLocationsFromStream from './utils/stringLocationsFromStream.js';
 import tripleQuotedStringSourceLocations from './utils/tripleQuotedStringSourceLocations.js';
 
 /**
@@ -19,9 +18,6 @@ export default function lex(source: string): SourceTokenList {
   do {
     pending.unshift(
       ...tripleQuotedStringSourceLocations(source, pending)
-    );
-    pending.unshift(
-      ...stringLocationsFromStream(pending)
     );
     pending.unshift(
       ...combinedLocationsForMultiwordOperators(pending, source)
@@ -95,7 +91,6 @@ export const CONTINUE = new SourceType('CONTINUE');
 export const DELETE = new SourceType('DELETE');
 export const DO = new SourceType('DO');
 export const DOT = new SourceType('DOT');
-export const DSTRING = new SourceType('DSTRING');
 export const ELSE = new SourceType('ELSE');
 export const EOF = new SourceType('EOF');
 export const EXISTENCE = new SourceType('EXISTENCE');
@@ -128,7 +123,6 @@ export const RETURN = new SourceType('RETURN');
 export const RPAREN = new SourceType('RPAREN');
 export const SEMICOLON = new SourceType('SEMICOLON');
 export const SPACE = new SourceType('SPACE');
-export const SSTRING = new SourceType('SSTRING');
 export const SUPER = new SourceType('SUPER');
 export const SWITCH = new SourceType('SWITCH');
 export const TDSTRING = new SourceType('TDSTRING');
@@ -150,7 +144,7 @@ export const YIELDFROM = new SourceType('YIELDFROM');
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
  */
-const STRING = [SSTRING, DSTRING, TSSTRING, TDSTRING];
+const STRING = [STRING_END, TSSTRING, TDSTRING];
 const CALLABLE = [
   IDENTIFIER, CALL_END, RPAREN, RBRACKET, EXISTENCE, AT, THIS, SUPER
 ];
@@ -199,6 +193,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
   let interpolationStack = ([]: Array<{ type: SourceType, braces: Array<number> }>);
   let braceStack = [];
   let parenStack = [];
+  let stringStack = [];
   let start = index;
   let locations = [];
   return function step(): SourceLocation {
@@ -243,6 +238,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case NULL:
         case UNDEFINED:
         case REGEXP:
+        case STRING_END:
         case INTERPOLATION_START:
         case SUPER:
         case TRY:
@@ -275,11 +271,19 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume('"""')) {
             setType(TDSTRING);
           } else if (consume('"')) {
-            setType(DSTRING);
+            stringStack.push({
+              allowInterpolations: true,
+              endingDelimiter: '"',
+            });
+            setType(STRING_START);
           } else if (consume('\'\'\'')) {
             setType(TSSTRING);
           } else if (consume('\'')) {
-            setType(SSTRING);
+            stringStack.push({
+              allowInterpolations: false,
+              endingDelimiter: '\'',
+            });
+            setType(STRING_START);
           } else if (consume(/^###[^#]/)) {
             setType(HERECOMMENT);
           } else if (consume('#')) {
@@ -492,27 +496,28 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           }
           break;
 
-        case SSTRING:
-          if (consume('\\')) {
-            index++;
-          } else if (consume('\'')) {
-            setType(NORMAL);
-          } else {
-            index++;
-          }
+        case STRING_START:
+          setType(STRING_CONTENT);
           break;
 
-        case DSTRING:
+        case STRING_CONTENT: {
+          let stringOptions = stringStack[stringStack.length - 1];
+          if (!stringOptions) {
+            throw new Error(
+              'Unexpected STRING_CONTENT without anything on the string stack.');
+          }
           if (consume('\\')) {
             index++;
-          } else if (consume('"')) {
-            setType(NORMAL);
-          } else if (consume('#{')) {
+          } else if (consume(stringOptions.endingDelimiter)) {
+            stringStack.pop();
+            setType(STRING_END);
+          } else if (stringOptions.allowInterpolations && consume('#{')) {
             pushInterpolation();
           } else {
             index++;
           }
           break;
+        }
 
         case COMMENT:
           if (consume('\n')) {
@@ -585,6 +590,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
               `unexpected EOF while looking for '}' to match '{' ` +
               `at ${braceStack[braceStack.length - 1]}`
             );
+          }
+          if (stringStack.length !== 0) {
+            throw new Error('unexpected EOF while parsing a string');
           }
           break;
 

@@ -53,7 +53,6 @@ import lex, {
   RPAREN,
   SEMICOLON,
   SPACE,
-  SSTRING,
   SUPER,
   SWITCH,
   TDSTRING,
@@ -487,7 +486,9 @@ describe('SourceTokenList', () => {
         STRING_START,
         STRING_CONTENT,
         INTERPOLATION_START,
-        DSTRING,
+        STRING_START,
+        STRING_CONTENT,
+        STRING_END,
         INTERPOLATION_END,
         STRING_CONTENT,
         STRING_END,
@@ -558,7 +559,9 @@ describe('stream', () => {
     checkLocations(
       stream(`'abc'`),
       [
-        new SourceLocation(SSTRING, 0),
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 1),
+        new SourceLocation(STRING_END, 4),
         new SourceLocation(EOF, 5)
       ]
     )
@@ -568,7 +571,9 @@ describe('stream', () => {
     checkLocations(
       stream(`"abc"`),
       [
-        new SourceLocation(DSTRING, 0),
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 1),
+        new SourceLocation(STRING_END, 4),
         new SourceLocation(EOF, 5)
       ]
     )
@@ -620,11 +625,13 @@ describe('stream', () => {
     checkLocations(
       stream(`"a#{b}c"`),
       [
-        new SourceLocation(DSTRING, 0),
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 1),
         new SourceLocation(INTERPOLATION_START, 2),
         new SourceLocation(IDENTIFIER, 4),
         new SourceLocation(INTERPOLATION_END, 5),
-        new SourceLocation(DSTRING, 6),
+        new SourceLocation(STRING_CONTENT, 6),
+        new SourceLocation(STRING_END, 7),
         new SourceLocation(EOF, 8)
       ]
     )
@@ -634,14 +641,18 @@ describe('stream', () => {
     checkLocations(
       stream(`"#{"#{}"}"`),
       [
-        new SourceLocation(DSTRING, 0),
+        new SourceLocation(STRING_START, 0),
+        new SourceLocation(STRING_CONTENT, 1),
         new SourceLocation(INTERPOLATION_START, 1),
-        new SourceLocation(DSTRING, 3),
+        new SourceLocation(STRING_START, 3),
+        new SourceLocation(STRING_CONTENT, 4),
         new SourceLocation(INTERPOLATION_START, 4),
         new SourceLocation(INTERPOLATION_END, 6),
-        new SourceLocation(DSTRING, 7),
+        new SourceLocation(STRING_CONTENT, 7),
+        new SourceLocation(STRING_END, 7),
         new SourceLocation(INTERPOLATION_END, 8),
-        new SourceLocation(DSTRING, 9),
+        new SourceLocation(STRING_CONTENT, 9),
+        new SourceLocation(STRING_END, 9),
         new SourceLocation(EOF, 10)
       ]
     )
@@ -694,7 +705,9 @@ describe('stream', () => {
         new SourceLocation(IDENTIFIER, 2),
         new SourceLocation(COLON, 3),
         new SourceLocation(SPACE, 4),
-        new SourceLocation(SSTRING, 5),
+        new SourceLocation(STRING_START, 5),
+        new SourceLocation(STRING_CONTENT, 6),
+        new SourceLocation(STRING_END, 8),
         new SourceLocation(SPACE, 9),
         new SourceLocation(RBRACE, 10),
         new SourceLocation(EOF, 11)
@@ -716,7 +729,9 @@ describe('stream', () => {
         new SourceLocation(SPACE, 7),
         new SourceLocation(IDENTIFIER, 8),
         new SourceLocation(LBRACKET, 9),
-        new SourceLocation(SSTRING, 10),
+        new SourceLocation(STRING_START, 10),
+        new SourceLocation(STRING_CONTENT, 11),
+        new SourceLocation(STRING_END, 14),
         new SourceLocation(RBRACKET, 15),
         new SourceLocation(SPACE, 16),
         new SourceLocation(RBRACKET, 17),
@@ -913,7 +928,9 @@ describe('stream', () => {
         new SourceLocation(DOT, 5),
         new SourceLocation(IDENTIFIER, 6),
         new SourceLocation(SPACE, 10),
-        new SourceLocation(SSTRING, 11),
+        new SourceLocation(STRING_START, 11),
+        new SourceLocation(STRING_CONTENT, 12),
+        new SourceLocation(STRING_END, 15),
         new SourceLocation(EOF, 16)
       ]
     )
@@ -1394,14 +1411,16 @@ else(0)`),
   it('does not infinite loop on incomplete string interpolations', () => {
     try {
       lex('a = "#{');
+      throw new Error('Expected an exception to be thrown.');
     } catch (e) {
-      ok(e.message.indexOf('Reached end of file') > -1);
+      ok(e.message.indexOf('unexpected EOF while parsing a string') > -1);
     }
   });
 
   it('does not infinite loop on incomplete triple-quoted string interpolations', () => {
     try {
       lex('a = """#{');
+      throw new Error('Expected an exception to be thrown.');
     } catch (e) {
       ok(e.message.indexOf('Reached end of file') > -1);
     }
