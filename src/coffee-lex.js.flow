@@ -80,7 +80,8 @@ declare var FINALLY: SourceType;
 declare var FOR: SourceType;
 declare var FUNCTION: SourceType;
 declare var HERECOMMENT: SourceType;
-declare var HEREGEXP: SourceType;
+declare var HEREGEXP_END: SourceType;
+declare var HEREGEXP_START: SourceType;
 declare var IF: SourceType;
 declare var INTERPOLATION_START: SourceType;
 declare var INTERPOLATION_END: SourceType;
@@ -158,7 +159,8 @@ export {
   FOR,
   FUNCTION,
   HERECOMMENT,
-  HEREGEXP,
+  HEREGEXP_END,
+  HEREGEXP_START,
   IF,
   INTERPOLATION_START,
   INTERPOLATION_END,

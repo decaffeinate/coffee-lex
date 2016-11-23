@@ -100,7 +100,8 @@ export const FINALLY = new SourceType('FINALLY');
 export const FOR = new SourceType('FOR');
 export const FUNCTION = new SourceType('FUNCTION');
 export const HERECOMMENT = new SourceType('HERECOMMENT');
-export const HEREGEXP = new SourceType('HEREGEXP');
+export const HEREGEXP_START = new SourceType('HEREGEXP_START');
+export const HEREGEXP_END = new SourceType('HEREGEXP_END');
 export const IF = new SourceType('IF');
 export const INTERPOLATION_START = new SourceType('INTERPOLATION_START');
 export const INTERPOLATION_END = new SourceType('INTERPOLATION_END');
@@ -308,7 +309,12 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consume('#')) {
             setType(COMMENT);
           } else if (consume('///')) {
-            setType(HEREGEXP);
+            stringStack.push({
+              allowInterpolations: true,
+              endingDelimiter: '///',
+              endSourceType: HEREGEXP_END,
+            });
+            setType(HEREGEXP_START);
           } else if (consume('(')) {
             if (CALLABLE.indexOf(location.type) >= 0) {
               parenStack.push(CALL_START);
@@ -519,6 +525,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case DSTRING_START:
         case TSSTRING_START:
         case TDSTRING_START:
+        case HEREGEXP_START:
           setType(STRING_CONTENT);
           break;
 
@@ -563,15 +570,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           braceStack = braces;
           break;
 
-        case HEREGEXP:
-          if (consume('\\')) {
-            index++;
-          } else if (consume('///')) {
-            while (consumeAny(REGEXP_FLAGS));
-            setType(NORMAL);
-          } else {
-            index++;
-          }
+        case HEREGEXP_END:
+          while (consumeAny(REGEXP_FLAGS));
+          setType(NORMAL);
           break;
 
         case JS:
