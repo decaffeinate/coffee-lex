@@ -111,6 +111,8 @@ declare var SWITCH: SourceType;
 declare var SSTRING_END: SourceType;
 declare var SSTRING_START: SourceType;
 declare var STRING_CONTENT: SourceType;
+declare var STRING_LINE_SEPARATOR: SourceType;
+declare var STRING_PADDING: SourceType;
 declare var TDSTRING_END: SourceType;
 declare var TDSTRING_START: SourceType;
 declare var THEN: SourceType;
@@ -190,6 +192,8 @@ export {
   SSTRING_END,
   SSTRING_START,
   STRING_CONTENT,
+  STRING_LINE_SEPARATOR,
+  STRING_PADDING,
   TDSTRING_END,
   TDSTRING_START,
   TSSTRING_END,

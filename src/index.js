@@ -5,6 +5,7 @@ import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';
 import SourceTokenList from './SourceTokenList.js';
 import SourceType from './SourceType.js';
+import calculateNormalStringPadding from './utils/calculateNormalStringPadding';
 import tripleQuotedStringSourceLocations from './utils/tripleQuotedStringSourceLocations.js';
 
 /**
@@ -16,6 +17,9 @@ export default function lex(source: string): SourceTokenList {
   let tokens = [];
   let pending = new BufferedStream(stream(source));
   do {
+    pending.unshift(
+      ...calculateNormalStringPadding(source, pending)
+    );
     pending.unshift(
       ...tripleQuotedStringSourceLocations(source, pending)
     );
@@ -131,6 +135,8 @@ export const SWITCH = new SourceType('SWITCH');
 export const SSTRING_START = new SourceType('SSTRING_START');
 export const SSTRING_END = new SourceType('SSTRING_END');
 export const STRING_CONTENT = new SourceType('STRING_CONTENT');
+export const STRING_LINE_SEPARATOR = new SourceType('STRING_LINE_SEPARATOR');
+export const STRING_PADDING = new SourceType('STRING_PADDING');
 export const TDSTRING_START = new SourceType('TDSTRING_START');
 export const TDSTRING_END = new SourceType('TDSTRING_END');
 export const THEN = new SourceType('THEN');
