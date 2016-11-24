@@ -1012,6 +1012,29 @@ describe('stream', () => {
     )
   );
 
+  it('computes the right padding for heregexes with interpolations', () =>
+    deepEqual(
+      lex(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toArray(),
+      [
+        new SourceToken(HEREGEXP_START, 0, 3),
+        new SourceToken(STRING_CONTENT, 3, 6),
+        new SourceToken(STRING_PADDING, 6, 7),
+        new SourceToken(STRING_CONTENT, 7, 10),
+        new SourceToken(INTERPOLATION_START, 10, 12),
+        new SourceToken(IDENTIFIER, 12, 13),
+        new SourceToken(INTERPOLATION_END, 13, 14),
+        new SourceToken(STRING_PADDING, 14, 36),
+        new SourceToken(STRING_CONTENT, 36, 39),
+        new SourceToken(HEREGEXP_END, 39, 43),
+        new SourceToken(DOT, 43, 44),
+        new SourceToken(IDENTIFIER, 44, 48),
+        new SourceToken(SSTRING_START, 49, 50),
+        new SourceToken(STRING_CONTENT, 50, 53),
+        new SourceToken(SSTRING_END, 53, 54),
+      ]
+    )
+  );
+
   it('identifies keywords for conditionals', () =>
     checkLocations(
       stream(`if a then b else c`),

@@ -5,7 +5,8 @@ import SourceLocation from './SourceLocation.js';
 import SourceToken from './SourceToken.js';
 import SourceTokenList from './SourceTokenList.js';
 import SourceType from './SourceType.js';
-import calculateNormalStringPadding from './utils/calculateNormalStringPadding';
+import calculateNormalStringPadding from './utils/calculateNormalStringPadding.js';
+import calculateHeregexpPadding from './utils/calculateHeregexpPadding.js';
 import tripleQuotedStringSourceLocations from './utils/tripleQuotedStringSourceLocations.js';
 
 /**
@@ -22,6 +23,9 @@ export default function lex(source: string): SourceTokenList {
     );
     pending.unshift(
       ...tripleQuotedStringSourceLocations(source, pending)
+    );
+    pending.unshift(
+      ...calculateHeregexpPadding(source, pending)
     );
     pending.unshift(
       ...combinedLocationsForMultiwordOperators(pending, source)
