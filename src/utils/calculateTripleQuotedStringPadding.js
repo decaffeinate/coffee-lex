@@ -17,7 +17,7 @@ import {
 
 const QUOTE_LENGTH = 3;
 
-export default function tripleQuotedStringSourceLocations(source: string, stream: BufferedStream): Array<SourceLocation> {
+export default function calculateTripleQuotedStringPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
   if (!stream.hasNext(TSSTRING_START) && !stream.hasNext(TDSTRING_START)) {
     return [];
   }
