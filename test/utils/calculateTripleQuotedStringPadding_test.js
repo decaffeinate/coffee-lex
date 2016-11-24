@@ -8,6 +8,7 @@ import {
   INTERPOLATION_END,
   SPACE,
   STRING_CONTENT,
+  STRING_PADDING,
   TDSTRING_START,
   TDSTRING_END,
   stream
@@ -130,13 +131,11 @@ a
       calculateTripleQuotedStringPadding(source, bufferedStream(source)),
       [
         new SourceLocation(TDSTRING_START, 0),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(STRING_CONTENT, 4),
+        new SourceLocation(STRING_PADDING, 3),
         new SourceLocation(INTERPOLATION_START, 4),
         new SourceLocation(IDENTIFIER, 6),
         new SourceLocation(INTERPOLATION_END, 7),
-        new SourceLocation(STRING_CONTENT, 8),
-        new SourceLocation(SPACE, 8),
+        new SourceLocation(STRING_PADDING, 8),
         new SourceLocation(TDSTRING_END, 9)
       ]
     )

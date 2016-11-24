@@ -81,7 +81,7 @@ export default class PaddingTracker {
 type PaddingRange = { start: number, end: number };
 type LocationEvent = 'START_PADDING' | 'END_PADDING' | 'START_LINE_SEPARATOR' | 'END_LINE_SEPARATOR';
 
-class TrackedFragment {
+export class TrackedFragment {
   content: string;
   start: number;
   end: number;
