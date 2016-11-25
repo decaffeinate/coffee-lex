@@ -61,6 +61,8 @@ import lex, {
   TDSTRING_END,
   TDSTRING_START,
   STRING_CONTENT,
+  STRING_LINE_SEPARATOR,
+  STRING_PADDING,
   SSTRING_END,
   SSTRING_START,
   THEN,
@@ -110,6 +112,31 @@ describe('lex', () => {
         new SourceToken(INTERPOLATION_END, 10, 11),
         new SourceToken(STRING_CONTENT, 11, 12),
         new SourceToken(DSTRING_END, 12, 13)
+      ]
+    )
+  );
+
+  it('inserts padding in the correct places for a multiline string', () =>
+    deepEqual(
+      lex(`"  b#{c}  \n  d#{e}  \n  f  "`).toArray(),
+      [
+        new SourceToken(DSTRING_START, 0, 1),
+        new SourceToken(STRING_CONTENT, 1, 4),
+        new SourceToken(INTERPOLATION_START, 4, 6),
+        new SourceToken(IDENTIFIER, 6, 7),
+        new SourceToken(INTERPOLATION_END, 7, 8),
+        new SourceToken(STRING_PADDING, 8, 10),
+        new SourceToken(STRING_LINE_SEPARATOR, 10, 11),
+        new SourceToken(STRING_PADDING, 11, 13),
+        new SourceToken(STRING_CONTENT, 13, 14),
+        new SourceToken(INTERPOLATION_START, 14, 16),
+        new SourceToken(IDENTIFIER, 16, 17),
+        new SourceToken(INTERPOLATION_END, 17, 18),
+        new SourceToken(STRING_PADDING, 18, 20),
+        new SourceToken(STRING_LINE_SEPARATOR, 20, 21),
+        new SourceToken(STRING_PADDING, 21, 23),
+        new SourceToken(STRING_CONTENT, 23, 26),
+        new SourceToken(DSTRING_END, 26, 27)
       ]
     )
   );
