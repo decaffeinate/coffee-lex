@@ -17,7 +17,7 @@ import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript.j
 
 describe('tripleQuotedStringSourceLocations', () => {
   it('returns an empty string for an empty triple-quoted string', () => {
-    verifyStringMatchesCoffeeScript(`''''''`, ['']);
+    verifyStringMatchesCoffeeScript(`''''''`, []);
   });
 
   it('marks a leading and trailing newline as padding', () => {
@@ -45,12 +45,12 @@ describe('tripleQuotedStringSourceLocations', () => {
     );
   });
 
-  it.skip('ignores the indentation level of the first line in herestrings', () => {
+  it('ignores the indentation level of the first line in herestrings', () => {
     verifyStringMatchesCoffeeScript(`'''a
       b'''`, ['a\nb']);
   });
 
-  it.skip('removes leading nonempty indentation in herestrings', () => {
+  it('removes leading nonempty indentation in herestrings', () => {
     verifyStringMatchesCoffeeScript(`'''
  a
   b
@@ -58,7 +58,7 @@ c
 d'''`, ['a\n b\nc\nd']);
   });
 
-  it.skip('preserves leading indentation on the first line in herestrings if necessary', () => {
+  it('preserves leading indentation on the first line in herestrings if necessary', () => {
     verifyStringMatchesCoffeeScript(`''' a
           b
             c
@@ -89,7 +89,7 @@ d'''`, ['a\n  b\n c\nd']);
       [' a\n  b\nc\n  d']);
   });
 
-  it.skip('keeps spacing in the second line if there are two lines and both are only whitespace', () => {
+  it('keeps spacing in the second line if there are two lines and both are only whitespace', () => {
     verifyStringMatchesCoffeeScript(`'''    
    '''`,
       ['   ']);
@@ -109,7 +109,7 @@ a
       ['a']);
   });
 
-  it.skip('handles a string with a blank line with spaces in it', () => {
+  it('handles a string with a blank line with spaces in it', () => {
     verifyStringMatchesCoffeeScript(`'''
   a
  
@@ -123,6 +123,13 @@ a
   b
  '''`,
       ['a\nb']);
+  });
+
+  it('keeps leading spaces in a herestring with interpolations', () => {
+    verifyStringMatchesCoffeeScript(`"""    a
+b#{c}
+"""`,
+      ['    a\nb']);
   });
 
   it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
