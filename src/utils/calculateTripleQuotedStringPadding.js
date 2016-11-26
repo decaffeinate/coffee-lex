@@ -11,6 +11,30 @@ import {
   TSSTRING_END,
 } from '../index.js';
 
+/**
+ * Compute the padding (the extra spacing to remove) for the given herestring.
+ *
+ * CoffeeScript removes spacing in the following situations:
+ * - If the first or last line is completely blank, it is removed.
+ * - The "common leading whitespace" is removed from each line if possible. This
+ *   is computed by taking the smallest nonzero amount of leading whitespace
+ *   among all lines except the partial line immediately after the open quotes
+ *   and except lines that consist only of whitespace. Note that this "smallest
+ *   nonzero amount" behavior doesn't just ignore blank lines; *any* line with
+ *   no leading whitespace will be ignored when calculating this value. Even
+ *   though the initial partial line has no effect when computing leading
+ *   whitespace, the common leading whitespace is still removed from that line
+ *   if possible.
+ * - Due to a bug in CoffeeScript, if the first full line (the one after the
+ *   partial line) is nonempty and has indent zero, the entire string is
+ *   considered to have "common leading whitespace" zero.
+ * - Due to another bug in CoffeeScript, if the herestring has exactly two lines
+ *   that both consist of only whitespace, the whitespace and newline is removed
+ *   from the first line, but the second line keeps all of its whitespace.
+ *
+ * See the stringToken function in lexer.coffee in the CoffeeScript source code
+ * for CoffeeScript's implementation of this.
+ */
 export default function calculateTripleQuotedStringPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
   let paddingTracker;
   if (stream.hasNext(TSSTRING_START)) {
@@ -22,31 +46,38 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
   }
 
   let firstFragment = paddingTracker.fragments[0];
+  let firstContent = firstFragment.content;
   let lastFragment = paddingTracker.fragments[paddingTracker.fragments.length - 1];
+  let lastContent = lastFragment.content;
 
-  let leadingMarginStart = firstFragment.start;
-  let leadingMarginEnd = getLeadingMarginEnd(source, leadingMarginStart);
-  let trailingMarginEnd = lastFragment.end;
-  let trailingMarginStart = getTrailingMarginStart(source, trailingMarginEnd);
+  let sharedIndent = getIndentForFragments(paddingTracker.fragments);
 
-  // Determine where the indents are, only looking at the string content parts,
-  // i.e. not the leading or trailing margins or the interpolations.
-  let { sharedIndent, indexes } = getIndentInfoForFragments(
-    source,
-    paddingTracker.fragments,
-    leadingMarginEnd,
-    trailingMarginStart
-  );
+  if (firstContent.indexOf('\n') > -1 && isWhitespace(firstContent.split('\n')[0])) {
+    firstFragment.markPadding(0, firstContent.indexOf('\n') + 1);
+  }
+  if (!shouldSkipRemovingLastLine(paddingTracker)) {
+    let lastLines = lastContent.split('\n');
+    if (lastLines.length > 1) {
+      let lastLine = lastLines[lastLines.length - 1];
+      if (isWhitespace(lastLine)) {
+        lastFragment.markPadding(
+          lastFragment.content.length - lastLine.length - 1,
+          lastFragment.content.length
+        );
+      }
+    }
+  }
 
-  firstFragment.markPadding(0, leadingMarginEnd - firstFragment.start);
-  lastFragment.markPadding(trailingMarginStart - lastFragment.start, lastFragment.content.length);
-  // For now just do two nested loops to find indexes (line starts) within each
-  // fragment so we know which ranges to ignore.
   for (let fragment of paddingTracker.fragments) {
-    for (let lineStart of indexes) {
-      if (lineStart >= fragment.start && lineStart < fragment.end) {
-        let fragmentLineStart = lineStart - fragment.start;
-        fragment.markPadding(fragmentLineStart, fragmentLineStart + sharedIndent.length)
+    for (let i = 0; i < fragment.content.length; i++) {
+      let isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
+      let isStartOfString = fragment.index === 0 && i == 0;
+      if (isStartOfLine || isStartOfString) {
+        let paddingStart = i;
+        let paddingEnd = i + sharedIndent.length;
+        if (fragment.content.slice(paddingStart, paddingEnd) === sharedIndent) {
+          fragment.markPadding(paddingStart, paddingEnd);
+        }
       }
     }
   }
@@ -54,87 +85,54 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
   return paddingTracker.computeSourceLocations();
 }
 
-function getLeadingMarginEnd(source: string, marginStart: number): number {
-  for (let i = marginStart; i < source.length; i++) {
-    let char = source.charAt(i);
+function getIndentForFragments(fragments: Array<TrackedFragment>): string {
+  let hasSeenLine = false;
+  let smallestIndent = null;
+  for (let fragment of fragments) {
+    let lines = fragment.content.split('\n');
+    for (let i = 1; i < lines.length; i++) {
+      let line = lines[i];
+      let indent = getLineIndent(line);
 
-    if (char === ' ' || char === '\t') {
-      // Just part of the margin.
-    } else if (char === '\n') {
-      // End of the margin.
-      return i + '\n'.length;
-    } else {
-      // Non-space before a newline, so there is no margin.
-      return marginStart;
-    }
-  }
+      // Replicate a bug in CoffeeScript: if the first line considered has
+      // indentation zero and is nonempty, the empty indentation isn't ignored
+      // like it should be, so the empty string is used as the indentation.
+      if (!hasSeenLine && indent.length === 0 && line.length > 0) {
+        return '';
+      }
+      hasSeenLine = true;
 
-  throw new Error(`unexpected EOF while looking for end of margin at offset ${marginStart}`);
-}
-
-function getTrailingMarginStart(source: string, marginEnd: number): number {
-  for (let i = marginEnd - 1; i >= 0; i--) {
-    let char = source.charAt(i);
-
-    if (char === ' ' || char === '\t') {
-      // Just part of the margin.
-    } else if (char === '\n') {
-      return i;
-    } else {
-      // Non-space before the ending, so there is no margin.
-      return marginEnd;
-    }
-  }
-
-  throw new Error(`unexpected SOF while looking for start of margin at offset ${marginEnd}`);
-}
-
-function getIndentInfoForFragments(
-    source: string, fragments: Array<TrackedFragment>, leadingMarginEnd: number,
-    trailingMarginStart: number): { sharedIndent: string, indexes: Array<number> } {
-  let sharedIndent = null;
-  let isAtStartOfLine = true;
-  let indexes = [];
-
-  fragments.forEach(({ start, end }) => {
-    start = Math.max(start, leadingMarginEnd);
-    end = Math.min(end, trailingMarginStart);
-    for (let i = start; i < end; i++) {
-      let char = source[i];
-
-      if (char === '\n') {
-        isAtStartOfLine = true;
-      } else if (isAtStartOfLine) {
-        isAtStartOfLine = false;
-        indexes.push(i);
-
-        let endOfPossibleIndent = sharedIndent ? i + sharedIndent.length : end;
-
-        for (let j = i; j < endOfPossibleIndent; j++) {
-          let maybeIndentChar = source[j];
-
-          if (sharedIndent) {
-            if (maybeIndentChar === sharedIndent[j - i]) {
-              // Matches the known indent so far.
-              continue;
-            }
-          } else if (maybeIndentChar === ' ' || maybeIndentChar === '\t') {
-            // Looks like a valid indent character.
-            continue;
-          }
-
-          // Set or shrink the known indent.
-          sharedIndent = source.slice(i, j);
-          i = j;
-          break;
-        }
+      if (indent.length === 0 || indent === line) {
+        continue;
+      }
+      if (smallestIndent === null || indent.length < smallestIndent.length) {
+        smallestIndent = indent;
       }
     }
-  });
-
-  if (sharedIndent === null) {
-    return { sharedIndent: '', indexes: [] };
   }
+  if (smallestIndent === null) {
+    return '';
+  }
+  return smallestIndent;
+}
 
-  return { sharedIndent: sharedIndent, indexes };
+/**
+ * Replicate a bug in CoffeeScript: if the string is whitespace-only with
+ * exactly two lines, we run the code to remove the first line but not the last
+ * line.
+ */
+function shouldSkipRemovingLastLine(paddingTracker: PaddingTracker): boolean {
+  if (paddingTracker.fragments.length !== 1) {
+    return false;
+  }
+  let lines = paddingTracker.fragments[0].content.split('\n');
+  return lines.length === 2 && isWhitespace(lines[0]) && isWhitespace(lines[1]);
+}
+
+function getLineIndent(line: string): string {
+  return /[^\n\S]*/.exec(line)[0];
+}
+
+function isWhitespace(line: string): boolean {
+  return /^[^\n\S]*$/.test(line);
 }

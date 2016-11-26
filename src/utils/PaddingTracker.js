@@ -49,7 +49,8 @@ export default class PaddingTracker {
         let start = location.index;
         let end = stream.peek().index;
         let content = source.slice(start, end);
-        this.fragments.push(new TrackedFragment(content, start, end));
+        let index = this.fragments.length;
+        this.fragments.push(new TrackedFragment(content, start, end, index));
       } else if (location.type === INTERPOLATION_START) {
         interpolationLevel += 1;
       } else if (location.type === INTERPOLATION_END) {
@@ -85,13 +86,15 @@ export class TrackedFragment {
   content: string;
   start: number;
   end: number;
+  index: number;
   _paddingRanges: Array<PaddingRange>;
   _lineSeparators: Array<number>;
 
-  constructor(content: string, start: number, end: number) {
+  constructor(content: string, start: number, end: number, index: number) {
     this.content = content;
     this.start = start;
     this.end = end;
+    this.index = index;
     this._paddingRanges = [];
     this._lineSeparators = [];
   }

@@ -16,8 +16,9 @@ import lex, {
  * This function uses a simple and imperfect algorithm to extract the string
  * contents from the coffee-lex and CoffeeScript output, so it should only be
  * given relatively simple cases, e.g. no string literals within interpolations.
- * It can always be made more advanced if more complicated cases are useful to
- * test.
+ * Also, empty quasis are removed to account for unimportant differences between
+ * coffee-lex and the CoffeeScript lexer. It can always be made more advanced if
+ * more complicated cases are useful to test.
  */
 export default function verifyStringMatchesCoffeeScript(code, expectedQuasis) {
   let coffeeLexResult = getCoffeeLexQuasis(code);
@@ -52,7 +53,7 @@ function getCoffeeLexQuasis(code) {
   if (tokens.toArray()[0].type === HEREGEXP_START) {
     quasis = quasis.map(str => str.replace(/\\/g, '\\\\'));
   }
-  return quasis;
+  return quasis.filter(quasi => quasi.length > 0);
 }
 
 function getCoffeeScriptQuasis(code) {
@@ -76,5 +77,5 @@ function getCoffeeScriptQuasis(code) {
       );
     }
   }
-  return resultQuasis;
+  return resultQuasis.filter(quasi => quasi.length > 0);
 }
