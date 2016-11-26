@@ -165,16 +165,19 @@ describe('lex', () => {
       lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray(),
       [
         new SourceToken(TDSTRING_START, 0, 3),
+        new SourceToken(STRING_PADDING, 3, 6),
         new SourceToken(STRING_CONTENT, 6, 7),
         new SourceToken(INTERPOLATION_START, 7, 9),
         new SourceToken(IDENTIFIER, 9, 10),
         new SourceToken(INTERPOLATION_END, 10, 11),
         new SourceToken(STRING_CONTENT, 11, 12),
+        new SourceToken(STRING_PADDING, 12, 14),
         new SourceToken(STRING_CONTENT, 14, 15),
         new SourceToken(INTERPOLATION_START, 15, 17),
         new SourceToken(IDENTIFIER, 17, 18),
         new SourceToken(INTERPOLATION_END, 18, 19),
         new SourceToken(STRING_CONTENT, 19, 20),
+        new SourceToken(STRING_PADDING, 20, 21),
         new SourceToken(TDSTRING_END, 21, 24)
       ]
     )
@@ -185,11 +188,11 @@ describe('lex', () => {
       lex(`"""\n#{a}\n"""`).toArray(),
       [
         new SourceToken(TDSTRING_START, 0, 3),
-        new SourceToken(STRING_CONTENT, 4, 4),
+        new SourceToken(STRING_PADDING, 3, 4),
         new SourceToken(INTERPOLATION_START, 4, 6),
         new SourceToken(IDENTIFIER, 6, 7),
         new SourceToken(INTERPOLATION_END, 7, 8),
-        new SourceToken(STRING_CONTENT, 8, 8),
+        new SourceToken(STRING_PADDING, 8, 9),
         new SourceToken(TDSTRING_END, 9, 12)
       ]
     )
@@ -337,8 +340,11 @@ describe('lex', () => {
         new SourceToken(IDENTIFIER, 0, 3),
         new SourceToken(OPERATOR, 4, 5),
         new SourceToken(TSSTRING_START, 6, 9),
+        new SourceToken(STRING_PADDING, 9, 16),
         new SourceToken(STRING_CONTENT, 16, 21),
+        new SourceToken(STRING_PADDING, 21, 27),
         new SourceToken(STRING_CONTENT, 27, 30),
+        new SourceToken(STRING_PADDING, 30, 37),
         new SourceToken(TSSTRING_END, 37, 40)
       ]
     )
