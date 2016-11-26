@@ -7,7 +7,7 @@ import SourceTokenList from './SourceTokenList.js';
 import SourceType from './SourceType.js';
 import calculateNormalStringPadding from './utils/calculateNormalStringPadding.js';
 import calculateHeregexpPadding from './utils/calculateHeregexpPadding.js';
-import tripleQuotedStringSourceLocations from './utils/tripleQuotedStringSourceLocations.js';
+import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStringPadding.js';
 
 /**
  * Generate a list of tokens from CoffeeScript source code.
@@ -22,7 +22,7 @@ export default function lex(source: string): SourceTokenList {
       ...calculateNormalStringPadding(source, pending)
     );
     pending.unshift(
-      ...tripleQuotedStringSourceLocations(source, pending)
+      ...calculateTripleQuotedStringPadding(source, pending)
     );
     pending.unshift(
       ...calculateHeregexpPadding(source, pending)

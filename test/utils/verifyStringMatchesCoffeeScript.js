@@ -22,8 +22,16 @@ import lex, {
 export default function verifyStringMatchesCoffeeScript(code, expectedQuasis) {
   let coffeeLexResult = getCoffeeLexQuasis(code);
   let coffeeScriptResult = getCoffeeScriptQuasis(code);
-  deepEqual(coffeeLexResult, coffeeScriptResult);
-  deepEqual(coffeeLexResult, expectedQuasis);
+  deepEqual(
+    coffeeLexResult,
+    coffeeScriptResult,
+    'coffee-lex output and CoffeeScript output disagreed.'
+  );
+  deepEqual(
+    coffeeLexResult,
+    expectedQuasis,
+    'coffee-lex output and expected output disagreed.'
+  );
 }
 
 function getCoffeeLexQuasis(code) {
@@ -52,8 +60,12 @@ function getCoffeeScriptQuasis(code) {
   let resultQuasis = [];
   for (let token of tokens) {
     if (token[0] === 'STRING') {
+      let stringForm = token[1].replace(/\t/g, '\\t');
+      if (stringForm[0] === '\'') {
+        stringForm = `"${stringForm.slice(1, -1)}"`;
+      }
       resultQuasis.push(
-        JSON.parse(token[1].replace(/\t/g, '\\t')).replace(/\\/g, '\\\\')
+        JSON.parse(stringForm).replace(/\\/g, '\\\\')
       );
     } else if (token[0] === 'REGEX') {
       let stringForm = `"${token[1].slice(1, -1)}"`
