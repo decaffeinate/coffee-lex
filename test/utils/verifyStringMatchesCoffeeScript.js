@@ -61,7 +61,7 @@ function getCoffeeScriptQuasis(code) {
   for (let token of tokens) {
     if (token[0] === 'STRING') {
       let stringForm = token[1].replace(/\t/g, '\\t');
-      if (stringForm.startsWith('\'')) {
+      if (stringForm[0] === '\'') {
         stringForm = `"${stringForm.slice(1, -1)}"`;
       }
       resultQuasis.push(
