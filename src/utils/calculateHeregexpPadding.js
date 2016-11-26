@@ -19,7 +19,7 @@ export default function calculateHeregexpPadding(source: string, stream: Buffere
     let content = fragment.content;
     let pos = 0;
     while (pos < content.length) {
-      if (isWhitespace(content[pos])) {
+      if (/\s/.test(content[pos])) {
         if (isWhitespaceEscaped(content, pos)) {
           // The escape character should be removed instead of the space.
           fragment.markPadding(pos - 1, pos);
@@ -27,7 +27,7 @@ export default function calculateHeregexpPadding(source: string, stream: Buffere
           fragment.markPadding(pos, pos + 1);
         }
         pos++;
-      } else if (content[pos] === '#' && (pos === 0 || isWhitespace(content[pos - 1]))) {
+      } else if (content[pos] === '#' && (pos === 0 || /\s/.test(content[pos - 1]))) {
         let commentStart = pos;
         while (pos < content.length && content[pos] !== '\n') {
           pos++;
@@ -39,10 +39,6 @@ export default function calculateHeregexpPadding(source: string, stream: Buffere
     }
   }
   return paddingTracker.computeSourceLocations();
-}
-
-function isWhitespace(char) {
-  return char === ' ' || char === '\t' || char === '\n';
 }
 
 /**
