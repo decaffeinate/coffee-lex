@@ -1,6 +1,4 @@
-/* @flow */
-
-import type SourceType from './SourceType.js';
+import SourceType from './SourceType';
 
 export default class SourceToken {
   type: SourceType;

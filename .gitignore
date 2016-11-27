@@ -1,2 +1,10 @@
 dist
 node_modules
+
+# Ignore generated JavaScript files.
+*.js
+!rollup.config.js
+
+# Ignore generated TypeScript definition files.
+*.d.ts
+!declarations/*.d.ts

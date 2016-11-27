@@ -1,15 +1,14 @@
-/* @flow */
 import {
   INTERPOLATION_START,
   INTERPOLATION_END,
   STRING_CONTENT,
   STRING_LINE_SEPARATOR,
   STRING_PADDING
-} from '../index.js';
-import SourceLocation from '../SourceLocation.js';
+} from '../index';
+import SourceLocation from '../SourceLocation';
 
-import type BufferedStream from './BufferedStream.js';
-import type SourceType from '../SourceType.js';
+import BufferedStream from './BufferedStream';
+import SourceType from '../SourceType';
 
 /**
  * Helper class for defining the padding (characters to remove, typically
@@ -60,7 +59,7 @@ export default class PaddingTracker {
   }
 
   computeSourceLocations(): Array<SourceLocation> {
-    let resultLocations = [];
+    let resultLocations: Array<SourceLocation> = [];
     let rangeIndex = 0;
     for (let location of this._originalLocations) {
       let currentRange = this.fragments[rangeIndex];
@@ -79,7 +78,7 @@ export default class PaddingTracker {
   }
 }
 
-type PaddingRange = { start: number, end: number };
+export type PaddingRange = { start: number, end: number };
 type LocationEvent = 'START_PADDING' | 'END_PADDING' | 'START_LINE_SEPARATOR' | 'END_LINE_SEPARATOR';
 
 export class TrackedFragment {
@@ -128,7 +127,7 @@ export class TrackedFragment {
       eventsByIndex[separatorIndex + 1].push('END_LINE_SEPARATOR');
     }
 
-    let resultLocations = [];
+    let resultLocations: Array<SourceLocation> = [];
     let lastSourceType = null;
     let paddingDepth = 0;
     let lineSeparatorDepth = 0;
