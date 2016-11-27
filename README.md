@@ -126,13 +126,19 @@ the official lexer generates for `"a#{b}c"`:
 Here's what coffee-lex generates for the same source:
 
 ```js
-[ SourceToken { type: SourceType { name: 'STRING_START' }, start: 0, end: 1 },
+[ SourceToken { type: SourceType { name: 'DSTRING_START' }, start: 0, end: 1 },
   SourceToken { type: SourceType { name: 'STRING_CONTENT' }, start: 1, end: 2 },
-  SourceToken { type: SourceType { name: 'INTERPOLATION_START' }, start: 2, end: 4 },
+  SourceToken {
+    type: SourceType { name: 'INTERPOLATION_START' },
+    start: 2,
+    end: 4 },
   SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 4, end: 5 },
-  SourceToken { type: SourceType { name: 'INTERPOLATION_END' }, start: 5, end: 6 },
+  SourceToken {
+    type: SourceType { name: 'INTERPOLATION_END' },
+    start: 5,
+    end: 6 },
   SourceToken { type: SourceType { name: 'STRING_CONTENT' }, start: 6, end: 7 },
-  SourceToken { type: SourceType { name: 'STRING_END' }, start: 7, end: 8 } ]
+  SourceToken { type: SourceType { name: 'DSTRING_END' }, start: 7, end: 8 } ]
 ```
 
 ## License
