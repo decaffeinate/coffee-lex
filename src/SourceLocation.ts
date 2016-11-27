@@ -1,6 +1,4 @@
-/* @flow */
-
-import type SourceType from './SourceType.js';
+import SourceType from './SourceType';
 
 /**
  * Represents a change in source code type at a particular index.

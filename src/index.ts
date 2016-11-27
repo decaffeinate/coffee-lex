@@ -1,13 +1,11 @@
-/* @flow */
-
-import BufferedStream from './utils/BufferedStream.js';
-import SourceLocation from './SourceLocation.js';
-import SourceToken from './SourceToken.js';
-import SourceTokenList from './SourceTokenList.js';
-import SourceType from './SourceType.js';
-import calculateNormalStringPadding from './utils/calculateNormalStringPadding.js';
-import calculateHeregexpPadding from './utils/calculateHeregexpPadding.js';
-import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStringPadding.js';
+import BufferedStream from './utils/BufferedStream';
+import SourceLocation from './SourceLocation';
+import SourceToken from './SourceToken';
+import SourceTokenList from './SourceTokenList';
+import SourceType from './SourceType';
+import calculateNormalStringPadding from './utils/calculateNormalStringPadding';
+import calculateHeregexpPadding from './utils/calculateHeregexpPadding';
+import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStringPadding';
 
 /**
  * Generate a list of tokens from CoffeeScript source code.
@@ -15,7 +13,7 @@ import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStr
 export default function lex(source: string): SourceTokenList {
   let location;
   let previousLocation;
-  let tokens = [];
+  let tokens: Array<SourceToken> = [];
   let pending = new BufferedStream(stream(source));
   do {
     pending.unshift(
@@ -205,12 +203,16 @@ const OPERATORS = [
  */
 export function stream(source: string, index: number=0): () => SourceLocation {
   let location = new SourceLocation(NORMAL, index);
-  let interpolationStack = ([]: Array<{ type: SourceType, braces: Array<number> }>);
-  let braceStack = [];
-  let parenStack = [];
-  let stringStack = [];
+  let interpolationStack: Array<{ type: SourceType, braces: Array<number> }> = [];
+  let braceStack: Array<number> = [];
+  let parenStack: Array<SourceType> = [];
+  let stringStack: Array<{
+    allowInterpolations: boolean,
+    endingDelimiter: string,
+    endSourceType: SourceType
+  }> = [];
   let start = index;
-  let locations = [];
+  let locations: Array<SourceLocation> = [];
   return function step(): SourceLocation {
     let lastLocation = location;
     let shouldStepAgain = false;
@@ -349,7 +351,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 default:
                   throw new Error(
-                    `unexpected token type for '(' matching ')' at ${start}: ${lparen.toString()}`
+                    `unexpected token type for '(' matching ')' at ${start}: ${lparen ? lparen.toString() : '??'}`
                   );
               }
             }
@@ -575,7 +577,11 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           break;
 
         case INTERPOLATION_END:
-          let { type, braces } = interpolationStack.pop();
+          let lastInterpolation = interpolationStack.pop();
+          if (!lastInterpolation) {
+            throw new Error(`found interpolation end without any interpolation start`);
+          }
+          let { type, braces } = lastInterpolation;
           setType(type);
           braceStack = braces;
           break;
@@ -681,7 +687,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     location = new SourceLocation(newType, start);
   }
 
-  function match(value: string|RegExp): ?Array<string> {
+  function match(value: string|RegExp): Array<string> | null {
     if (typeof value === 'string') {
       let matches = source.slice(index, index + value.length) === value;
       return matches ? [value] : null;
@@ -705,8 +711,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 }
 
 export function consumeStream(lexer: () => SourceLocation): Array<SourceLocation> {
-  let result = [];
-  let location;
+  let result: Array<SourceLocation> = [];
+  let location: SourceLocation;
   do {
     location = lexer();
     result.push(location);

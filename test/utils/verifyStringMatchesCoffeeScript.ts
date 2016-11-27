@@ -6,7 +6,7 @@ import lex, {
   INTERPOLATION_START,
   STRING_CONTENT,
   STRING_LINE_SEPARATOR
-} from '../../src/index.js';
+} from '../../src/index';
 
 /**
  * Given code containing a string, herestring, or heregex, verify that the
@@ -35,7 +35,7 @@ export default function verifyStringMatchesCoffeeScript(code, expectedQuasis) {
   );
 }
 
-function getCoffeeLexQuasis(code) {
+function getCoffeeLexQuasis(code: string): Array<string> {
   let tokens = lex(code);
   let quasis = [''];
   tokens.forEach(token => {
@@ -56,9 +56,9 @@ function getCoffeeLexQuasis(code) {
   return quasis.filter(quasi => quasi.length > 0);
 }
 
-function getCoffeeScriptQuasis(code) {
+function getCoffeeScriptQuasis(code: string): Array<string> {
   let tokens = CoffeeScript.tokens(code);
-  let resultQuasis = [];
+  let resultQuasis: Array<string> = [];
   for (let token of tokens) {
     if (token[0] === 'STRING') {
       let stringForm = token[1].replace(/\t/g, '\\t');

@@ -1,15 +1,13 @@
-/* @flow */
-
-import PaddingTracker from './PaddingTracker.js';
-import type { TrackedFragment } from './PaddingTracker.js';
-import SourceLocation from '../SourceLocation.js';
-import type BufferedStream from './BufferedStream.js';
+import PaddingTracker from './PaddingTracker';
+import { TrackedFragment } from './PaddingTracker';
+import SourceLocation from '../SourceLocation';
+import BufferedStream from './BufferedStream';
 import {
   TDSTRING_START,
   TDSTRING_END,
   TSSTRING_START,
   TSSTRING_END,
-} from '../index.js';
+} from '../index';
 
 /**
  * Compute the padding (the extra spacing to remove) for the given herestring.
@@ -87,7 +85,7 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
 
 function getIndentForFragments(fragments: Array<TrackedFragment>): string {
   let hasSeenLine = false;
-  let smallestIndent = null;
+  let smallestIndent: string | null = null;
   for (let fragment of fragments) {
     let lines = fragment.content.split('\n');
     for (let i = 1; i < lines.length; i++) {
@@ -130,7 +128,12 @@ function shouldSkipRemovingLastLine(paddingTracker: PaddingTracker): boolean {
 }
 
 function getLineIndent(line: string): string {
-  return /[^\n\S]*/.exec(line)[0];
+  let match = /[^\n\S]*/.exec(line);
+  if (match) {
+    return match[0];
+  } else {
+    return '';
+  }
 }
 
 function isWhitespace(line: string): boolean {

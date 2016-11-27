@@ -1,7 +1,5 @@
-/* @flow */
-
-import type SourceLocation from '../SourceLocation.js';
-import type SourceType from '../SourceType.js';
+import SourceLocation from '../SourceLocation';
+import SourceType from '../SourceType';
 
 export default class BufferedStream {
   _getNextLocation: () => SourceLocation;
@@ -16,7 +14,7 @@ export default class BufferedStream {
   }
 
   hasNext(...types: Array<SourceType>): boolean {
-    let locationsToPutBack = [];
+    let locationsToPutBack: Array<SourceLocation> = [];
     let result = types.every(type => {
       let next = this.shift();
       locationsToPutBack.push(next);

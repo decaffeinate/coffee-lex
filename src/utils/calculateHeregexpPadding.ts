@@ -1,9 +1,8 @@
-/* @flow */
-import { HEREGEXP_START, HEREGEXP_END } from '../index.js';
+import { HEREGEXP_START, HEREGEXP_END } from '../index';
 import PaddingTracker from './PaddingTracker';
 
-import type BufferedStream from './BufferedStream.js';
-import type SourceLocation from '../SourceLocation.js';
+import BufferedStream from './BufferedStream';
+import SourceLocation from '../SourceLocation';
 
 /**
  * Compute the whitespace to remove in a heregexp. All unescaped whitespace

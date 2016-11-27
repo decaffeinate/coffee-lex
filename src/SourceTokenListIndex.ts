@@ -1,6 +1,4 @@
-/* @flow */
-
-import SourceTokenList from './SourceTokenList.js';
+import SourceTokenList from './SourceTokenList';
 
 /**
  * Represents a token at a particular index within a list of tokens.
@@ -18,7 +16,7 @@ export default class SourceTokenListIndex {
    * Get a new index offset from this one, if the resulting offset is within
    * the list range.
    */
-  advance(offset: number): ?SourceTokenListIndex {
+  advance(offset: number): SourceTokenListIndex | null {
     let newIndex = this._index + offset;
     if (newIndex < 0 || this._sourceTokenList.length < newIndex) {
       return null;
@@ -29,14 +27,14 @@ export default class SourceTokenListIndex {
   /**
    * Get the index of the token after this one, if it's not the last one.
    */
-  next(): ?SourceTokenListIndex {
+  next(): SourceTokenListIndex | null {
     return this.advance(1);
   }
 
   /**
    * Get the index of the token before this one, if it's not the first one.
    */
-  previous(): ?SourceTokenListIndex {
+  previous(): SourceTokenListIndex | null {
     return this.advance(-1);
   }
 

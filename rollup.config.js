@@ -1,11 +1,11 @@
-import babel from 'rollup-plugin-babel';
-import babelrc from 'babelrc-rollup';
+import ts from 'rollup-plugin-typescript';
+import * as TypeScript from 'typescript';
 
 var pkg = require('./package.json');
 
 export default {
-  entry: 'src/index.js',
-  plugins: [babel(babelrc())],
+  entry: 'src/index.ts',
+  plugins: [ts({ typescript: TypeScript })],
   exports: 'named',
   targets: [
     {
