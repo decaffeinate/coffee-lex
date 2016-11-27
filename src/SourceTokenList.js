@@ -3,7 +3,7 @@
 import SourceToken from './SourceToken.js';
 import SourceTokenListIndex from './SourceTokenListIndex.js';
 import SourceType from './SourceType.js';
-import { DSTRING_START, DSTRING_END, TDSTRING_START, TDSTRING_END } from './index.js';
+import { DSTRING_START, DSTRING_END, HEREGEXP_START, HEREGEXP_END, TDSTRING_START, TDSTRING_END } from './index.js';
 
 type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
 
@@ -83,7 +83,8 @@ export default class SourceTokenList {
    */
   rangeOfInterpolatedStringTokensContainingTokenIndex(index: SourceTokenListIndex): ?SourceTokenListIndexRange {
     let bestRange = null;
-    for (let [startType, endType] of [[DSTRING_START, DSTRING_END], [TDSTRING_START, TDSTRING_END]]) {
+    for (let [startType, endType] of [
+        [DSTRING_START, DSTRING_END], [TDSTRING_START, TDSTRING_END], [HEREGEXP_START, HEREGEXP_END]]) {
       let range = this.rangeOfMatchingTokensContainingTokenIndex(
         startType,
         endType,

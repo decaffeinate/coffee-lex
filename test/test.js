@@ -542,6 +542,31 @@ describe('SourceTokenList', () => {
     strictEqual(range[1], list.endIndex);
   });
 
+  it('can determine the interpolated string range for a heregex', () => {
+    let list = lex('///a#{b}c///');
+
+    deepEqual(
+      list.map(t => t.type),
+      [
+        HEREGEXP_START,
+        STRING_CONTENT,
+        INTERPOLATION_START,
+        IDENTIFIER,
+        INTERPOLATION_END,
+        STRING_CONTENT,
+        HEREGEXP_END,
+      ]
+    );
+
+    // Go past HEREGEXP_START & STRING_CONTENT.
+    let interpolationStart = list.startIndex.advance(2);
+    let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+      interpolationStart
+    );
+    strictEqual(range[0], list.startIndex);
+    strictEqual(range[1], list.endIndex);
+  });
+
   it('allows comparing indexes', () => {
     let list = lex('a b');
     let { startIndex, endIndex } = list;
