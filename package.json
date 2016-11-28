@@ -33,7 +33,6 @@
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
     "@types/node": "^6.0.51",
-    "cz-conventional-changelog": "^1.1.6",
     "decaffeinate-coffeescript": "^1.10.0-patch5",
     "mocha": "^3.0.0",
     "mocha-typescript": "^1.0.11",
@@ -45,10 +44,5 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }
