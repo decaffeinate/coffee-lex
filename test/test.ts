@@ -77,19 +77,17 @@ import lex, {
   YIELDFROM,
 } from '../src/index';
 
-import { suite, test } from 'mocha-typescript';
-
 function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
   let actualLocations = consumeStream(stream);
   deepEqual(actualLocations, expectedLocations);
 }
 
-@suite class lexTest {
-  @test 'returns an empty list for an empty program'() {
+describe('lexTest', () => {
+  it('returns an empty list for an empty program', () => {
     deepEqual(lex('').toArray(), [])
-  }
+  });
 
-  @test 'builds a list of tokens omitting SPACE and EOF'() {
+  it('builds a list of tokens omitting SPACE and EOF', () => {
     deepEqual(
       lex(`a + b`).toArray(),
       [
@@ -98,13 +96,13 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(IDENTIFIER, 4, 5)
       ]
     )
-  }
+  });
 
-  @test 'returns a `SourceTokenList`'() {
+  it('returns a `SourceTokenList`', () => {
     ok(lex('') instanceof SourceTokenList)
-  }
+  });
 
-  @test 'turns string interpolations into cohesive string tokens'() {
+  it('turns string interpolations into cohesive string tokens', () => {
     deepEqual(
       lex(`"b#{c}d#{e}f"`).toArray(),
       [
@@ -121,9 +119,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(DSTRING_END, 12, 13)
       ]
     )
-  }
+  });
 
-  @test 'inserts padding in the correct places for a multiline string'() {
+  it('inserts padding in the correct places for a multiline string', () => {
     deepEqual(
       lex(`"  b#{c}  \n  d#{e}  \n  f  "`).toArray(),
       [
@@ -146,9 +144,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(DSTRING_END, 26, 27)
       ]
     )
-  }
+  });
 
-  @test 'adds empty template content tokens between adjacent interpolations'() {
+  it('adds empty template content tokens between adjacent interpolations', () => {
     deepEqual(
       lex(`"#{a}#{b}"`).toArray(),
       [
@@ -165,9 +163,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(DSTRING_END, 9, 10)
       ]
     )
-  }
+  });
 
-  @test 'turns triple-quoted string interpolations into string tokens'() {
+  it('turns triple-quoted string interpolations into string tokens', () => {
     deepEqual(
       lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray(),
       [
@@ -188,9 +186,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(TDSTRING_END, 21, 24)
       ]
     )
-  }
+  });
 
-  @test 'turns triple-quoted strings with leading interpolation into string tokens'() {
+  it('turns triple-quoted strings with leading interpolation into string tokens', () => {
     deepEqual(
       lex(`"""\n#{a}\n"""`).toArray(),
       [
@@ -203,9 +201,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(TDSTRING_END, 9, 12)
       ]
     )
-  }
+  });
 
-  @test 'handles nested interpolations'() {
+  it('handles nested interpolations', () => {
     deepEqual(
       lex(`"#{"#{a}"}"`).toArray(),
       [
@@ -224,9 +222,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(DSTRING_END, 10, 11)
       ]
     )
-  }
+  });
 
-  @test 'handles spaces in string interpolations appropriately'() {
+  it('handles spaces in string interpolations appropriately', () => {
     deepEqual(
       lex(`"#{ a }"`).toArray(),
       [
@@ -239,9 +237,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(DSTRING_END, 7, 8)
       ]
     )
-  }
+  });
 
-  @test 'identifies `not instanceof` as a single operator'() {
+  it('identifies `not instanceof` as a single operator', () => {
     deepEqual(
       lex('a not instanceof b').toArray(),
       [
@@ -250,9 +248,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(IDENTIFIER, 17, 18)
       ]
     )
-  }
+  });
 
-  @test 'identifies `not in` as a single operator'() {
+  it('identifies `not in` as a single operator', () => {
     deepEqual(
       lex('a not in b').toArray(),
       [
@@ -261,9 +259,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(IDENTIFIER, 9, 10)
       ]
     )
-  }
+  });
 
-  @test 'identifies `not of` as a single operator'() {
+  it('identifies `not of` as a single operator', () => {
     deepEqual(
       lex('a not of b').toArray(),
       [
@@ -272,9 +270,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(IDENTIFIER, 9, 10)
       ]
     )
-  }
+  });
 
-  @test 'identifies parentheses immediately after callable tokens as CALL_START'() {
+  it('identifies parentheses immediately after callable tokens as CALL_START', () => {
     deepEqual(
       lex('a(super(@(b[0](), true&(false), b?())))').toArray(),
       [
@@ -306,9 +304,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(CALL_END, 38, 39)
       ]
     )
-  }
+  });
 
-  @test 'identifies parentheses immediately after a CALL_END as CALL_START'() {
+  it('identifies parentheses immediately after a CALL_END as CALL_START', () => {
     deepEqual(
       lex('a()()').toArray(),
       [
@@ -319,9 +317,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(CALL_END, 4, 5)
       ]
     )
-  }
+  });
 
-  @test 'identifies closing interpolations inside objects'() {
+  it('identifies closing interpolations inside objects', () => {
     deepEqual(
       lex(`{ id: "#{a}" }`).toArray(),
       [
@@ -338,9 +336,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(RBRACE, 13, 14)
       ]
     )
-  }
+  });
 
-  @test 'represents triple-quoted strings as a series of tokens to ignore the non-semantic parts'() {
+  it('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () => {
     deepEqual(
       lex(`foo = '''\n      abc\n\n      def\n      '''`).toArray(),
       [
@@ -355,9 +353,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(TSSTRING_END, 37, 40)
       ]
     )
-  }
+  });
 
-  @test '@on() is a function call not and not a bool followed by parens'() {
+  it('@on() is a function call not and not a bool followed by parens', () => {
     deepEqual(
       lex(`@on()`).toArray(),
       [
@@ -367,28 +365,28 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(CALL_END, 4, 5),
       ]
     )
-  }
-}
+  });
+});
 
-@suite class SourceTokenListTest {
-  @test 'has a `startIndex` that represents the first token'() {
+describe('SourceTokenListTest', () => {
+  it('has a `startIndex` that represents the first token', () => {
     let list = lex('0');
     let token = list.tokenAtIndex(list.startIndex);
     deepEqual(token, new SourceToken(NUMBER, 0, 1));
-  }
+  });
 
-  @test 'has an `endIndex` that represents the virtual token after the last one'() {
+  it('has an `endIndex` that represents the virtual token after the last one', () => {
     let { startIndex, endIndex } = lex(''); // no tokens
     strictEqual(endIndex, startIndex);
-  }
+  });
 
-  @test 'always returns the same index when advancing to the same offset'() {
+  it('always returns the same index when advancing to the same offset', () => {
     let { startIndex, endIndex } = lex('a'); // one token
     strictEqual(startIndex.next(), endIndex);
     strictEqual(endIndex.previous(), startIndex);
-  }
+  });
 
-  @test 'allows getting a containing token index by source index'() {
+  it('allows getting a containing token index by source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
@@ -403,9 +401,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
     strictEqual(list.indexOfTokenContainingSourceIndex(7), twoIndex);  // w
     strictEqual(list.indexOfTokenContainingSourceIndex(8), twoIndex);  // o
     strictEqual(list.indexOfTokenContainingSourceIndex(9), null);      // <EOF>
-  }
+  });
 
-  @test 'allows getting a token index by its starting source index'() {
+  it('allows getting a token index by its starting source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
@@ -420,9 +418,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
     strictEqual(list.indexOfTokenStartingAtSourceIndex(7), null);      // w
     strictEqual(list.indexOfTokenStartingAtSourceIndex(8), null);      // o
     strictEqual(list.indexOfTokenStartingAtSourceIndex(9), null);      // <EOF>
-  }
+  });
 
-  @test 'allows getting a token index by its ending source index'() {
+  it('allows getting a token index by its ending source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
@@ -437,9 +435,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
     strictEqual(list.indexOfTokenEndingAtSourceIndex(7), null);      // w
     strictEqual(list.indexOfTokenEndingAtSourceIndex(8), null);      // o
     strictEqual(list.indexOfTokenEndingAtSourceIndex(9), twoIndex);  // <EOF>
-  }
+  });
 
-  @test 'allows getting the range of an interpolated string by source index'() {
+  it('allows getting the range of an interpolated string by source index', () => {
     let list = lex('a = "b#{c}d".length');
     let expectedStartIndex = list.startIndex.advance(2);
     let expectedStart = expectedStartIndex && list.tokenAtIndex(expectedStartIndex);
@@ -491,7 +489,7 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
     assertMatchesAtSourceIndex(6);  // #
     assertMatchesAtSourceIndex(7);  // {
     assertMatchesAtSourceIndex(8);  // c
-    assertMatchesAtSourceIndex(9);  // }
+    assertMatchesAtSourceIndex(9);  // });
     assertMatchesAtSourceIndex(10); // d
     assertMatchesAtSourceIndex(11); // "
     assertNullAtSourceIndex(12);    // .
@@ -502,9 +500,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
     assertNullAtSourceIndex(17);    // t
     assertNullAtSourceIndex(18);    // h
     assertNullAtSourceIndex(19);    // <EOF>
-  }
+  });
 
-  @test 'can find the containing interpolated string starting at an interpolation boundary'() {
+  it('can find the containing interpolated string starting at an interpolation boundary', () => {
     let list = lex('"#{a}b"');
     let expectedStart = list.startIndex;
     let expectedEnd = list.endIndex;
@@ -529,9 +527,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
     );
     strictEqual(range && range[0], expectedStart);
     strictEqual(range && range[1], expectedEnd);
-  }
+  });
 
-  @test 'can determine the interpolated string range with an interior string'() {
+  it('can determine the interpolated string range with an interior string', () => {
     let list = lex('"#{"a"}"');
 
     deepEqual(
@@ -561,9 +559,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
 
     strictEqual(range[0], list.startIndex);
     strictEqual(range[1], list.endIndex);
-  }
+  });
 
- @test 'can determine the interpolated string range for a heregex'() {
+ it('can determine the interpolated string range for a heregex', () => {
    let list = lex('///a#{b}c///');
 
    deepEqual(
@@ -591,9 +589,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
 
    strictEqual(range[0], list.startIndex);
    strictEqual(range[1], list.endIndex);
- }
+ });
 
-  @test 'allows comparing indexes'() {
+  it('allows comparing indexes', () => {
     let list = lex('a b');
     let { startIndex, endIndex } = list;
 
@@ -631,20 +629,20 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
       !startIndex.isAfter(endIndex),
       `#isAfter should be false for indexes out of order`
     );
-  }
-}
+  });
+});
 
-@suite class streamTest {
-  @test 'yields EOF when given an empty program'() {
+describe('streamTest', () => {
+  it('yields EOF when given an empty program', () => {
     checkLocations(
       stream(''),
       [
         new SourceLocation(EOF, 0)
       ]
     )
-   }
+   });
 
-  @test 'identifies single-quoted strings'() { 
+  it('identifies single-quoted strings', () => { 
     checkLocations(
       stream(`'abc'`),
       [
@@ -654,9 +652,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 5)
       ]
     )
-   }
+   });
 
-  @test 'identifies double-quoted strings'() { 
+  it('identifies double-quoted strings', () => { 
     checkLocations(
       stream(`"abc"`),
       [
@@ -666,9 +664,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 5)
       ]
     )
-   }
+   });
 
-  @test 'identifies triple-single-quoted strings'() { 
+  it('identifies triple-single-quoted strings', () => { 
     checkLocations(
       stream(`'''abc'''`),
       [
@@ -678,9 +676,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies triple-double-quoted strings'() { 
+  it('identifies triple-double-quoted strings', () => { 
     checkLocations(
       stream(`"""abc"""`),
       [
@@ -690,9 +688,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies identifiers'() { 
+  it('identifies identifiers', () => { 
     checkLocations(
       stream(`a`),
       [
@@ -700,9 +698,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 1)
       ]
     )
-   }
+   });
 
-  @test 'identifies whitespace'() { 
+  it('identifies whitespace', () => { 
     checkLocations(
       stream(`a b`),
       [
@@ -712,9 +710,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 3)
       ]
     )
-   }
+   });
 
-  @test 'transitions to INTERPOLATION_START at a string interpolation'() { 
+  it('transitions to INTERPOLATION_START at a string interpolation', () => { 
     checkLocations(
       stream(`"a#{b}c"`),
       [
@@ -728,9 +726,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 8)
       ]
     )
-   }
+   });
 
-  @test 'handles nested string interpolation'() { 
+  it('handles nested string interpolation', () => { 
     checkLocations(
       stream(`"#{"#{}"}"`),
       [
@@ -749,9 +747,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 10)
       ]
     )
-   }
+   });
 
-  @test 'identifies integers as numbers'() { 
+  it('identifies integers as numbers', () => { 
     checkLocations(
       stream(`10`),
       [
@@ -759,9 +757,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 2)
       ]
     )
-   }
+   });
 
-  @test 'identifies + as an operator'() { 
+  it('identifies + as an operator', () => { 
     checkLocations(
       stream(`a + b`),
       [
@@ -773,9 +771,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 5)
       ]
     )
-   }
+   });
 
-  @test 'identifies opening and closing parentheses'() { 
+  it('identifies opening and closing parentheses', () => { 
     checkLocations(
       stream(`(b)*2`),
       [
@@ -787,9 +785,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 5)
       ]
     )
-   }
+   });
 
-  @test 'identifies opening and closing braces'() { 
+  it('identifies opening and closing braces', () => { 
     checkLocations(
       stream(`{ a: '{}' }`),
       [
@@ -806,9 +804,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 11)
       ]
     )
-   }
+   });
 
-  @test 'identifies opening and closing brackets'() { 
+  it('identifies opening and closing brackets', () => { 
     checkLocations(
       stream(`[ a[1], b['f]['] ]`),
       [
@@ -831,9 +829,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 18)
       ]
     )
-   }
+   });
 
-  @test 'identifies embedded JavaScript'() { 
+  it('identifies embedded JavaScript', () => { 
     checkLocations(
       stream('`1` + 2'),
       [
@@ -845,9 +843,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 7)
       ]
     )
-   }
+   });
 
-  @test 'identifies LF as a newline'() { 
+  it('identifies LF as a newline', () => { 
     checkLocations(
       stream(`a\nb`),
       [
@@ -857,9 +855,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 3)
       ]
     )
-   }
+   });
 
-  @test 'identifies @'() { 
+  it('identifies @', () => { 
     checkLocations(
       stream(`@a`),
       [
@@ -868,9 +866,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 2)
       ]
     )
-   }
+   });
 
-  @test 'identifies semicolons'() { 
+  it('identifies semicolons', () => { 
     checkLocations(
       stream(`a; b`),
       [
@@ -881,9 +879,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies adjacent operators as distinct'() { 
+  it('identifies adjacent operators as distinct', () => { 
     checkLocations(
       stream(`a=++b`),
       [
@@ -894,9 +892,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 5)
       ]
     )
-   }
+   });
 
-  @test 'identifies comparison operators'() { 
+  it('identifies comparison operators', () => { 
     checkLocations(
       stream(`a < b <= c; a > b >= c`),
       [
@@ -923,9 +921,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 22)
       ]
     )
-   }
+   });
 
-  @test 'identifies dots'() { 
+  it('identifies dots', () => { 
     checkLocations(
       stream(`a.b`),
       [
@@ -935,9 +933,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 3)
       ]
     )
-   }
+   });
 
-  @test 'identifies block comments'() { 
+  it('identifies block comments', () => { 
     checkLocations(
       stream(`### a ###`),
       [
@@ -945,9 +943,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'does not treat markdown-style headings as block comments'() { 
+  it('does not treat markdown-style headings as block comments', () => { 
     checkLocations(
       stream(`#### FOO`),
       [
@@ -955,9 +953,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 8)
       ]
     )
-   }
+   });
 
-  @test 'treats `->` as a function'() { 
+  it('treats `->` as a function', () => { 
     checkLocations(
       stream(`-> a`),
       [
@@ -967,9 +965,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'treats `=>` as a function'() { 
+  it('treats `=>` as a function', () => { 
     checkLocations(
       stream(`=> a`),
       [
@@ -979,9 +977,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies division as distinct from regular expressions'() { 
+  it('identifies division as distinct from regular expressions', () => { 
     checkLocations(
       stream(`1/0 + 2/4`),
       [
@@ -997,9 +995,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies regular expressions as RHS in assignment'() { 
+  it('identifies regular expressions as RHS in assignment', () => { 
     checkLocations(
       stream(`a = /foo/`),
       [
@@ -1011,9 +1009,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies regular expressions at the start of the source'() { 
+  it('identifies regular expressions at the start of the source', () => { 
     checkLocations(
       stream(`/foo/.test 'abc'`),
       [
@@ -1027,9 +1025,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 16)
       ]
     )
-   }
+   });
 
-  @test 'identifies simple heregexes'() { 
+  it('identifies simple heregexes', () => { 
     checkLocations(
       stream(`///abc///g.test 'foo'`),
       [
@@ -1045,9 +1043,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 21)
       ]
     )
-   }
+   });
 
-  @test 'identifies heregexes with interpolations'() { 
+  it('identifies heregexes with interpolations', () => { 
     checkLocations(
       stream(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`),
       [
@@ -1067,9 +1065,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 54)
       ]
     )
-   }
+   });
 
-  @test 'computes the right padding for heregexes with interpolations'() { 
+  it('computes the right padding for heregexes with interpolations', () => { 
     deepEqual(
       lex(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toArray(),
       [
@@ -1090,9 +1088,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceToken(SSTRING_END, 53, 54),
       ]
     )
-   }
+   });
 
-  @test 'identifies keywords for conditionals'() { 
+  it('identifies keywords for conditionals', () => { 
     checkLocations(
       stream(`if a then b else c`),
       [
@@ -1110,9 +1108,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 18)
       ]
     )
-   }
+   });
 
-  @test 'identifies keywords for `unless` conditionals'() { 
+  it('identifies keywords for `unless` conditionals', () => { 
     checkLocations(
       stream(`b unless a`),
       [
@@ -1124,9 +1122,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 10)
       ]
     )
-   }
+   });
 
-  @test 'identifies keywords for switch'() { 
+  it('identifies keywords for switch', () => { 
     checkLocations(
       stream(`switch a\n  when b\n    c\n  else d`),
       [
@@ -1149,9 +1147,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 32)
       ]
     )
-   }
+   });
 
-  @test 'identifies keywords for `for` loops'() { 
+  it('identifies keywords for `for` loops', () => { 
     checkLocations(
       stream(`for own a in b then a`),
       [
@@ -1171,9 +1169,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 21)
       ]
     )
-   }
+   });
 
-  @test 'identifies keywords for `while` loops'() { 
+  it('identifies keywords for `while` loops', () => { 
     checkLocations(
       stream(`loop then until a then while b then c`),
       [
@@ -1197,9 +1195,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 37)
       ]
     )
-   }
+   });
 
-  @test 'identifies `class` as a keyword'() { 
+  it('identifies `class` as a keyword', () => { 
     checkLocations(
       stream(`class A`),
       [
@@ -1209,9 +1207,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 7)
       ]
     )
-   }
+   });
 
-  @test 'identifies `return` as a keyword'() { 
+  it('identifies `return` as a keyword', () => { 
     checkLocations(
       stream(`return 0`),
       [
@@ -1221,9 +1219,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 8)
       ]
     )
-   }
+   });
 
-  @test 'identifies `break` and `continue` as keywords'() { 
+  it('identifies `break` and `continue` as keywords', () => { 
     checkLocations(
       stream(`break;continue;`),
       [
@@ -1234,9 +1232,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 15)
       ]
     )
-   }
+   });
 
-  @test 'identifies identifiers with keyword names after dot access'() { 
+  it('identifies identifiers with keyword names after dot access', () => { 
     checkLocations(
       stream(`s.else(0)`),
       [
@@ -1249,9 +1247,9 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies identifiers with keyword names after dot access after a newline'() { 
+  it('identifies identifiers with keyword names after dot access after a newline', () => { 
     checkLocations(
       stream(`s.
 else(0)`),
@@ -1266,9 +1264,9 @@ else(0)`),
         new SourceLocation(EOF, 10)
       ]
     )
-   }
+   });
 
-  @test 'identifies identifiers with keyword names after proto access'() { 
+  it('identifies identifiers with keyword names after proto access', () => { 
     checkLocations(
       stream(`s::delete`),
       [
@@ -1278,9 +1276,9 @@ else(0)`),
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies `null`'() { 
+  it('identifies `null`', () => { 
     checkLocations(
       stream(`null`),
       [
@@ -1288,9 +1286,9 @@ else(0)`),
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies `undefined`'() { 
+  it('identifies `undefined`', () => { 
     checkLocations(
       stream(`undefined`),
       [
@@ -1298,9 +1296,9 @@ else(0)`),
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies `this`'() { 
+  it('identifies `this`', () => { 
     checkLocations(
       stream(`this`),
       [
@@ -1308,9 +1306,9 @@ else(0)`),
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies `super`'() { 
+  it('identifies `super`', () => { 
     checkLocations(
       stream(`super`),
       [
@@ -1318,9 +1316,9 @@ else(0)`),
         new SourceLocation(EOF, 5)
       ]
     )
-   }
+   });
 
-  @test 'identifies `delete`'() { 
+  it('identifies `delete`', () => { 
     checkLocations(
       stream(`delete a.b`),
       [
@@ -1332,9 +1330,9 @@ else(0)`),
         new SourceLocation(EOF, 10)
       ]
     )
-   }
+   });
 
-  @test 'identifies booleans'() { 
+  it('identifies booleans', () => { 
     checkLocations(
       stream(`true;false;yes;no;on;off`),
       [
@@ -1352,9 +1350,9 @@ else(0)`),
         new SourceLocation(EOF, 24)
       ]
     )
-   }
+   });
 
-  @test 'identifies existence operators'() { 
+  it('identifies existence operators', () => { 
     checkLocations(
       stream(`a?.b`),
       [
@@ -1365,9 +1363,9 @@ else(0)`),
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies proto operators'() { 
+  it('identifies proto operators', () => { 
     checkLocations(
       stream(`a::b`),
       [
@@ -1377,9 +1375,9 @@ else(0)`),
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies inclusive ranges'() { 
+  it('identifies inclusive ranges', () => { 
     checkLocations(
       stream(`a..b`),
       [
@@ -1389,9 +1387,9 @@ else(0)`),
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'identifies line continuations'() { 
+  it('identifies line continuations', () => { 
     checkLocations(
       stream(`a = \\\n  b`),
       [
@@ -1406,9 +1404,9 @@ else(0)`),
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies floor division'() { 
+  it('identifies floor division', () => { 
     checkLocations(
       stream(`7 // 3`),
       [
@@ -1420,9 +1418,9 @@ else(0)`),
         new SourceLocation(EOF, 6)
       ]
     )
-   }
+   });
 
-  @test 'identifies compound assignment'() { 
+  it('identifies compound assignment', () => { 
     checkLocations(
       stream(`a ?= 3`),
       [
@@ -1434,9 +1432,9 @@ else(0)`),
         new SourceLocation(EOF, 6)
       ]
     )
-   }
+   });
 
-  @test 'identifies compound assignment with word operators'() { 
+  it('identifies compound assignment with word operators', () => { 
     checkLocations(
       stream(`a or= 3`),
       [
@@ -1448,9 +1446,9 @@ else(0)`),
         new SourceLocation(EOF, 7)
       ]
     )
-   }
+   });
 
-  @test 'identifies keyword operators'() { 
+  it('identifies keyword operators', () => { 
     checkLocations(
       stream(`a and b is c or d`),
       [
@@ -1470,9 +1468,9 @@ else(0)`),
         new SourceLocation(EOF, 17)
       ]
     )
-   }
+   });
 
-  @test 'identifies `in` and `of` as relations'() { 
+  it('identifies `in` and `of` as relations', () => { 
     checkLocations(
       stream(`a in b or c of d`),
       [
@@ -1492,9 +1490,9 @@ else(0)`),
         new SourceLocation(EOF, 16)
       ]
     )
-   }
+   });
 
-  @test 'identifies keywords for `try/catch/finally`'() { 
+  it('identifies keywords for `try/catch/finally`', () => { 
     checkLocations(
       stream('try a catch e then b finally c'),
       [
@@ -1516,9 +1514,9 @@ else(0)`),
         new SourceLocation(EOF, 30)
       ]
     )
-   }
+   });
 
-  @test 'identifies `do` as a keyword'() { 
+  it('identifies `do` as a keyword', () => { 
     checkLocations(
       stream('do foo'),
       [
@@ -1528,9 +1526,9 @@ else(0)`),
         new SourceLocation(EOF, 6)
       ]
     )
-   }
+   });
 
-  @test 'identifies `yield` as a keyword'() { 
+  it('identifies `yield` as a keyword', () => { 
     checkLocations(
       stream('yield foo'),
       [
@@ -1540,9 +1538,9 @@ else(0)`),
         new SourceLocation(EOF, 9)
       ]
     )
-   }
+   });
 
-  @test 'identifies `yield from` as keyword'() { 
+  it('identifies `yield from` as keyword', () => { 
     checkLocations(
       stream('yield  from foo'),
       [
@@ -1552,9 +1550,9 @@ else(0)`),
         new SourceLocation(EOF, 15)
       ]
     )
-   }
+   });
 
-  @test 'identifies `from` as an identifier without yield'() { 
+  it('identifies `from` as an identifier without yield', () => { 
     checkLocations(
       stream('from'),
       [
@@ -1562,23 +1560,23 @@ else(0)`),
         new SourceLocation(EOF, 4)
       ]
     )
-   }
+   });
 
-  @test 'does not infinite loop on incomplete string interpolations'() {
+  it('does not infinite loop on incomplete string interpolations', () => {
     try {
       lex('a = "#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
       ok(e.message.indexOf('unexpected EOF while parsing a string') > -1);
     }
-  }
+  });
 
-  @test 'does not infinite loop on incomplete triple-quoted string interpolations'() {
+  it('does not infinite loop on incomplete triple-quoted string interpolations', () => {
     try {
       lex('a = """#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
       ok(e.message.indexOf('unexpected EOF while parsing a string') > -1);
     }
-  }
-}
+  });
+});

@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "rm -rf dist/",
     "build": "rollup -c && cp src/coffee-lex.js.flow dist/",
-    "typecheck": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
     "pretest": "npm run typecheck",
     "test": "mocha",
     "prepublish": "npm run typecheck && npm run build",
@@ -32,15 +32,16 @@
   },
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
+    "@types/mocha": "^2.2.33",
     "@types/node": "^6.0.51",
     "cz-conventional-changelog": "^1.1.6",
     "decaffeinate-coffeescript": "^1.10.0-patch5",
     "mocha": "^3.0.0",
-    "mocha-typescript": "^1.0.11",
     "reify": "^0.4.4",
     "rollup": "^0.36.0",
     "rollup-plugin-typescript": "^0.8.1",
     "semantic-release": "^6.3.2",
+    "ts-node": "^1.7.0",
     "typescript": "^2.0.10"
   },
   "publishConfig": {
