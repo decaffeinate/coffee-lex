@@ -10,12 +10,12 @@ export default {
   targets: [
     {
       format: 'es',
-      dest: pkg['jsnext:main']
+      dest: pkg.module
     },
     {
       format: 'umd',
       moduleName: 'coffeelex',
-      dest: pkg['main']
+      dest: pkg.main
     }
   ]
 };
