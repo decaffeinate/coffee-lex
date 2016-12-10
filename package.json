@@ -2,7 +2,7 @@
   "name": "coffee-lex",
   "description": "Stupid lexer for CoffeeScript.",
   "main": "dist/coffee-lex.js",
-  "jsnext:main": "dist/coffee-lex.mjs",
+  "module": "dist/coffee-lex.mjs",
   "scripts": {
     "prebuild": "rm -rf dist/",
     "build": "rollup -c && cp src/coffee-lex.js.flow dist/",
