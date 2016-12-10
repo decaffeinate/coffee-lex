@@ -1,13 +1,13 @@
-import PaddingTracker from './PaddingTracker';
-import { TrackedFragment } from './PaddingTracker';
+import {
+  TDSTRING_END,
+  TDSTRING_START,
+  TSSTRING_END,
+  TSSTRING_START,
+} from '../index';
 import SourceLocation from '../SourceLocation';
 import BufferedStream from './BufferedStream';
-import {
-  TDSTRING_START,
-  TDSTRING_END,
-  TSSTRING_START,
-  TSSTRING_END,
-} from '../index';
+import PaddingTracker from './PaddingTracker';
+import { TrackedFragment } from './PaddingTracker';
 
 /**
  * Compute the padding (the extra spacing to remove) for the given herestring.
@@ -69,7 +69,7 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
   for (let fragment of paddingTracker.fragments) {
     for (let i = 0; i < fragment.content.length; i++) {
       let isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
-      let isStartOfString = fragment.index === 0 && i == 0;
+      let isStartOfString = fragment.index === 0 && i === 0;
       if (isStartOfLine || isStartOfString) {
         let paddingStart = i;
         let paddingEnd = i + sharedIndent.length;

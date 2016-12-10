@@ -20,7 +20,7 @@ import lex, {
  * coffee-lex and the CoffeeScript lexer. It can always be made more advanced if
  * more complicated cases are useful to test.
  */
-export default function verifyStringMatchesCoffeeScript(code, expectedQuasis) {
+export default function verifyStringMatchesCoffeeScript(code: string, expectedQuasis: Array<string>) {
   let coffeeLexResult = getCoffeeLexQuasis(code);
   let coffeeScriptResult = getCoffeeScriptQuasis(code);
   deepEqual(

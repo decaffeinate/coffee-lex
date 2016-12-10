@@ -1,14 +1,14 @@
 import {
-  INTERPOLATION_START,
   INTERPOLATION_END,
+  INTERPOLATION_START,
   STRING_CONTENT,
   STRING_LINE_SEPARATOR,
   STRING_PADDING
 } from '../index';
 import SourceLocation from '../SourceLocation';
 
-import BufferedStream from './BufferedStream';
 import SourceType from '../SourceType';
+import BufferedStream from './BufferedStream';
 
 /**
  * Helper class for defining the padding (characters to remove, typically

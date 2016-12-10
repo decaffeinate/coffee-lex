@@ -1,8 +1,8 @@
-import { SSTRING_START, SSTRING_END, DSTRING_START, DSTRING_END } from '../index';
+import { DSTRING_END, DSTRING_START, SSTRING_END, SSTRING_START } from '../index';
 import PaddingTracker from './PaddingTracker';
 
-import BufferedStream from './BufferedStream';
 import SourceLocation from '../SourceLocation';
+import BufferedStream from './BufferedStream';
 
 /**
  * Compute the whitespace to remove in a multiline single or double quoted
@@ -93,5 +93,5 @@ function isNewlineEscaped(content: string, newlinePos: number): boolean {
       break;
     }
   }
-  return numSeenBackslashes % 2 == 1;
+  return numSeenBackslashes % 2 === 1;
 }

@@ -1,7 +1,7 @@
+import { DSTRING_END, DSTRING_START, HEREGEXP_END, HEREGEXP_START, TDSTRING_END, TDSTRING_START } from './index';
 import SourceToken from './SourceToken';
 import SourceTokenListIndex from './SourceTokenListIndex';
 import SourceType from './SourceType';
-import { DSTRING_START, DSTRING_END, HEREGEXP_START, HEREGEXP_END, TDSTRING_START, TDSTRING_END } from './index';
 
 export type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
 
