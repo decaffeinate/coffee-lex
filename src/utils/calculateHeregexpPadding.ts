@@ -1,8 +1,8 @@
-import { HEREGEXP_START, HEREGEXP_END } from '../index';
+import { HEREGEXP_END, HEREGEXP_START } from '../index';
 import PaddingTracker from './PaddingTracker';
 
-import BufferedStream from './BufferedStream';
 import SourceLocation from '../SourceLocation';
+import BufferedStream from './BufferedStream';
 
 /**
  * Compute the whitespace to remove in a heregexp. All unescaped whitespace
@@ -49,5 +49,5 @@ function isWhitespaceEscaped(content: string, whitespacePos: number): boolean {
   while (prevPos >= 0 && content[prevPos] === '\\') {
     prevPos--;
   }
-  return (whitespacePos - prevPos) % 2 == 0;
+  return (whitespacePos - prevPos) % 2 === 0;
 }

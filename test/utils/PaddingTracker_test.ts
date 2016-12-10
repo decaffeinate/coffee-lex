@@ -1,19 +1,19 @@
 import { deepEqual, strictEqual, throws } from 'assert';
 
 import {
+  stream,
   DSTRING_END,
   DSTRING_START,
   IDENTIFIER,
-  INTERPOLATION_START,
   INTERPOLATION_END,
+  INTERPOLATION_START,
   STRING_CONTENT,
   STRING_LINE_SEPARATOR,
-  STRING_PADDING,
-  stream
+  STRING_PADDING
 } from '../../src/index';
+import SourceLocation from '../../src/SourceLocation';
 import BufferedStream from '../../src/utils/BufferedStream';
 import PaddingTracker from '../../src/utils/PaddingTracker';
-import SourceLocation from '../../src/SourceLocation';
 
 describe('PaddingTrackerTest', () => {
   it('exposes the fragments in a string and allows marking padding', () => {

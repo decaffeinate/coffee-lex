@@ -1,10 +1,10 @@
-import BufferedStream from './utils/BufferedStream';
 import SourceLocation from './SourceLocation';
 import SourceToken from './SourceToken';
 import SourceTokenList from './SourceTokenList';
 import SourceType from './SourceType';
-import calculateNormalStringPadding from './utils/calculateNormalStringPadding';
+import BufferedStream from './utils/BufferedStream';
 import calculateHeregexpPadding from './utils/calculateHeregexpPadding';
+import calculateNormalStringPadding from './utils/calculateNormalStringPadding';
 import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStringPadding';
 
 /**
@@ -587,7 +587,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           break;
 
         case HEREGEXP_END:
-          while (consumeAny(REGEXP_FLAGS));
+          while (consumeAny(REGEXP_FLAGS)) {
+            // condition has side-effect
+          }
           setType(NORMAL);
           break;
 
@@ -656,7 +658,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     if (!matchData) {
       return false;
     }
-    let [ regex, body, closed ] = matchData;
+    let [ regex, , closed ] = matchData;
     let prev = locations[locations.length - 1];
     if (prev) {
       let spaced = false;

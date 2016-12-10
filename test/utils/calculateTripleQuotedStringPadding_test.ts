@@ -1,18 +1,18 @@
 import { deepEqual } from 'assert';
-import BufferedStream from '../../src/utils/BufferedStream';
-import SourceLocation from '../../src/SourceLocation';
-import calculateTripleQuotedStringPadding from '../../src/utils/calculateTripleQuotedStringPadding';
 import {
+  stream,
   IDENTIFIER,
-  INTERPOLATION_START,
   INTERPOLATION_END,
+  INTERPOLATION_START,
   SPACE,
   STRING_CONTENT,
   STRING_PADDING,
-  TDSTRING_START,
   TDSTRING_END,
-  stream
+  TDSTRING_START
 } from '../../src/index';
+import SourceLocation from '../../src/SourceLocation';
+import BufferedStream from '../../src/utils/BufferedStream';
+import calculateTripleQuotedStringPadding from '../../src/utils/calculateTripleQuotedStringPadding';
 import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript';
 
 function bufferedStream(source: string): BufferedStream {
@@ -149,7 +149,7 @@ b#{c}
         new SourceLocation(STRING_PADDING, 8),
         new SourceLocation(TDSTRING_END, 9)
       ]
-    )
+    );
   });
 
   it('returns an array with empty string content token between adjacent interpolations', () => {
@@ -169,7 +169,7 @@ b#{c}
         new SourceLocation(STRING_CONTENT, 11),
         new SourceLocation(TDSTRING_END, 11)
       ]
-    )
+    );
   });
 
   it('consumes only as many locations as it needs', () => {

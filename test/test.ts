@@ -1,11 +1,8 @@
-import SourceLocation from '../src/SourceLocation';
-import SourceToken from '../src/SourceToken';
-import SourceTokenList from '../src/SourceTokenList';
+import { deepEqual, ok, strictEqual } from 'assert';
 import { inspect } from 'util';
-import { ok, deepEqual, strictEqual } from 'assert';
 import lex, {
-  stream,
   consumeStream,
+  stream,
   AT,
   BOOL,
   BREAK,
@@ -56,15 +53,15 @@ import lex, {
   RPAREN,
   SEMICOLON,
   SPACE,
+  SSTRING_END,
+  SSTRING_START,
+  STRING_CONTENT,
+  STRING_LINE_SEPARATOR,
+  STRING_PADDING,
   SUPER,
   SWITCH,
   TDSTRING_END,
   TDSTRING_START,
-  STRING_CONTENT,
-  STRING_LINE_SEPARATOR,
-  STRING_PADDING,
-  SSTRING_END,
-  SSTRING_START,
   THEN,
   THIS,
   TRY,
@@ -76,6 +73,9 @@ import lex, {
   YIELD,
   YIELDFROM,
 } from '../src/index';
+import SourceLocation from '../src/SourceLocation';
+import SourceToken from '../src/SourceToken';
+import SourceTokenList from '../src/SourceTokenList';
 
 function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
   let actualLocations = consumeStream(stream);
@@ -84,7 +84,7 @@ function checkLocations(stream: () => SourceLocation, expectedLocations: Array<S
 
 describe('lexTest', () => {
   it('returns an empty list for an empty program', () => {
-    deepEqual(lex('').toArray(), [])
+    deepEqual(lex('').toArray(), []);
   });
 
   it('builds a list of tokens omitting SPACE and EOF', () => {
@@ -95,11 +95,11 @@ describe('lexTest', () => {
         new SourceToken(OPERATOR, 2, 3),
         new SourceToken(IDENTIFIER, 4, 5)
       ]
-    )
+    );
   });
 
   it('returns a `SourceTokenList`', () => {
-    ok(lex('') instanceof SourceTokenList)
+    ok(lex('') instanceof SourceTokenList);
   });
 
   it('turns string interpolations into cohesive string tokens', () => {
@@ -118,7 +118,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_CONTENT, 11, 12),
         new SourceToken(DSTRING_END, 12, 13)
       ]
-    )
+    );
   });
 
   it('inserts padding in the correct places for a multiline string', () => {
@@ -143,7 +143,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_CONTENT, 23, 26),
         new SourceToken(DSTRING_END, 26, 27)
       ]
-    )
+    );
   });
 
   it('adds empty template content tokens between adjacent interpolations', () => {
@@ -162,7 +162,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_CONTENT, 9, 9),
         new SourceToken(DSTRING_END, 9, 10)
       ]
-    )
+    );
   });
 
   it('turns triple-quoted string interpolations into string tokens', () => {
@@ -185,7 +185,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_PADDING, 20, 21),
         new SourceToken(TDSTRING_END, 21, 24)
       ]
-    )
+    );
   });
 
   it('turns triple-quoted strings with leading interpolation into string tokens', () => {
@@ -200,7 +200,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_PADDING, 8, 9),
         new SourceToken(TDSTRING_END, 9, 12)
       ]
-    )
+    );
   });
 
   it('handles nested interpolations', () => {
@@ -221,7 +221,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_CONTENT, 10, 10),
         new SourceToken(DSTRING_END, 10, 11)
       ]
-    )
+    );
   });
 
   it('handles spaces in string interpolations appropriately', () => {
@@ -236,7 +236,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_CONTENT, 7, 7),
         new SourceToken(DSTRING_END, 7, 8)
       ]
-    )
+    );
   });
 
   it('identifies `not instanceof` as a single operator', () => {
@@ -247,7 +247,7 @@ describe('lexTest', () => {
         new SourceToken(OPERATOR, 2, 16),
         new SourceToken(IDENTIFIER, 17, 18)
       ]
-    )
+    );
   });
 
   it('identifies `not in` as a single operator', () => {
@@ -258,7 +258,7 @@ describe('lexTest', () => {
         new SourceToken(RELATION, 2, 8),
         new SourceToken(IDENTIFIER, 9, 10)
       ]
-    )
+    );
   });
 
   it('identifies `not of` as a single operator', () => {
@@ -269,7 +269,7 @@ describe('lexTest', () => {
         new SourceToken(RELATION, 2, 8),
         new SourceToken(IDENTIFIER, 9, 10)
       ]
-    )
+    );
   });
 
   it('identifies parentheses immediately after callable tokens as CALL_START', () => {
@@ -303,7 +303,7 @@ describe('lexTest', () => {
         new SourceToken(CALL_END, 37, 38),
         new SourceToken(CALL_END, 38, 39)
       ]
-    )
+    );
   });
 
   it('identifies parentheses immediately after a CALL_END as CALL_START', () => {
@@ -316,7 +316,7 @@ describe('lexTest', () => {
         new SourceToken(CALL_START, 3, 4),
         new SourceToken(CALL_END, 4, 5)
       ]
-    )
+    );
   });
 
   it('identifies closing interpolations inside objects', () => {
@@ -335,7 +335,7 @@ describe('lexTest', () => {
         new SourceToken(DSTRING_END, 11, 12),
         new SourceToken(RBRACE, 13, 14)
       ]
-    )
+    );
   });
 
   it('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () => {
@@ -352,7 +352,7 @@ describe('lexTest', () => {
         new SourceToken(STRING_PADDING, 30, 37),
         new SourceToken(TSSTRING_END, 37, 40)
       ]
-    )
+    );
   });
 
   it('@on() is a function call not and not a bool followed by parens', () => {
@@ -364,7 +364,7 @@ describe('lexTest', () => {
         new SourceToken(CALL_START, 3, 4),
         new SourceToken(CALL_END, 4, 5),
       ]
-    )
+    );
   });
 });
 
@@ -639,7 +639,7 @@ describe('streamTest', () => {
       [
         new SourceLocation(EOF, 0)
       ]
-    )
+    );
    });
 
   it('identifies single-quoted strings', () => { 
@@ -651,7 +651,7 @@ describe('streamTest', () => {
         new SourceLocation(SSTRING_END, 4),
         new SourceLocation(EOF, 5)
       ]
-    )
+    );
    });
 
   it('identifies double-quoted strings', () => { 
@@ -663,7 +663,7 @@ describe('streamTest', () => {
         new SourceLocation(DSTRING_END, 4),
         new SourceLocation(EOF, 5)
       ]
-    )
+    );
    });
 
   it('identifies triple-single-quoted strings', () => { 
@@ -675,7 +675,7 @@ describe('streamTest', () => {
         new SourceLocation(TSSTRING_END, 6),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies triple-double-quoted strings', () => { 
@@ -687,7 +687,7 @@ describe('streamTest', () => {
         new SourceLocation(TDSTRING_END, 6),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies identifiers', () => { 
@@ -697,7 +697,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 0),
         new SourceLocation(EOF, 1)
       ]
-    )
+    );
    });
 
   it('identifies whitespace', () => { 
@@ -709,7 +709,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 2),
         new SourceLocation(EOF, 3)
       ]
-    )
+    );
    });
 
   it('transitions to INTERPOLATION_START at a string interpolation', () => { 
@@ -725,7 +725,7 @@ describe('streamTest', () => {
         new SourceLocation(DSTRING_END, 7),
         new SourceLocation(EOF, 8)
       ]
-    )
+    );
    });
 
   it('handles nested string interpolation', () => { 
@@ -746,7 +746,7 @@ describe('streamTest', () => {
         new SourceLocation(DSTRING_END, 9),
         new SourceLocation(EOF, 10)
       ]
-    )
+    );
    });
 
   it('identifies integers as numbers', () => { 
@@ -756,7 +756,7 @@ describe('streamTest', () => {
         new SourceLocation(NUMBER, 0),
         new SourceLocation(EOF, 2)
       ]
-    )
+    );
    });
 
   it('identifies + as an operator', () => { 
@@ -770,7 +770,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 4),
         new SourceLocation(EOF, 5)
       ]
-    )
+    );
    });
 
   it('identifies opening and closing parentheses', () => { 
@@ -784,7 +784,7 @@ describe('streamTest', () => {
         new SourceLocation(NUMBER, 4),
         new SourceLocation(EOF, 5)
       ]
-    )
+    );
    });
 
   it('identifies opening and closing braces', () => { 
@@ -803,7 +803,7 @@ describe('streamTest', () => {
         new SourceLocation(RBRACE, 10),
         new SourceLocation(EOF, 11)
       ]
-    )
+    );
    });
 
   it('identifies opening and closing brackets', () => { 
@@ -828,7 +828,7 @@ describe('streamTest', () => {
         new SourceLocation(RBRACKET, 17),
         new SourceLocation(EOF, 18)
       ]
-    )
+    );
    });
 
   it('identifies embedded JavaScript', () => { 
@@ -842,7 +842,7 @@ describe('streamTest', () => {
         new SourceLocation(NUMBER, 6),
         new SourceLocation(EOF, 7)
       ]
-    )
+    );
    });
 
   it('identifies LF as a newline', () => { 
@@ -854,7 +854,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 2),
         new SourceLocation(EOF, 3)
       ]
-    )
+    );
    });
 
   it('identifies @', () => { 
@@ -865,7 +865,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 1),
         new SourceLocation(EOF, 2)
       ]
-    )
+    );
    });
 
   it('identifies semicolons', () => { 
@@ -878,7 +878,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies adjacent operators as distinct', () => { 
@@ -891,7 +891,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 4),
         new SourceLocation(EOF, 5)
       ]
-    )
+    );
    });
 
   it('identifies comparison operators', () => { 
@@ -920,7 +920,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 21),
         new SourceLocation(EOF, 22)
       ]
-    )
+    );
    });
 
   it('identifies dots', () => { 
@@ -932,7 +932,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 2),
         new SourceLocation(EOF, 3)
       ]
-    )
+    );
    });
 
   it('identifies block comments', () => { 
@@ -942,7 +942,7 @@ describe('streamTest', () => {
         new SourceLocation(HERECOMMENT, 0),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('does not treat markdown-style headings as block comments', () => { 
@@ -952,7 +952,7 @@ describe('streamTest', () => {
         new SourceLocation(COMMENT, 0),
         new SourceLocation(EOF, 8)
       ]
-    )
+    );
    });
 
   it('treats `->` as a function', () => { 
@@ -964,7 +964,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('treats `=>` as a function', () => { 
@@ -976,7 +976,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies division as distinct from regular expressions', () => { 
@@ -994,7 +994,7 @@ describe('streamTest', () => {
         new SourceLocation(NUMBER, 8),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies regular expressions as RHS in assignment', () => { 
@@ -1008,7 +1008,7 @@ describe('streamTest', () => {
         new SourceLocation(REGEXP, 4),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies regular expressions at the start of the source', () => { 
@@ -1024,7 +1024,7 @@ describe('streamTest', () => {
         new SourceLocation(SSTRING_END, 15),
         new SourceLocation(EOF, 16)
       ]
-    )
+    );
    });
 
   it('identifies simple heregexes', () => { 
@@ -1042,7 +1042,7 @@ describe('streamTest', () => {
         new SourceLocation(SSTRING_END, 20),
         new SourceLocation(EOF, 21)
       ]
-    )
+    );
    });
 
   it('identifies heregexes with interpolations', () => { 
@@ -1064,7 +1064,7 @@ describe('streamTest', () => {
         new SourceLocation(SSTRING_END, 53),
         new SourceLocation(EOF, 54)
       ]
-    )
+    );
    });
 
   it('computes the right padding for heregexes with interpolations', () => { 
@@ -1087,7 +1087,7 @@ describe('streamTest', () => {
         new SourceToken(STRING_CONTENT, 50, 53),
         new SourceToken(SSTRING_END, 53, 54),
       ]
-    )
+    );
    });
 
   it('identifies keywords for conditionals', () => { 
@@ -1107,7 +1107,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 17),
         new SourceLocation(EOF, 18)
       ]
-    )
+    );
    });
 
   it('identifies keywords for `unless` conditionals', () => { 
@@ -1121,7 +1121,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 9),
         new SourceLocation(EOF, 10)
       ]
-    )
+    );
    });
 
   it('identifies keywords for switch', () => { 
@@ -1146,7 +1146,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 31),
         new SourceLocation(EOF, 32)
       ]
-    )
+    );
    });
 
   it('identifies keywords for `for` loops', () => { 
@@ -1168,7 +1168,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 20),
         new SourceLocation(EOF, 21)
       ]
-    )
+    );
    });
 
   it('identifies keywords for `while` loops', () => { 
@@ -1194,7 +1194,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 36),
         new SourceLocation(EOF, 37)
       ]
-    )
+    );
    });
 
   it('identifies `class` as a keyword', () => { 
@@ -1206,7 +1206,7 @@ describe('streamTest', () => {
         new SourceLocation(IDENTIFIER, 6),
         new SourceLocation(EOF, 7)
       ]
-    )
+    );
    });
 
   it('identifies `return` as a keyword', () => { 
@@ -1218,7 +1218,7 @@ describe('streamTest', () => {
         new SourceLocation(NUMBER, 7),
         new SourceLocation(EOF, 8)
       ]
-    )
+    );
    });
 
   it('identifies `break` and `continue` as keywords', () => { 
@@ -1231,7 +1231,7 @@ describe('streamTest', () => {
         new SourceLocation(SEMICOLON, 14),
         new SourceLocation(EOF, 15)
       ]
-    )
+    );
    });
 
   it('identifies identifiers with keyword names after dot access', () => { 
@@ -1246,7 +1246,7 @@ describe('streamTest', () => {
         new SourceLocation(CALL_END, 8),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies identifiers with keyword names after dot access after a newline', () => { 
@@ -1263,7 +1263,7 @@ else(0)`),
         new SourceLocation(CALL_END, 9),
         new SourceLocation(EOF, 10)
       ]
-    )
+    );
    });
 
   it('identifies identifiers with keyword names after proto access', () => { 
@@ -1275,7 +1275,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies `null`', () => { 
@@ -1285,7 +1285,7 @@ else(0)`),
         new SourceLocation(NULL, 0),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies `undefined`', () => { 
@@ -1295,7 +1295,7 @@ else(0)`),
         new SourceLocation(UNDEFINED, 0),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies `this`', () => { 
@@ -1305,7 +1305,7 @@ else(0)`),
         new SourceLocation(THIS, 0),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies `super`', () => { 
@@ -1315,7 +1315,7 @@ else(0)`),
         new SourceLocation(SUPER, 0),
         new SourceLocation(EOF, 5)
       ]
-    )
+    );
    });
 
   it('identifies `delete`', () => { 
@@ -1329,7 +1329,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 9),
         new SourceLocation(EOF, 10)
       ]
-    )
+    );
    });
 
   it('identifies booleans', () => { 
@@ -1349,7 +1349,7 @@ else(0)`),
         new SourceLocation(BOOL, 21),
         new SourceLocation(EOF, 24)
       ]
-    )
+    );
    });
 
   it('identifies existence operators', () => { 
@@ -1362,7 +1362,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies proto operators', () => { 
@@ -1374,7 +1374,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies inclusive ranges', () => { 
@@ -1386,7 +1386,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('identifies line continuations', () => { 
@@ -1403,7 +1403,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 8),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies floor division', () => { 
@@ -1417,7 +1417,7 @@ else(0)`),
         new SourceLocation(NUMBER, 5),
         new SourceLocation(EOF, 6)
       ]
-    )
+    );
    });
 
   it('identifies compound assignment', () => { 
@@ -1431,7 +1431,7 @@ else(0)`),
         new SourceLocation(NUMBER, 5),
         new SourceLocation(EOF, 6)
       ]
-    )
+    );
    });
 
   it('identifies compound assignment with word operators', () => { 
@@ -1445,7 +1445,7 @@ else(0)`),
         new SourceLocation(NUMBER, 6),
         new SourceLocation(EOF, 7)
       ]
-    )
+    );
    });
 
   it('identifies keyword operators', () => { 
@@ -1467,7 +1467,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 16),
         new SourceLocation(EOF, 17)
       ]
-    )
+    );
    });
 
   it('identifies `in` and `of` as relations', () => { 
@@ -1489,7 +1489,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 15),
         new SourceLocation(EOF, 16)
       ]
-    )
+    );
    });
 
   it('identifies keywords for `try/catch/finally`', () => { 
@@ -1513,7 +1513,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 29),
         new SourceLocation(EOF, 30)
       ]
-    )
+    );
    });
 
   it('identifies `do` as a keyword', () => { 
@@ -1525,7 +1525,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 3),
         new SourceLocation(EOF, 6)
       ]
-    )
+    );
    });
 
   it('identifies `yield` as a keyword', () => { 
@@ -1537,7 +1537,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 6),
         new SourceLocation(EOF, 9)
       ]
-    )
+    );
    });
 
   it('identifies `yield from` as keyword', () => { 
@@ -1549,7 +1549,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 12),
         new SourceLocation(EOF, 15)
       ]
-    )
+    );
    });
 
   it('identifies `from` as an identifier without yield', () => { 
@@ -1559,7 +1559,7 @@ else(0)`),
         new SourceLocation(IDENTIFIER, 0),
         new SourceLocation(EOF, 4)
       ]
-    )
+    );
    });
 
   it('does not infinite loop on incomplete string interpolations', () => {
