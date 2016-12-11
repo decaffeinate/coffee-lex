@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIST="${DIST:-dist}"
+TSC="${TSC:-node_modules/.bin/tsc}"
+
+# Build ES module version.
+"${TSC}" --project . --outDir "${DIST}" --module ES6
+for js in $(find "${DIST}" -name '*.js'); do
+  mv "${js}" "$(dirname "${js}")/$(basename "${js}" .js).mjs"
+done
+
+# Build CommonJS version.
+"${TSC}" --project . --outDir "${DIST}" --module commonjs
+
+# Restructure.
+rm -rf dist/test
+mv dist/src/* dist/
+rmdir dist/src
