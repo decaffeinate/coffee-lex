@@ -38,7 +38,7 @@
     "decaffeinate-coffeescript": "^1.10.0-patch5",
     "mocha": "^3.2.0",
     "reify": "^0.4.4",
-    "rollup": "^0.36.4",
+    "rollup": "^0.37.0",
     "rollup-plugin-typescript": "^0.8.1",
     "semantic-release": "^6.3.2",
     "ts-node": "^1.7.2",
