@@ -5,7 +5,6 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prebuild": "rm -rf dist/",
     "build": "./script/build",
     "lint": "tslint --config tslint.json --project tsconfig.json --type-check",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix",
@@ -35,10 +34,10 @@
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
     "@types/mocha": "^2.2.33",
-    "@types/node": "^6.0.51",
-    "decaffeinate-coffeescript": "^1.10.0-patch5",
+    "@types/node": "^6.0.52",
+    "decaffeinate-coffeescript": "^1.10.0-patch7",
     "mocha": "^3.2.0",
-    "semantic-release": "^6.3.2",
+    "semantic-release": "^6.3.5",
     "ts-node": "^1.7.2",
     "tslint": "^4.0.2",
     "typescript": "^2.1.4"
