@@ -5,14 +5,25 @@ set -e
 DIST="${DIST:-dist}"
 TSC="${TSC:-node_modules/.bin/tsc}"
 
-# Build ES module version.
-"${TSC}" --project . --outDir "${DIST}" --module ES6
+rm -rf "${DIST}"
+
+echo 'Building ES module version.'
+"${TSC}" \
+  --project . \
+  --outDir "${DIST}" \
+  --module ES2015 \
+  --moduleResolution node
+
 for js in $(find "${DIST}" -name '*.js'); do
   mv "${js}" "$(dirname "${js}")/$(basename "${js}" .js).mjs"
 done
 
-# Build CommonJS version.
-"${TSC}" --project . --outDir "${DIST}" --module commonjs
+echo 'Building CommonJS version.'
+"${TSC}" \
+  --project . \
+  --outDir "${DIST}" \
+  --module commonjs \
+  --moduleResolution node
 
 # Restructure.
 rm -rf dist/test
