@@ -1,4 +1,3 @@
-import { DSTRING_END, DSTRING_START, HEREGEXP_END, HEREGEXP_START, TDSTRING_END, TDSTRING_START } from './index';
 import SourceToken from './SourceToken';
 import SourceTokenListIndex from './SourceTokenListIndex';
 import SourceType from './SourceType';
@@ -100,7 +99,7 @@ export default class SourceTokenList {
   rangeOfInterpolatedStringTokensContainingTokenIndex(index: SourceTokenListIndex): SourceTokenListIndexRange | null {
     let bestRange: SourceTokenListIndexRange | null = null;
     for (let [startType, endType] of [
-        [DSTRING_START, DSTRING_END], [TDSTRING_START, TDSTRING_END], [HEREGEXP_START, HEREGEXP_END]]) {
+        [SourceType.DSTRING_START, SourceType.DSTRING_END], [SourceType.TDSTRING_START, SourceType.TDSTRING_END], [SourceType.HEREGEXP_START, SourceType.HEREGEXP_END]]) {
       let range = this.rangeOfMatchingTokensContainingTokenIndex(
         startType,
         endType,

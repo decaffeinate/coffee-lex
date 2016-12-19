@@ -29,7 +29,7 @@ export default function lex(source: string): SourceTokenList {
       ...combinedLocationsForMultiwordOperators(pending, source)
     );
     location = pending.shift();
-    if (previousLocation && previousLocation.type !== SPACE) {
+    if (previousLocation && previousLocation.type !== SourceType.SPACE) {
       tokens.push(
         new SourceToken(
           previousLocation.type,
@@ -39,12 +39,12 @@ export default function lex(source: string): SourceTokenList {
       );
     }
     previousLocation = location;
-  } while (location.type !== EOF);
+  } while (location.type !== SourceType.EOF);
   return new SourceTokenList(tokens);
 }
 
 function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: string): Array<SourceLocation> {
-  if (!stream.hasNext(OPERATOR, SPACE, OPERATOR) && !stream.hasNext(OPERATOR, SPACE, RELATION)) {
+  if (!stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.OPERATOR) && !stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.RELATION)) {
     return [];
   }
 
@@ -60,7 +60,7 @@ function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: 
       case 'of':
         return [
           new SourceLocation(
-            RELATION,
+            SourceType.RELATION,
             not.index
           )
         ];
@@ -68,7 +68,7 @@ function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: 
       case 'instanceof':
         return [
           new SourceLocation(
-            OPERATOR,
+            SourceType.OPERATOR,
             not.index
           )
         ];
@@ -82,88 +82,18 @@ function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: 
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 
-export const AT = new SourceType('AT');
-export const BOOL = new SourceType('BOOL');
-export const BREAK = new SourceType('BREAK');
-export const CATCH = new SourceType('CATCH');
-export const CALL_END = new SourceType('CALL_END');
-export const CALL_START = new SourceType('CALL_START');
-export const CLASS = new SourceType('CLASS');
-export const COLON = new SourceType('COLON');
-export const COMMA = new SourceType('COMMA');
-export const COMMENT = new SourceType('COMMENT');
-export const CONTINUATION = new SourceType('CONTINUATION');
-export const CONTINUE = new SourceType('CONTINUE');
-export const DELETE = new SourceType('DELETE');
-export const DO = new SourceType('DO');
-export const DOT = new SourceType('DOT');
-export const DSTRING_START = new SourceType('DSTRING_START');
-export const DSTRING_END = new SourceType('DSTRING_END');
-export const ELSE = new SourceType('ELSE');
-export const EOF = new SourceType('EOF');
-export const EXISTENCE = new SourceType('EXISTENCE');
-export const FINALLY = new SourceType('FINALLY');
-export const FOR = new SourceType('FOR');
-export const FUNCTION = new SourceType('FUNCTION');
-export const HERECOMMENT = new SourceType('HERECOMMENT');
-export const HEREGEXP_START = new SourceType('HEREGEXP_START');
-export const HEREGEXP_END = new SourceType('HEREGEXP_END');
-export const IF = new SourceType('IF');
-export const INTERPOLATION_START = new SourceType('INTERPOLATION_START');
-export const INTERPOLATION_END = new SourceType('INTERPOLATION_END');
-export const JS = new SourceType('JS');
-export const LBRACE = new SourceType('LBRACE');
-export const LBRACKET = new SourceType('LBRACKET');
-export const LOOP = new SourceType('LOOP');
-export const LPAREN = new SourceType('LPAREN');
-export const NEWLINE = new SourceType('NEWLINE');
-export const NORMAL = new SourceType('NORMAL');
-export const NULL = new SourceType('NULL');
-export const NUMBER = new SourceType('NUMBER');
-export const OPERATOR = new SourceType('OPERATOR');
-export const OWN = new SourceType('OWN');
-export const PROTO = new SourceType('PROTO');
-export const RANGE = new SourceType('RANGE');
-export const REGEXP = new SourceType('REGEXP');
-export const RBRACE = new SourceType('RBRACE');
-export const RBRACKET = new SourceType('RBRACKET');
-export const RELATION = new SourceType('RELATION');
-export const RETURN = new SourceType('RETURN');
-export const RPAREN = new SourceType('RPAREN');
-export const SEMICOLON = new SourceType('SEMICOLON');
-export const SPACE = new SourceType('SPACE');
-export const SUPER = new SourceType('SUPER');
-export const SWITCH = new SourceType('SWITCH');
-export const SSTRING_START = new SourceType('SSTRING_START');
-export const SSTRING_END = new SourceType('SSTRING_END');
-export const STRING_CONTENT = new SourceType('STRING_CONTENT');
-export const STRING_LINE_SEPARATOR = new SourceType('STRING_LINE_SEPARATOR');
-export const STRING_PADDING = new SourceType('STRING_PADDING');
-export const TDSTRING_START = new SourceType('TDSTRING_START');
-export const TDSTRING_END = new SourceType('TDSTRING_END');
-export const THEN = new SourceType('THEN');
-export const THIS = new SourceType('THIS');
-export const TRY = new SourceType('TRY');
-export const TSSTRING_START = new SourceType('TSSTRING_START');
-export const TSSTRING_END = new SourceType('TSSTRING_END');
-export const UNDEFINED = new SourceType('UNDEFINED');
-export const UNKNOWN = new SourceType('UNKNOWN');
-export const WHEN = new SourceType('WHEN');
-export const WHILE = new SourceType('WHILE');
-export const IDENTIFIER = new SourceType('IDENTIFIER');
-export const YIELD = new SourceType('YIELD');
-export const YIELDFROM = new SourceType('YIELDFROM');
+export { SourceType };
 
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
  */
-const STRING = [SSTRING_END, DSTRING_END, TSSTRING_END, TDSTRING_END];
+const STRING = [SourceType.SSTRING_END, SourceType.DSTRING_END, SourceType.TSSTRING_END, SourceType.TDSTRING_END];
 const CALLABLE = [
-  IDENTIFIER, CALL_END, RPAREN, RBRACKET, EXISTENCE, AT, THIS, SUPER
+  SourceType.IDENTIFIER, SourceType.CALL_END, SourceType.RPAREN, SourceType.RBRACKET, SourceType.EXISTENCE, SourceType.AT, SourceType.THIS, SourceType.SUPER
 ];
 const INDEXABLE = CALLABLE.concat([
-  NUMBER, ...STRING, REGEXP,
-  BOOL, NULL, UNDEFINED, RBRACE, PROTO
+  SourceType.NUMBER, ...STRING, SourceType.REGEXP,
+  SourceType.BOOL, SourceType.NULL, SourceType.UNDEFINED, SourceType.RBRACE, SourceType.PROTO
 ]);
 const NOT_REGEXP = INDEXABLE; // .concat(['++', '--'])
 
@@ -202,7 +132,7 @@ const OPERATORS = [
  * Provides a stream of source type change locations.
  */
 export function stream(source: string, index: number=0): () => SourceLocation {
-  let location = new SourceLocation(NORMAL, index);
+  let location = new SourceLocation(SourceType.NORMAL, index);
   let interpolationStack: Array<{ type: SourceType, braces: Array<number> }> = [];
   let braceStack: Array<number> = [];
   let parenStack: Array<SourceType> = [];
@@ -220,120 +150,120 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     do {
       start = index;
       if (index >= source.length) {
-        setType(EOF);
+        setType(SourceType.EOF);
       }
 
       switch (location.type) {
-        case NORMAL:
-        case SPACE:
-        case IDENTIFIER:
-        case DOT:
-        case NUMBER:
-        case OPERATOR:
-        case COMMA:
-        case LPAREN:
-        case RPAREN:
-        case CALL_START:
-        case CALL_END:
-        case LBRACE:
-        case RBRACE:
-        case LBRACKET:
-        case RBRACKET:
-        case NEWLINE:
-        case COLON:
-        case FUNCTION:
-        case THIS:
-        case AT:
-        case SEMICOLON:
-        case IF:
-        case ELSE:
-        case THEN:
-        case FOR:
-        case OWN:
-        case WHILE:
-        case BOOL:
-        case NULL:
-        case UNDEFINED:
-        case REGEXP:
-        case SSTRING_END:
-        case DSTRING_END:
-        case TSSTRING_END:
-        case TDSTRING_END:
-        case INTERPOLATION_START:
-        case SUPER:
-        case TRY:
-        case CATCH:
-        case FINALLY:
-        case SWITCH:
-        case WHEN:
-        case BREAK:
-        case CONTINUE:
-        case EXISTENCE:
-        case CLASS:
-        case PROTO:
-        case RANGE:
-        case DELETE:
-        case RETURN:
-        case RELATION:
-        case LOOP:
-        case DO:
-        case YIELD:
-        case YIELDFROM:
-        case CONTINUATION:
+        case SourceType.NORMAL:
+        case SourceType.SPACE:
+        case SourceType.IDENTIFIER:
+        case SourceType.DOT:
+        case SourceType.NUMBER:
+        case SourceType.OPERATOR:
+        case SourceType.COMMA:
+        case SourceType.LPAREN:
+        case SourceType.RPAREN:
+        case SourceType.CALL_START:
+        case SourceType.CALL_END:
+        case SourceType.LBRACE:
+        case SourceType.RBRACE:
+        case SourceType.LBRACKET:
+        case SourceType.RBRACKET:
+        case SourceType.NEWLINE:
+        case SourceType.COLON:
+        case SourceType.FUNCTION:
+        case SourceType.THIS:
+        case SourceType.AT:
+        case SourceType.SEMICOLON:
+        case SourceType.IF:
+        case SourceType.ELSE:
+        case SourceType.THEN:
+        case SourceType.FOR:
+        case SourceType.OWN:
+        case SourceType.WHILE:
+        case SourceType.BOOL:
+        case SourceType.NULL:
+        case SourceType.UNDEFINED:
+        case SourceType.REGEXP:
+        case SourceType.SSTRING_END:
+        case SourceType.DSTRING_END:
+        case SourceType.TSSTRING_END:
+        case SourceType.TDSTRING_END:
+        case SourceType.INTERPOLATION_START:
+        case SourceType.SUPER:
+        case SourceType.TRY:
+        case SourceType.CATCH:
+        case SourceType.FINALLY:
+        case SourceType.SWITCH:
+        case SourceType.WHEN:
+        case SourceType.BREAK:
+        case SourceType.CONTINUE:
+        case SourceType.EXISTENCE:
+        case SourceType.CLASS:
+        case SourceType.PROTO:
+        case SourceType.RANGE:
+        case SourceType.DELETE:
+        case SourceType.RETURN:
+        case SourceType.RELATION:
+        case SourceType.LOOP:
+        case SourceType.DO:
+        case SourceType.YIELD:
+        case SourceType.YIELDFROM:
+        case SourceType.CONTINUATION:
           if (consume(SPACE_PATTERN)) {
-            setType(SPACE);
+            setType(SourceType.SPACE);
           } else if (consume('\n')) {
-            setType(NEWLINE);
+            setType(SourceType.NEWLINE);
           } else if (consume('...') || consume('..')) {
-            setType(RANGE);
+            setType(SourceType.RANGE);
           } else if (consume('.')) {
-            setType(DOT);
+            setType(SourceType.DOT);
           } else if (consume('"""')) {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '"""',
-              endSourceType: TDSTRING_END,
+              endSourceType: SourceType.TDSTRING_END,
             });
-            setType(TDSTRING_START);
+            setType(SourceType.TDSTRING_START);
           } else if (consume('"')) {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '"',
-              endSourceType: DSTRING_END,
+              endSourceType: SourceType.DSTRING_END,
             });
-            setType(DSTRING_START);
+            setType(SourceType.DSTRING_START);
           } else if (consume('\'\'\'')) {
             stringStack.push({
               allowInterpolations: false,
               endingDelimiter: '\'\'\'',
-              endSourceType: TSSTRING_END,
+              endSourceType: SourceType.TSSTRING_END,
             });
-            setType(TSSTRING_START);
+            setType(SourceType.TSSTRING_START);
           } else if (consume('\'')) {
             stringStack.push({
               allowInterpolations: false,
               endingDelimiter: '\'',
-              endSourceType: SSTRING_END,
+              endSourceType: SourceType.SSTRING_END,
             });
-            setType(SSTRING_START);
+            setType(SourceType.SSTRING_START);
           } else if (consume(/^###[^#]/)) {
-            setType(HERECOMMENT);
+            setType(SourceType.HERECOMMENT);
           } else if (consume('#')) {
-            setType(COMMENT);
+            setType(SourceType.COMMENT);
           } else if (consume('///')) {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '///',
-              endSourceType: HEREGEXP_END,
+              endSourceType: SourceType.HEREGEXP_END,
             });
-            setType(HEREGEXP_START);
+            setType(SourceType.HEREGEXP_START);
           } else if (consume('(')) {
             if (CALLABLE.indexOf(location.type) >= 0) {
-              parenStack.push(CALL_START);
-              setType(CALL_START);
+              parenStack.push(SourceType.CALL_START);
+              setType(SourceType.CALL_START);
             } else {
-              parenStack.push(LPAREN);
-              setType(LPAREN);
+              parenStack.push(SourceType.LPAREN);
+              setType(SourceType.LPAREN);
             }
           } else if (consume(')')) {
             if (parenStack.length === 0) {
@@ -341,12 +271,12 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             } else {
               let lparen = parenStack.pop();
               switch (lparen) {
-                case LPAREN:
-                  setType(RPAREN);
+                case SourceType.LPAREN:
+                  setType(SourceType.RPAREN);
                   break;
 
-                case CALL_START:
-                  setType(CALL_END);
+                case SourceType.CALL_START:
+                  setType(SourceType.CALL_END);
                   break;
 
                 default:
@@ -356,109 +286,109 @@ export function stream(source: string, index: number=0): () => SourceLocation {
               }
             }
           } else if (consume('[')) {
-            setType(LBRACKET);
+            setType(SourceType.LBRACKET);
           } else if (consume(']')) {
-            setType(RBRACKET);
+            setType(SourceType.RBRACKET);
           } else if (consume('{')) {
             braceStack.push(start);
-            setType(LBRACE);
+            setType(SourceType.LBRACE);
           } else if (consume('}')) {
             if (braceStack.length === 0) {
               popInterpolation();
             } else {
               braceStack.pop();
-              setType(RBRACE);
+              setType(SourceType.RBRACE);
             }
           } else if (consumeAny(['->', '=>'])) {
-            setType(FUNCTION);
+            setType(SourceType.FUNCTION);
           } else if (consumeRegexp()) {
-            setType(REGEXP);
+            setType(SourceType.REGEXP);
           } else if (consume('::')) {
-            setType(PROTO);
+            setType(SourceType.PROTO);
           } else if (consume(':')) {
-            setType(COLON);
+            setType(SourceType.COLON);
           } else if (consume(',')) {
-            setType(COMMA);
+            setType(SourceType.COMMA);
           } else if (consume('@')) {
-            setType(AT);
+            setType(SourceType.AT);
           } else if (consume(';')) {
-            setType(SEMICOLON);
+            setType(SourceType.SEMICOLON);
           } else if (consume('`')) {
-            setType(JS);
+            setType(SourceType.JS);
           } else if (consumeAny(OPERATORS)) {
             if (consumed() === '?') {
-              setType(EXISTENCE);
+              setType(SourceType.EXISTENCE);
             } else {
-              setType(OPERATOR);
+              setType(SourceType.OPERATOR);
             }
           } else if (consume(YIELDFROM_PATTERN)) {
-            setType(YIELDFROM);
+            setType(SourceType.YIELDFROM);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prevLocationIndex = locations.length - 1;
-            while (prevLocationIndex > 0 && locations[prevLocationIndex].type === NEWLINE) {
+            while (prevLocationIndex > 0 && locations[prevLocationIndex].type === SourceType.NEWLINE) {
               prevLocationIndex--;
             }
             let prev = locations[prevLocationIndex];
-            if (prev && (prev.type === DOT || prev.type === PROTO || prev.type === AT)) {
-              setType(IDENTIFIER);
+            if (prev && (prev.type === SourceType.DOT || prev.type === SourceType.PROTO || prev.type === SourceType.AT)) {
+              setType(SourceType.IDENTIFIER);
             } else {
               switch (consumed()) {
                 case 'if':
                 case 'unless':
-                  setType(IF);
+                  setType(SourceType.IF);
                   break;
 
                 case 'else':
-                  setType(ELSE);
+                  setType(SourceType.ELSE);
                   break;
 
                 case 'return':
-                  setType(RETURN);
+                  setType(SourceType.RETURN);
                   break;
 
                 case 'for':
-                  setType(FOR);
+                  setType(SourceType.FOR);
                   break;
 
                 case 'own':
-                  setType(OWN);
+                  setType(SourceType.OWN);
                   break;
 
                 case 'while':
                 case 'until':
-                  setType(WHILE);
+                  setType(SourceType.WHILE);
                   break;
 
                 case 'loop':
-                  setType(LOOP);
+                  setType(SourceType.LOOP);
                   break;
 
                 case 'then':
-                  setType(THEN);
+                  setType(SourceType.THEN);
                   break;
 
                 case 'switch':
-                  setType(SWITCH);
+                  setType(SourceType.SWITCH);
                   break;
 
                 case 'when':
-                  setType(WHEN);
+                  setType(SourceType.WHEN);
                   break;
 
                 case 'null':
-                  setType(NULL);
+                  setType(SourceType.NULL);
                   break;
 
                 case 'undefined':
-                  setType(UNDEFINED);
+                  setType(SourceType.UNDEFINED);
                   break;
 
                 case 'this':
-                  setType(THIS);
+                  setType(SourceType.THIS);
                   break;
 
                 case 'super':
-                  setType(SUPER);
+                  setType(SourceType.SUPER);
                   break;
 
                 case 'true':
@@ -467,7 +397,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                 case 'no':
                 case 'on':
                 case 'off':
-                  setType(BOOL);
+                  setType(SourceType.BOOL);
                   break;
 
                 case 'and':
@@ -476,72 +406,72 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                 case 'is':
                 case 'isnt':
                 case 'instanceof':
-                  setType(OPERATOR);
+                  setType(SourceType.OPERATOR);
                   break;
 
                 case 'class':
-                  setType(CLASS);
+                  setType(SourceType.CLASS);
                   break;
 
                 case 'break':
-                  setType(BREAK);
+                  setType(SourceType.BREAK);
                   break;
 
                 case 'continue':
-                  setType(CONTINUE);
+                  setType(SourceType.CONTINUE);
                   break;
 
                 case 'try':
-                  setType(TRY);
+                  setType(SourceType.TRY);
                   break;
 
                 case 'catch':
-                  setType(CATCH);
+                  setType(SourceType.CATCH);
                   break;
 
                 case 'finally':
-                  setType(FINALLY);
+                  setType(SourceType.FINALLY);
                   break;
 
                 case 'delete':
-                  setType(DELETE);
+                  setType(SourceType.DELETE);
                   break;
 
                 case 'in':
                 case 'of':
-                  setType(RELATION);
+                  setType(SourceType.RELATION);
                   break;
 
                 case 'do':
-                  setType(DO);
+                  setType(SourceType.DO);
                   break;
 
                 case 'yield':
-                  setType(YIELD);
+                  setType(SourceType.YIELD);
                   break;
 
                 default:
-                  setType(IDENTIFIER);
+                  setType(SourceType.IDENTIFIER);
               }
             }
           } else if (consume(NUMBER_PATTERN)) {
-            setType(NUMBER);
+            setType(SourceType.NUMBER);
           } else if (consume('\\')) {
-            setType(CONTINUATION);
+            setType(SourceType.CONTINUATION);
           } else {
-            setType(UNKNOWN);
+            setType(SourceType.UNKNOWN);
           }
           break;
 
-        case SSTRING_START:
-        case DSTRING_START:
-        case TSSTRING_START:
-        case TDSTRING_START:
-        case HEREGEXP_START:
-          setType(STRING_CONTENT);
+        case SourceType.SSTRING_START:
+        case SourceType.DSTRING_START:
+        case SourceType.TSSTRING_START:
+        case SourceType.TDSTRING_START:
+        case SourceType.HEREGEXP_START:
+          setType(SourceType.STRING_CONTENT);
           break;
 
-        case STRING_CONTENT: {
+        case SourceType.STRING_CONTENT: {
           let stringOptions = stringStack[stringStack.length - 1];
           if (!stringOptions) {
             throw new Error(
@@ -560,23 +490,23 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           break;
         }
 
-        case COMMENT:
+        case SourceType.COMMENT:
           if (consume('\n')) {
-            setType(NEWLINE);
+            setType(SourceType.NEWLINE);
           } else {
             index++;
           }
           break;
 
-        case HERECOMMENT:
+        case SourceType.HERECOMMENT:
           if (consume('###')) {
-            setType(NORMAL);
+            setType(SourceType.NORMAL);
           } else {
             index++;
           }
           break;
 
-        case INTERPOLATION_END:
+        case SourceType.INTERPOLATION_END:
           let lastInterpolation = interpolationStack.pop();
           if (!lastInterpolation) {
             throw new Error(`found interpolation end without any interpolation start`);
@@ -586,24 +516,24 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           braceStack = braces;
           break;
 
-        case HEREGEXP_END:
+        case SourceType.HEREGEXP_END:
           while (consumeAny(REGEXP_FLAGS)) {
             // condition has side-effect
           }
-          setType(NORMAL);
+          setType(SourceType.NORMAL);
           break;
 
-        case JS:
+        case SourceType.JS:
           if (consume('\\')) {
             index++;
           } else if (consume('`')) {
-            setType(NORMAL);
+            setType(SourceType.NORMAL);
           } else {
             index++;
           }
           break;
 
-        case EOF:
+        case SourceType.EOF:
           if (braceStack.length !== 0) {
             throw new Error(
               `unexpected EOF while looking for '}' to match '{' ` +
@@ -615,22 +545,22 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           }
           break;
 
-        case UNKNOWN:
+        case SourceType.UNKNOWN:
           // Jump to the end.
           index = source.length;
           break;
 
         default:
-          throw new Error(`unknown source type at offset ${location.index}: ${location.type.name}`);
+          throw new Error(`unknown source type at offset ${location.index}: ${SourceType[location.type]}`);
       }
 
       shouldStepAgain = (
         // Don't report on going back to "normal" source code.
-        location.type === NORMAL ||
+        location.type === SourceType.NORMAL ||
         // Don't report if nothing has changed, unless we're at the end.
         (
           location === lastLocation &&
-          location.type !== EOF
+          location.type !== SourceType.EOF
         )
       );
     } while (shouldStepAgain);
@@ -662,7 +592,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     let prev = locations[locations.length - 1];
     if (prev) {
       let spaced = false;
-      if (prev.type === SPACE) {
+      if (prev.type === SourceType.SPACE) {
         spaced = true;
         prev = locations[locations.length - 2];
       }
@@ -700,7 +630,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
   function pushInterpolation() {
     interpolationStack.push({ type: location.type, braces: braceStack });
-    setType(INTERPOLATION_START);
+    setType(SourceType.INTERPOLATION_START);
     braceStack = [];
   }
 
@@ -708,7 +638,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     if (interpolationStack.length === 0) {
       throw new Error(`unexpected '}' found in string at ${index}: ${JSON.stringify(source)}`);
     }
-    setType(INTERPOLATION_END);
+    setType(SourceType.INTERPOLATION_END);
   }
 }
 
@@ -718,6 +648,6 @@ export function consumeStream(lexer: () => SourceLocation): Array<SourceLocation
   do {
     location = lexer();
     result.push(location);
-  } while (location.type !== EOF);
+  } while (location.type !== SourceType.EOF);
   return result;
 }

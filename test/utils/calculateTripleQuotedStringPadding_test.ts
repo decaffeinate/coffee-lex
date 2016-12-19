@@ -1,15 +1,5 @@
 import { deepEqual } from 'assert';
-import {
-  stream,
-  IDENTIFIER,
-  INTERPOLATION_END,
-  INTERPOLATION_START,
-  SPACE,
-  STRING_CONTENT,
-  STRING_PADDING,
-  TDSTRING_END,
-  TDSTRING_START
-} from '../../src/index';
+import { stream, SourceType } from '../../src/index';
 import SourceLocation from '../../src/SourceLocation';
 import BufferedStream from '../../src/utils/BufferedStream';
 import calculateTripleQuotedStringPadding from '../../src/utils/calculateTripleQuotedStringPadding';
@@ -141,13 +131,13 @@ b#{c}
     deepEqual(
       calculateTripleQuotedStringPadding(source, bufferedStream(source)),
       [
-        new SourceLocation(TDSTRING_START, 0),
-        new SourceLocation(STRING_PADDING, 3),
-        new SourceLocation(INTERPOLATION_START, 4),
-        new SourceLocation(IDENTIFIER, 6),
-        new SourceLocation(INTERPOLATION_END, 7),
-        new SourceLocation(STRING_PADDING, 8),
-        new SourceLocation(TDSTRING_END, 9)
+        new SourceLocation(SourceType.TDSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_PADDING, 3),
+        new SourceLocation(SourceType.INTERPOLATION_START, 4),
+        new SourceLocation(SourceType.IDENTIFIER, 6),
+        new SourceLocation(SourceType.INTERPOLATION_END, 7),
+        new SourceLocation(SourceType.STRING_PADDING, 8),
+        new SourceLocation(SourceType.TDSTRING_END, 9)
       ]
     );
   });
@@ -157,17 +147,17 @@ b#{c}
     deepEqual(
       calculateTripleQuotedStringPadding(source, bufferedStream(source)),
       [
-        new SourceLocation(TDSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 3),
-        new SourceLocation(INTERPOLATION_START, 3),
-        new SourceLocation(IDENTIFIER, 5),
-        new SourceLocation(INTERPOLATION_END, 6),
-        new SourceLocation(STRING_CONTENT, 7),
-        new SourceLocation(INTERPOLATION_START, 7),
-        new SourceLocation(IDENTIFIER, 9),
-        new SourceLocation(INTERPOLATION_END, 10),
-        new SourceLocation(STRING_CONTENT, 11),
-        new SourceLocation(TDSTRING_END, 11)
+        new SourceLocation(SourceType.TDSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 3),
+        new SourceLocation(SourceType.INTERPOLATION_START, 3),
+        new SourceLocation(SourceType.IDENTIFIER, 5),
+        new SourceLocation(SourceType.INTERPOLATION_END, 6),
+        new SourceLocation(SourceType.STRING_CONTENT, 7),
+        new SourceLocation(SourceType.INTERPOLATION_START, 7),
+        new SourceLocation(SourceType.IDENTIFIER, 9),
+        new SourceLocation(SourceType.INTERPOLATION_END, 10),
+        new SourceLocation(SourceType.STRING_CONTENT, 11),
+        new SourceLocation(SourceType.TDSTRING_END, 11)
       ]
     );
   });
@@ -178,14 +168,14 @@ b#{c}
     deepEqual(
       calculateTripleQuotedStringPadding(source, stream),
       [
-        new SourceLocation(TDSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 3),
-        new SourceLocation(TDSTRING_END, 6)
+        new SourceLocation(SourceType.TDSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 3),
+        new SourceLocation(SourceType.TDSTRING_END, 6)
       ]
     );
     deepEqual(
       stream.peek(),
-      new SourceLocation(SPACE, 9)
+      new SourceLocation(SourceType.SPACE, 9)
     );
   });
 });

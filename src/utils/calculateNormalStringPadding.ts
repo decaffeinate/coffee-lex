@@ -1,4 +1,4 @@
-import { DSTRING_END, DSTRING_START, SSTRING_END, SSTRING_START } from '../index';
+import SourceType from '../SourceType';
 import PaddingTracker from './PaddingTracker';
 
 import SourceLocation from '../SourceLocation';
@@ -14,10 +14,10 @@ import BufferedStream from './BufferedStream';
  */
 export default function calculateNormalStringPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
   let paddingTracker;
-  if (stream.hasNext(SSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, SSTRING_END);
-  } else if (stream.hasNext(DSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, DSTRING_END);
+  if (stream.hasNext(SourceType.SSTRING_START)) {
+    paddingTracker = new PaddingTracker(source, stream, SourceType.SSTRING_END);
+  } else if (stream.hasNext(SourceType.DSTRING_START)) {
+    paddingTracker = new PaddingTracker(source, stream, SourceType.DSTRING_END);
   } else {
     return [];
   }
