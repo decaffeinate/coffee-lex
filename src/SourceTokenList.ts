@@ -12,16 +12,34 @@ export type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIn
 export default class SourceTokenList {
   _tokens: Array<SourceToken>;
   _indexCache: Array<SourceTokenListIndex>;
+  _indexBySourceIndex: Array<SourceTokenListIndex>;
+  _indexByStartSourceIndex: Array<SourceTokenListIndex>;
+  _indexByEndSourceIndex: Array<SourceTokenListIndex>;
   length: number;
   startIndex: SourceTokenListIndex;
   endIndex: SourceTokenListIndex;
 
   constructor(tokens: Array<SourceToken>) {
+    this._validateTokens(tokens);
     this._tokens = tokens;
     this._indexCache = new Array(tokens.length);
     this.length = tokens.length;
     this.startIndex = this._getIndex(0);
     this.endIndex = this._getIndex(tokens.length);
+
+    // Precompute sparse arrays to do source-to-token mappings later. Iterate
+    // backwards through the tokens so that earlier tokens win ties.
+    this._indexBySourceIndex = [];
+    this._indexByStartSourceIndex = [];
+    this._indexByEndSourceIndex = [];
+    for (let tokenIndex = tokens.length - 1; tokenIndex >= 0; tokenIndex--) {
+      let token = tokens[tokenIndex];
+      for (let sourceIndex = token.start; sourceIndex < token.end; sourceIndex++) {
+        this._indexBySourceIndex[sourceIndex] = this._getIndex(tokenIndex);
+      }
+      this._indexByStartSourceIndex[token.start] = this._getIndex(tokenIndex);
+      this._indexByEndSourceIndex[token.end] = this._getIndex(tokenIndex);
+    }
   }
 
   /**
@@ -196,10 +214,28 @@ export default class SourceTokenList {
 
   /**
    * Finds the index of the token whose source range includes the given index.
+   * If the given index does not correspond to the range of a token, returns
+   * null.
    */
   indexOfTokenContainingSourceIndex(index: number): SourceTokenListIndex | null {
     this._validateSourceIndex(index);
-    return this.indexOfTokenMatchingPredicate(({ start, end }) => start <= index && index < end);
+    return this._indexBySourceIndex[index] || null;
+  }
+
+  /**
+   * If the given source index lands on a token, return the index of that token.
+   * Otherwise, return the index of the previous token in the source code, or
+   * the first token if there is no previous token.
+   */
+  indexOfTokenNearSourceIndex(index: number): SourceTokenListIndex {
+    this._validateSourceIndex(index);
+    for (let searchIndex = index; searchIndex >= 0; searchIndex--) {
+      let tokenIndex = this._indexBySourceIndex[searchIndex];
+      if (tokenIndex) {
+        return tokenIndex;
+      }
+    }
+    return this.startIndex;
   }
 
   /**
@@ -207,7 +243,7 @@ export default class SourceTokenList {
    */
   indexOfTokenStartingAtSourceIndex(index: number): SourceTokenListIndex | null {
     this._validateSourceIndex(index);
-    return this.indexOfTokenMatchingPredicate(({ start }) => start === index);
+    return this._indexByStartSourceIndex[index] || null;
   }
 
   /**
@@ -215,20 +251,23 @@ export default class SourceTokenList {
    */
   indexOfTokenEndingAtSourceIndex(index: number): SourceTokenListIndex | null {
     this._validateSourceIndex(index);
-    return this.indexOfTokenMatchingPredicate(({ end }) => end === index);
+    return this._indexByEndSourceIndex[index] || null;
   }
 
   /**
    * Finds the index of the first token matching a predicate.
    */
-  indexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start: SourceTokenListIndex | null = null): SourceTokenListIndex | null {
+  indexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start: SourceTokenListIndex | null = null, end: SourceTokenListIndex | null = null): SourceTokenListIndex | null {
     if (!start) {
       start = this.startIndex;
     }
+    if (!end) {
+      end = this.endIndex;
+    }
     this._validateIndex(start);
+    this._validateIndex(end);
 
-    let { endIndex } = this;
-    for (let i: SourceTokenListIndex | null = start; i && i !== endIndex; i = i.next()) {
+    for (let i: SourceTokenListIndex | null = start; i && i !== end; i = i.next()) {
       let token = this.tokenAtIndex(i);
       if (!token) {
         break;
@@ -241,9 +280,10 @@ export default class SourceTokenList {
   }
 
   /**
-   * Finds the index of the first token matching a predicate.
+   * Finds the index of the first token matching a predicate, traversing
+   * backwards.
    */
-  lastIndexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start: SourceTokenListIndex | null = null): SourceTokenListIndex | null {
+  lastIndexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start: SourceTokenListIndex | null = null, end: SourceTokenListIndex | null = null): SourceTokenListIndex | null {
     if (!start) {
       start = this.endIndex.previous();
       if (!start) {
@@ -251,6 +291,9 @@ export default class SourceTokenList {
       }
     }
     this._validateIndex(start);
+    if (end) {
+      this._validateIndex(end);
+    }
 
     let i: SourceTokenListIndex | null = start;
     do {
@@ -262,7 +305,7 @@ export default class SourceTokenList {
       } else if (i) {
         i = i.previous();
       }
-    } while (i);
+    } while (i && i !== end);
 
     return null;
   }
@@ -288,6 +331,19 @@ export default class SourceTokenList {
         return result;
       }
     };
+  }
+
+  /**
+   * @internal
+   */
+  _validateTokens(tokens: Array<SourceToken>) {
+    for (let i = 0; i < tokens.length - 1; i++) {
+      if (tokens[i].end > tokens[i + 1].start) {
+        throw new Error(
+          `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` +
+          `${JSON.stringify(tokens[i + 1])}`);
+      }
+    }
   }
 
   /**
