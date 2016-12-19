@@ -403,6 +403,23 @@ describe('SourceTokenListTest', () => {
     strictEqual(list.indexOfTokenContainingSourceIndex(9), null);      // <EOF>
   });
 
+  it('allows getting a nearby token index by source index', () => {
+    let list = lex('one + two');
+    let oneIndex = list.startIndex;
+    let plusIndex = oneIndex.next();
+    let twoIndex = plusIndex && plusIndex.next();
+    strictEqual(list.indexOfTokenNearSourceIndex(0), oneIndex);  // o
+    strictEqual(list.indexOfTokenNearSourceIndex(1), oneIndex);  // n
+    strictEqual(list.indexOfTokenNearSourceIndex(2), oneIndex);  // e
+    strictEqual(list.indexOfTokenNearSourceIndex(3), oneIndex);  //
+    strictEqual(list.indexOfTokenNearSourceIndex(4), plusIndex); // +
+    strictEqual(list.indexOfTokenNearSourceIndex(5), plusIndex); //
+    strictEqual(list.indexOfTokenNearSourceIndex(6), twoIndex);  // t
+    strictEqual(list.indexOfTokenNearSourceIndex(7), twoIndex);  // w
+    strictEqual(list.indexOfTokenNearSourceIndex(8), twoIndex);  // o
+    strictEqual(list.indexOfTokenNearSourceIndex(9), twoIndex);  // <EOF>
+  });
+
   it('allows getting a token index by its starting source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
@@ -435,6 +452,44 @@ describe('SourceTokenListTest', () => {
     strictEqual(list.indexOfTokenEndingAtSourceIndex(7), null);      // w
     strictEqual(list.indexOfTokenEndingAtSourceIndex(8), null);      // o
     strictEqual(list.indexOfTokenEndingAtSourceIndex(9), twoIndex);  // <EOF>
+  });
+
+  it('allows searching through a token index range by a predicate', () => {
+    let list = lex('one + two');
+    let oneIndex = list.startIndex;
+    let plusIndex = oneIndex.next();
+    let twoIndex = plusIndex && plusIndex.next();
+    strictEqual(
+      list.indexOfTokenMatchingPredicate(token => token.type === IDENTIFIER),
+      oneIndex
+    );
+    strictEqual(
+      list.indexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex),
+      twoIndex
+    );
+    strictEqual(
+      list.indexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex, twoIndex),
+      null
+    );
+  });
+
+  it('allows searching backwards through a token index range by a predicate', () => {
+    let list = lex('one + two');
+    let oneIndex = list.startIndex;
+    let plusIndex = oneIndex.next();
+    let twoIndex = plusIndex && plusIndex.next();
+    strictEqual(
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === IDENTIFIER),
+      twoIndex
+    );
+    strictEqual(
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex),
+      oneIndex
+    );
+    strictEqual(
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex, oneIndex),
+      null
+    );
   });
 
   it('allows getting the range of an interpolated string by source index', () => {
