@@ -1,4 +1,4 @@
-import { HEREGEXP_END, HEREGEXP_START } from '../index';
+import SourceType from '../SourceType';
 import PaddingTracker from './PaddingTracker';
 
 import SourceLocation from '../SourceLocation';
@@ -9,10 +9,10 @@ import BufferedStream from './BufferedStream';
  * characters are removed, and comments are respected.
  */
 export default function calculateHeregexpPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
-  if (!stream.hasNext(HEREGEXP_START)) {
+  if (!stream.hasNext(SourceType.HEREGEXP_START)) {
     return [];
   }
-  let paddingTracker = new PaddingTracker(source, stream, HEREGEXP_END);
+  let paddingTracker = new PaddingTracker(source, stream, SourceType.HEREGEXP_END);
 
   for (let fragment of paddingTracker.fragments) {
     let content = fragment.content;

@@ -1,12 +1,8 @@
 import { deepEqual } from 'assert';
 import * as CoffeeScript from 'decaffeinate-coffeescript';
 
-import lex, {
-  HEREGEXP_START,
-  INTERPOLATION_START,
-  STRING_CONTENT,
-  STRING_LINE_SEPARATOR
-} from '../../src/index';
+import lex  from '../../src/index';
+import SourceType from '../../src/SourceType';
 
 /**
  * Given code containing a string, herestring, or heregex, verify that the
@@ -39,18 +35,18 @@ function getCoffeeLexQuasis(code: string): Array<string> {
   let tokens = lex(code);
   let quasis = [''];
   tokens.forEach(token => {
-    if (token.type === STRING_CONTENT) {
+    if (token.type === SourceType.STRING_CONTENT) {
       quasis[quasis.length - 1] += code.slice(token.start, token.end);
-    } else if (token.type === STRING_LINE_SEPARATOR) {
+    } else if (token.type === SourceType.STRING_LINE_SEPARATOR) {
       quasis[quasis.length - 1] += ' ';
-    } else if (token.type === INTERPOLATION_START) {
+    } else if (token.type === SourceType.INTERPOLATION_START) {
       quasis.push('');
     }
   });
   // As a special case, if this is a heregexp, escaping rules are different, so
   // convert backslash to double backslash. Code using coffee-lex is responsible
   // for adding these escape characters.
-  if (tokens.toArray()[0].type === HEREGEXP_START) {
+  if (tokens.toArray()[0].type === SourceType.HEREGEXP_START) {
     quasis = quasis.map(str => str.replace(/\\/g, '\\\\'));
   }
   return quasis.filter(quasi => quasi.length > 0);

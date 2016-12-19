@@ -1,12 +1,4 @@
-import {
-  INTERPOLATION_END,
-  INTERPOLATION_START,
-  STRING_CONTENT,
-  STRING_LINE_SEPARATOR,
-  STRING_PADDING
-} from '../index';
 import SourceLocation from '../SourceLocation';
-
 import SourceType from '../SourceType';
 import BufferedStream from './BufferedStream';
 
@@ -44,15 +36,15 @@ export default class PaddingTracker {
     do {
       location = stream.shift();
       this._originalLocations.push(location);
-      if (interpolationLevel === 0 && location.type === STRING_CONTENT) {
+      if (interpolationLevel === 0 && location.type === SourceType.STRING_CONTENT) {
         let start = location.index;
         let end = stream.peek().index;
         let content = source.slice(start, end);
         let index = this.fragments.length;
         this.fragments.push(new TrackedFragment(content, start, end, index));
-      } else if (location.type === INTERPOLATION_START) {
+      } else if (location.type === SourceType.INTERPOLATION_START) {
         interpolationLevel += 1;
-      } else if (location.type === INTERPOLATION_END) {
+      } else if (location.type === SourceType.INTERPOLATION_END) {
         interpolationLevel -= 1;
       }
     } while (interpolationLevel > 0 || location.type !== endType);
@@ -63,7 +55,7 @@ export default class PaddingTracker {
     let rangeIndex = 0;
     for (let location of this._originalLocations) {
       let currentRange = this.fragments[rangeIndex];
-      if (location.type === STRING_CONTENT &&
+      if (location.type === SourceType.STRING_CONTENT &&
           currentRange && location.index === currentRange.start) {
         resultLocations.push(...currentRange.computeSourceLocations());
         rangeIndex++;
@@ -108,7 +100,7 @@ export class TrackedFragment {
 
   computeSourceLocations(): Array<SourceLocation> {
     if (this.start === this.end) {
-      return [new SourceLocation(STRING_CONTENT, this.start)];
+      return [new SourceLocation(SourceType.STRING_CONTENT, this.start)];
     }
 
     // Break the marked ranges down into events, similar to how you might count
@@ -150,11 +142,11 @@ export class TrackedFragment {
 
       let sourceType;
       if (paddingDepth > 0) {
-        sourceType = STRING_PADDING;
+        sourceType = SourceType.STRING_PADDING;
       } else if (lineSeparatorDepth > 0) {
-        sourceType = STRING_LINE_SEPARATOR;
+        sourceType = SourceType.STRING_LINE_SEPARATOR;
       } else {
-        sourceType = STRING_CONTENT;
+        sourceType = SourceType.STRING_CONTENT;
       }
       if (sourceType !== lastSourceType) {
         resultLocations.push(new SourceLocation(sourceType, sourceIndex));

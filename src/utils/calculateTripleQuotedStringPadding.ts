@@ -1,10 +1,5 @@
-import {
-  TDSTRING_END,
-  TDSTRING_START,
-  TSSTRING_END,
-  TSSTRING_START,
-} from '../index';
 import SourceLocation from '../SourceLocation';
+import SourceType from '../SourceType';
 import BufferedStream from './BufferedStream';
 import PaddingTracker from './PaddingTracker';
 import { TrackedFragment } from './PaddingTracker';
@@ -35,10 +30,10 @@ import { TrackedFragment } from './PaddingTracker';
  */
 export default function calculateTripleQuotedStringPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
   let paddingTracker;
-  if (stream.hasNext(TSSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, TSSTRING_END);
-  } else if (stream.hasNext(TDSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, TDSTRING_END);
+  if (stream.hasNext(SourceType.TSSTRING_START)) {
+    paddingTracker = new PaddingTracker(source, stream, SourceType.TSSTRING_END);
+  } else if (stream.hasNext(SourceType.TDSTRING_START)) {
+    paddingTracker = new PaddingTracker(source, stream, SourceType.TDSTRING_END);
   } else {
     return [];
   }

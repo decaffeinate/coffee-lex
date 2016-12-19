@@ -1,14 +1,78 @@
 /**
  * Represents a particular type of CoffeeScript code.
  */
-export default class SourceType {
-  name: string;
-
-  constructor(name: string) {
-    this.name = name;
-  }
-  
-  toString(): string {
-    return this.name;
-  }
+enum SourceType {
+  AT = 1,
+  BOOL = 2,
+  BREAK = 3,
+  CATCH = 4,
+  CALL_END = 5,
+  CALL_START = 6,
+  CLASS = 7,
+  COLON = 8,
+  COMMA = 9,
+  COMMENT = 10,
+  CONTINUATION = 11,
+  CONTINUE = 12,
+  DELETE = 13,
+  DO = 14,
+  DOT = 15,
+  DSTRING_START = 16,
+  DSTRING_END = 17,
+  ELSE = 18,
+  EOF = 19,
+  EXISTENCE = 20,
+  FINALLY = 21,
+  FOR = 22,
+  FUNCTION = 23,
+  HERECOMMENT = 24,
+  HEREGEXP_START = 25,
+  HEREGEXP_END = 26,
+  IF = 27,
+  INTERPOLATION_START = 28,
+  INTERPOLATION_END = 29,
+  JS = 30,
+  LBRACE = 31,
+  LBRACKET = 32,
+  LOOP = 33,
+  LPAREN = 34,
+  NEWLINE = 35,
+  NORMAL = 36,
+  NULL = 37,
+  NUMBER = 38,
+  OPERATOR = 39,
+  OWN = 40,
+  PROTO = 41,
+  RANGE = 42,
+  REGEXP = 43,
+  RBRACE = 44,
+  RBRACKET = 45,
+  RELATION = 46,
+  RETURN = 47,
+  RPAREN = 48,
+  SEMICOLON = 49,
+  SPACE = 50,
+  SUPER = 51,
+  SWITCH = 52,
+  SSTRING_START = 53,
+  SSTRING_END = 54,
+  STRING_CONTENT = 55,
+  STRING_LINE_SEPARATOR = 56,
+  STRING_PADDING = 57,
+  TDSTRING_START = 58,
+  TDSTRING_END = 59,
+  THEN = 60,
+  THIS = 61,
+  TRY = 62,
+  TSSTRING_START = 63,
+  TSSTRING_END = 64,
+  UNDEFINED = 65,
+  UNKNOWN = 66,
+  WHEN = 67,
+  WHILE = 68,
+  IDENTIFIER = 69,
+  YIELD = 70,
+  YIELDFROM = 71,
 }
+
+export default SourceType;

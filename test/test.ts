@@ -1,78 +1,6 @@
 import { deepEqual, ok, strictEqual } from 'assert';
 import { inspect } from 'util';
-import lex, {
-  consumeStream,
-  stream,
-  AT,
-  BOOL,
-  BREAK,
-  CALL_END,
-  CALL_START,
-  CATCH,
-  CLASS,
-  COLON,
-  COMMA,
-  COMMENT,
-  CONTINUATION,
-  CONTINUE,
-  DELETE,
-  DO,
-  DOT,
-  DSTRING_END,
-  DSTRING_START,
-  ELSE,
-  EOF,
-  EXISTENCE,
-  FINALLY,
-  FOR,
-  FUNCTION,
-  HERECOMMENT,
-  HEREGEXP_END,
-  HEREGEXP_START,
-  IDENTIFIER,
-  IF,
-  INTERPOLATION_END,
-  INTERPOLATION_START,
-  JS,
-  LBRACE,
-  LBRACKET,
-  LOOP,
-  LPAREN,
-  NEWLINE,
-  NULL,
-  NUMBER,
-  OPERATOR,
-  OWN,
-  PROTO,
-  RANGE,
-  RBRACE,
-  RBRACKET,
-  REGEXP,
-  RELATION,
-  RETURN,
-  RPAREN,
-  SEMICOLON,
-  SPACE,
-  SSTRING_END,
-  SSTRING_START,
-  STRING_CONTENT,
-  STRING_LINE_SEPARATOR,
-  STRING_PADDING,
-  SUPER,
-  SWITCH,
-  TDSTRING_END,
-  TDSTRING_START,
-  THEN,
-  THIS,
-  TRY,
-  TSSTRING_END,
-  TSSTRING_START,
-  UNDEFINED,
-  WHEN,
-  WHILE,
-  YIELD,
-  YIELDFROM,
-} from '../src/index';
+import lex, { consumeStream, stream, SourceType } from '../src/index';
 import SourceLocation from '../src/SourceLocation';
 import SourceToken from '../src/SourceToken';
 import SourceTokenList from '../src/SourceTokenList';
@@ -91,9 +19,9 @@ describe('lexTest', () => {
     deepEqual(
       lex(`a + b`).toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 1),
-        new SourceToken(OPERATOR, 2, 3),
-        new SourceToken(IDENTIFIER, 4, 5)
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.OPERATOR, 2, 3),
+        new SourceToken(SourceType.IDENTIFIER, 4, 5)
       ]
     );
   });
@@ -106,17 +34,17 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"b#{c}d#{e}f"`).toArray(),
       [
-        new SourceToken(DSTRING_START, 0, 1),
-        new SourceToken(STRING_CONTENT, 1, 2),
-        new SourceToken(INTERPOLATION_START, 2, 4),
-        new SourceToken(IDENTIFIER, 4, 5),
-        new SourceToken(INTERPOLATION_END, 5, 6),
-        new SourceToken(STRING_CONTENT, 6, 7),
-        new SourceToken(INTERPOLATION_START, 7, 9),
-        new SourceToken(IDENTIFIER, 9, 10),
-        new SourceToken(INTERPOLATION_END, 10, 11),
-        new SourceToken(STRING_CONTENT, 11, 12),
-        new SourceToken(DSTRING_END, 12, 13)
+        new SourceToken(SourceType.DSTRING_START, 0, 1),
+        new SourceToken(SourceType.STRING_CONTENT, 1, 2),
+        new SourceToken(SourceType.INTERPOLATION_START, 2, 4),
+        new SourceToken(SourceType.IDENTIFIER, 4, 5),
+        new SourceToken(SourceType.INTERPOLATION_END, 5, 6),
+        new SourceToken(SourceType.STRING_CONTENT, 6, 7),
+        new SourceToken(SourceType.INTERPOLATION_START, 7, 9),
+        new SourceToken(SourceType.IDENTIFIER, 9, 10),
+        new SourceToken(SourceType.INTERPOLATION_END, 10, 11),
+        new SourceToken(SourceType.STRING_CONTENT, 11, 12),
+        new SourceToken(SourceType.DSTRING_END, 12, 13)
       ]
     );
   });
@@ -125,23 +53,23 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"  b#{c}  \n  d#{e}  \n  f  "`).toArray(),
       [
-        new SourceToken(DSTRING_START, 0, 1),
-        new SourceToken(STRING_CONTENT, 1, 4),
-        new SourceToken(INTERPOLATION_START, 4, 6),
-        new SourceToken(IDENTIFIER, 6, 7),
-        new SourceToken(INTERPOLATION_END, 7, 8),
-        new SourceToken(STRING_PADDING, 8, 10),
-        new SourceToken(STRING_LINE_SEPARATOR, 10, 11),
-        new SourceToken(STRING_PADDING, 11, 13),
-        new SourceToken(STRING_CONTENT, 13, 14),
-        new SourceToken(INTERPOLATION_START, 14, 16),
-        new SourceToken(IDENTIFIER, 16, 17),
-        new SourceToken(INTERPOLATION_END, 17, 18),
-        new SourceToken(STRING_PADDING, 18, 20),
-        new SourceToken(STRING_LINE_SEPARATOR, 20, 21),
-        new SourceToken(STRING_PADDING, 21, 23),
-        new SourceToken(STRING_CONTENT, 23, 26),
-        new SourceToken(DSTRING_END, 26, 27)
+        new SourceToken(SourceType.DSTRING_START, 0, 1),
+        new SourceToken(SourceType.STRING_CONTENT, 1, 4),
+        new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
+        new SourceToken(SourceType.IDENTIFIER, 6, 7),
+        new SourceToken(SourceType.INTERPOLATION_END, 7, 8),
+        new SourceToken(SourceType.STRING_PADDING, 8, 10),
+        new SourceToken(SourceType.STRING_LINE_SEPARATOR, 10, 11),
+        new SourceToken(SourceType.STRING_PADDING, 11, 13),
+        new SourceToken(SourceType.STRING_CONTENT, 13, 14),
+        new SourceToken(SourceType.INTERPOLATION_START, 14, 16),
+        new SourceToken(SourceType.IDENTIFIER, 16, 17),
+        new SourceToken(SourceType.INTERPOLATION_END, 17, 18),
+        new SourceToken(SourceType.STRING_PADDING, 18, 20),
+        new SourceToken(SourceType.STRING_LINE_SEPARATOR, 20, 21),
+        new SourceToken(SourceType.STRING_PADDING, 21, 23),
+        new SourceToken(SourceType.STRING_CONTENT, 23, 26),
+        new SourceToken(SourceType.DSTRING_END, 26, 27)
       ]
     );
   });
@@ -150,17 +78,17 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"#{a}#{b}"`).toArray(),
       [
-        new SourceToken(DSTRING_START, 0, 1),
-        new SourceToken(STRING_CONTENT, 1, 1),
-        new SourceToken(INTERPOLATION_START, 1, 3),
-        new SourceToken(IDENTIFIER, 3, 4),
-        new SourceToken(INTERPOLATION_END, 4, 5),
-        new SourceToken(STRING_CONTENT, 5, 5),
-        new SourceToken(INTERPOLATION_START, 5, 7),
-        new SourceToken(IDENTIFIER, 7, 8),
-        new SourceToken(INTERPOLATION_END, 8, 9),
-        new SourceToken(STRING_CONTENT, 9, 9),
-        new SourceToken(DSTRING_END, 9, 10)
+        new SourceToken(SourceType.DSTRING_START, 0, 1),
+        new SourceToken(SourceType.STRING_CONTENT, 1, 1),
+        new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
+        new SourceToken(SourceType.IDENTIFIER, 3, 4),
+        new SourceToken(SourceType.INTERPOLATION_END, 4, 5),
+        new SourceToken(SourceType.STRING_CONTENT, 5, 5),
+        new SourceToken(SourceType.INTERPOLATION_START, 5, 7),
+        new SourceToken(SourceType.IDENTIFIER, 7, 8),
+        new SourceToken(SourceType.INTERPOLATION_END, 8, 9),
+        new SourceToken(SourceType.STRING_CONTENT, 9, 9),
+        new SourceToken(SourceType.DSTRING_END, 9, 10)
       ]
     );
   });
@@ -169,21 +97,21 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray(),
       [
-        new SourceToken(TDSTRING_START, 0, 3),
-        new SourceToken(STRING_PADDING, 3, 6),
-        new SourceToken(STRING_CONTENT, 6, 7),
-        new SourceToken(INTERPOLATION_START, 7, 9),
-        new SourceToken(IDENTIFIER, 9, 10),
-        new SourceToken(INTERPOLATION_END, 10, 11),
-        new SourceToken(STRING_CONTENT, 11, 12),
-        new SourceToken(STRING_PADDING, 12, 14),
-        new SourceToken(STRING_CONTENT, 14, 15),
-        new SourceToken(INTERPOLATION_START, 15, 17),
-        new SourceToken(IDENTIFIER, 17, 18),
-        new SourceToken(INTERPOLATION_END, 18, 19),
-        new SourceToken(STRING_CONTENT, 19, 20),
-        new SourceToken(STRING_PADDING, 20, 21),
-        new SourceToken(TDSTRING_END, 21, 24)
+        new SourceToken(SourceType.TDSTRING_START, 0, 3),
+        new SourceToken(SourceType.STRING_PADDING, 3, 6),
+        new SourceToken(SourceType.STRING_CONTENT, 6, 7),
+        new SourceToken(SourceType.INTERPOLATION_START, 7, 9),
+        new SourceToken(SourceType.IDENTIFIER, 9, 10),
+        new SourceToken(SourceType.INTERPOLATION_END, 10, 11),
+        new SourceToken(SourceType.STRING_CONTENT, 11, 12),
+        new SourceToken(SourceType.STRING_PADDING, 12, 14),
+        new SourceToken(SourceType.STRING_CONTENT, 14, 15),
+        new SourceToken(SourceType.INTERPOLATION_START, 15, 17),
+        new SourceToken(SourceType.IDENTIFIER, 17, 18),
+        new SourceToken(SourceType.INTERPOLATION_END, 18, 19),
+        new SourceToken(SourceType.STRING_CONTENT, 19, 20),
+        new SourceToken(SourceType.STRING_PADDING, 20, 21),
+        new SourceToken(SourceType.TDSTRING_END, 21, 24)
       ]
     );
   });
@@ -192,13 +120,13 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"""\n#{a}\n"""`).toArray(),
       [
-        new SourceToken(TDSTRING_START, 0, 3),
-        new SourceToken(STRING_PADDING, 3, 4),
-        new SourceToken(INTERPOLATION_START, 4, 6),
-        new SourceToken(IDENTIFIER, 6, 7),
-        new SourceToken(INTERPOLATION_END, 7, 8),
-        new SourceToken(STRING_PADDING, 8, 9),
-        new SourceToken(TDSTRING_END, 9, 12)
+        new SourceToken(SourceType.TDSTRING_START, 0, 3),
+        new SourceToken(SourceType.STRING_PADDING, 3, 4),
+        new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
+        new SourceToken(SourceType.IDENTIFIER, 6, 7),
+        new SourceToken(SourceType.INTERPOLATION_END, 7, 8),
+        new SourceToken(SourceType.STRING_PADDING, 8, 9),
+        new SourceToken(SourceType.TDSTRING_END, 9, 12)
       ]
     );
   });
@@ -207,19 +135,19 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"#{"#{a}"}"`).toArray(),
       [
-        new SourceToken(DSTRING_START, 0, 1),
-        new SourceToken(STRING_CONTENT, 1, 1),
-        new SourceToken(INTERPOLATION_START, 1, 3),
-        new SourceToken(DSTRING_START, 3, 4),
-        new SourceToken(STRING_CONTENT, 4, 4),
-        new SourceToken(INTERPOLATION_START, 4, 6),
-        new SourceToken(IDENTIFIER, 6, 7),
-        new SourceToken(INTERPOLATION_END, 7, 8),
-        new SourceToken(STRING_CONTENT, 8, 8),
-        new SourceToken(DSTRING_END, 8, 9),
-        new SourceToken(INTERPOLATION_END, 9, 10),
-        new SourceToken(STRING_CONTENT, 10, 10),
-        new SourceToken(DSTRING_END, 10, 11)
+        new SourceToken(SourceType.DSTRING_START, 0, 1),
+        new SourceToken(SourceType.STRING_CONTENT, 1, 1),
+        new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
+        new SourceToken(SourceType.DSTRING_START, 3, 4),
+        new SourceToken(SourceType.STRING_CONTENT, 4, 4),
+        new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
+        new SourceToken(SourceType.IDENTIFIER, 6, 7),
+        new SourceToken(SourceType.INTERPOLATION_END, 7, 8),
+        new SourceToken(SourceType.STRING_CONTENT, 8, 8),
+        new SourceToken(SourceType.DSTRING_END, 8, 9),
+        new SourceToken(SourceType.INTERPOLATION_END, 9, 10),
+        new SourceToken(SourceType.STRING_CONTENT, 10, 10),
+        new SourceToken(SourceType.DSTRING_END, 10, 11)
       ]
     );
   });
@@ -228,13 +156,13 @@ describe('lexTest', () => {
     deepEqual(
       lex(`"#{ a }"`).toArray(),
       [
-        new SourceToken(DSTRING_START, 0, 1),
-        new SourceToken(STRING_CONTENT, 1, 1),
-        new SourceToken(INTERPOLATION_START, 1, 3),
-        new SourceToken(IDENTIFIER, 4, 5),
-        new SourceToken(INTERPOLATION_END, 6, 7),
-        new SourceToken(STRING_CONTENT, 7, 7),
-        new SourceToken(DSTRING_END, 7, 8)
+        new SourceToken(SourceType.DSTRING_START, 0, 1),
+        new SourceToken(SourceType.STRING_CONTENT, 1, 1),
+        new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
+        new SourceToken(SourceType.IDENTIFIER, 4, 5),
+        new SourceToken(SourceType.INTERPOLATION_END, 6, 7),
+        new SourceToken(SourceType.STRING_CONTENT, 7, 7),
+        new SourceToken(SourceType.DSTRING_END, 7, 8)
       ]
     );
   });
@@ -243,9 +171,9 @@ describe('lexTest', () => {
     deepEqual(
       lex('a not instanceof b').toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 1),
-        new SourceToken(OPERATOR, 2, 16),
-        new SourceToken(IDENTIFIER, 17, 18)
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.OPERATOR, 2, 16),
+        new SourceToken(SourceType.IDENTIFIER, 17, 18)
       ]
     );
   });
@@ -254,9 +182,9 @@ describe('lexTest', () => {
     deepEqual(
       lex('a not in b').toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 1),
-        new SourceToken(RELATION, 2, 8),
-        new SourceToken(IDENTIFIER, 9, 10)
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.RELATION, 2, 8),
+        new SourceToken(SourceType.IDENTIFIER, 9, 10)
       ]
     );
   });
@@ -265,9 +193,9 @@ describe('lexTest', () => {
     deepEqual(
       lex('a not of b').toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 1),
-        new SourceToken(RELATION, 2, 8),
-        new SourceToken(IDENTIFIER, 9, 10)
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.RELATION, 2, 8),
+        new SourceToken(SourceType.IDENTIFIER, 9, 10)
       ]
     );
   });
@@ -276,32 +204,32 @@ describe('lexTest', () => {
     deepEqual(
       lex('a(super(@(b[0](), true&(false), b?())))').toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 1),
-        new SourceToken(CALL_START, 1, 2),
-        new SourceToken(SUPER, 2, 7),
-        new SourceToken(CALL_START, 7, 8),
-        new SourceToken(AT, 8, 9),
-        new SourceToken(CALL_START, 9, 10),
-        new SourceToken(IDENTIFIER, 10, 11),
-        new SourceToken(LBRACKET, 11, 12),
-        new SourceToken(NUMBER, 12, 13),
-        new SourceToken(RBRACKET, 13, 14),
-        new SourceToken(CALL_START, 14, 15),
-        new SourceToken(CALL_END, 15, 16),
-        new SourceToken(COMMA, 16, 17),
-        new SourceToken(BOOL, 18, 22),
-        new SourceToken(OPERATOR, 22, 23),
-        new SourceToken(LPAREN, 23, 24),
-        new SourceToken(BOOL, 24, 29),
-        new SourceToken(RPAREN, 29, 30),
-        new SourceToken(COMMA, 30, 31),
-        new SourceToken(IDENTIFIER, 32, 33),
-        new SourceToken(EXISTENCE, 33, 34),
-        new SourceToken(CALL_START, 34, 35),
-        new SourceToken(CALL_END, 35, 36),
-        new SourceToken(CALL_END, 36, 37),
-        new SourceToken(CALL_END, 37, 38),
-        new SourceToken(CALL_END, 38, 39)
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.CALL_START, 1, 2),
+        new SourceToken(SourceType.SUPER, 2, 7),
+        new SourceToken(SourceType.CALL_START, 7, 8),
+        new SourceToken(SourceType.AT, 8, 9),
+        new SourceToken(SourceType.CALL_START, 9, 10),
+        new SourceToken(SourceType.IDENTIFIER, 10, 11),
+        new SourceToken(SourceType.LBRACKET, 11, 12),
+        new SourceToken(SourceType.NUMBER, 12, 13),
+        new SourceToken(SourceType.RBRACKET, 13, 14),
+        new SourceToken(SourceType.CALL_START, 14, 15),
+        new SourceToken(SourceType.CALL_END, 15, 16),
+        new SourceToken(SourceType.COMMA, 16, 17),
+        new SourceToken(SourceType.BOOL, 18, 22),
+        new SourceToken(SourceType.OPERATOR, 22, 23),
+        new SourceToken(SourceType.LPAREN, 23, 24),
+        new SourceToken(SourceType.BOOL, 24, 29),
+        new SourceToken(SourceType.RPAREN, 29, 30),
+        new SourceToken(SourceType.COMMA, 30, 31),
+        new SourceToken(SourceType.IDENTIFIER, 32, 33),
+        new SourceToken(SourceType.EXISTENCE, 33, 34),
+        new SourceToken(SourceType.CALL_START, 34, 35),
+        new SourceToken(SourceType.CALL_END, 35, 36),
+        new SourceToken(SourceType.CALL_END, 36, 37),
+        new SourceToken(SourceType.CALL_END, 37, 38),
+        new SourceToken(SourceType.CALL_END, 38, 39)
       ]
     );
   });
@@ -310,11 +238,11 @@ describe('lexTest', () => {
     deepEqual(
       lex('a()()').toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 1),
-        new SourceToken(CALL_START, 1, 2),
-        new SourceToken(CALL_END, 2, 3),
-        new SourceToken(CALL_START, 3, 4),
-        new SourceToken(CALL_END, 4, 5)
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.CALL_START, 1, 2),
+        new SourceToken(SourceType.CALL_END, 2, 3),
+        new SourceToken(SourceType.CALL_START, 3, 4),
+        new SourceToken(SourceType.CALL_END, 4, 5)
       ]
     );
   });
@@ -323,17 +251,17 @@ describe('lexTest', () => {
     deepEqual(
       lex(`{ id: "#{a}" }`).toArray(),
       [
-        new SourceToken(LBRACE, 0, 1),
-        new SourceToken(IDENTIFIER, 2, 4),
-        new SourceToken(COLON, 4, 5),
-        new SourceToken(DSTRING_START, 6, 7),
-        new SourceToken(STRING_CONTENT, 7, 7),
-        new SourceToken(INTERPOLATION_START, 7, 9),
-        new SourceToken(IDENTIFIER, 9, 10),
-        new SourceToken(INTERPOLATION_END, 10, 11),
-        new SourceToken(STRING_CONTENT, 11, 11),
-        new SourceToken(DSTRING_END, 11, 12),
-        new SourceToken(RBRACE, 13, 14)
+        new SourceToken(SourceType.LBRACE, 0, 1),
+        new SourceToken(SourceType.IDENTIFIER, 2, 4),
+        new SourceToken(SourceType.COLON, 4, 5),
+        new SourceToken(SourceType.DSTRING_START, 6, 7),
+        new SourceToken(SourceType.STRING_CONTENT, 7, 7),
+        new SourceToken(SourceType.INTERPOLATION_START, 7, 9),
+        new SourceToken(SourceType.IDENTIFIER, 9, 10),
+        new SourceToken(SourceType.INTERPOLATION_END, 10, 11),
+        new SourceToken(SourceType.STRING_CONTENT, 11, 11),
+        new SourceToken(SourceType.DSTRING_END, 11, 12),
+        new SourceToken(SourceType.RBRACE, 13, 14)
       ]
     );
   });
@@ -342,15 +270,15 @@ describe('lexTest', () => {
     deepEqual(
       lex(`foo = '''\n      abc\n\n      def\n      '''`).toArray(),
       [
-        new SourceToken(IDENTIFIER, 0, 3),
-        new SourceToken(OPERATOR, 4, 5),
-        new SourceToken(TSSTRING_START, 6, 9),
-        new SourceToken(STRING_PADDING, 9, 16),
-        new SourceToken(STRING_CONTENT, 16, 21),
-        new SourceToken(STRING_PADDING, 21, 27),
-        new SourceToken(STRING_CONTENT, 27, 30),
-        new SourceToken(STRING_PADDING, 30, 37),
-        new SourceToken(TSSTRING_END, 37, 40)
+        new SourceToken(SourceType.IDENTIFIER, 0, 3),
+        new SourceToken(SourceType.OPERATOR, 4, 5),
+        new SourceToken(SourceType.TSSTRING_START, 6, 9),
+        new SourceToken(SourceType.STRING_PADDING, 9, 16),
+        new SourceToken(SourceType.STRING_CONTENT, 16, 21),
+        new SourceToken(SourceType.STRING_PADDING, 21, 27),
+        new SourceToken(SourceType.STRING_CONTENT, 27, 30),
+        new SourceToken(SourceType.STRING_PADDING, 30, 37),
+        new SourceToken(SourceType.TSSTRING_END, 37, 40)
       ]
     );
   });
@@ -359,10 +287,10 @@ describe('lexTest', () => {
     deepEqual(
       lex(`@on()`).toArray(),
       [
-        new SourceToken(AT, 0, 1),
-        new SourceToken(IDENTIFIER, 1, 3),
-        new SourceToken(CALL_START, 3, 4),
-        new SourceToken(CALL_END, 4, 5),
+        new SourceToken(SourceType.AT, 0, 1),
+        new SourceToken(SourceType.IDENTIFIER, 1, 3),
+        new SourceToken(SourceType.CALL_START, 3, 4),
+        new SourceToken(SourceType.CALL_END, 4, 5),
       ]
     );
   });
@@ -372,7 +300,7 @@ describe('SourceTokenListTest', () => {
   it('has a `startIndex` that represents the first token', () => {
     let list = lex('0');
     let token = list.tokenAtIndex(list.startIndex);
-    deepEqual(token, new SourceToken(NUMBER, 0, 1));
+    deepEqual(token, new SourceToken(SourceType.NUMBER, 0, 1));
   });
 
   it('has an `endIndex` that represents the virtual token after the last one', () => {
@@ -460,15 +388,15 @@ describe('SourceTokenListTest', () => {
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
     strictEqual(
-      list.indexOfTokenMatchingPredicate(token => token.type === IDENTIFIER),
+      list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER),
       oneIndex
     );
     strictEqual(
-      list.indexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex),
+      list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex),
       twoIndex
     );
     strictEqual(
-      list.indexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex, twoIndex),
+      list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex, twoIndex),
       null
     );
   });
@@ -479,15 +407,15 @@ describe('SourceTokenListTest', () => {
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
     strictEqual(
-      list.lastIndexOfTokenMatchingPredicate(token => token.type === IDENTIFIER),
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER),
       twoIndex
     );
     strictEqual(
-      list.lastIndexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex),
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex),
       oneIndex
     );
     strictEqual(
-      list.lastIndexOfTokenMatchingPredicate(token => token.type === IDENTIFIER, plusIndex, oneIndex),
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex, oneIndex),
       null
     );
   });
@@ -572,9 +500,9 @@ describe('SourceTokenListTest', () => {
 
     strictEqual(
       interpolationStartToken.type,
-      INTERPOLATION_START,
+      SourceType.INTERPOLATION_START,
       `expected ${inspect(interpolationStartToken)} to have type ` +
-      INTERPOLATION_START.name
+      SourceType[SourceType.INTERPOLATION_START]
     );
 
     let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
@@ -590,15 +518,15 @@ describe('SourceTokenListTest', () => {
     deepEqual(
       list.map(t => t.type),
       [
-        DSTRING_START,
-        STRING_CONTENT,
-        INTERPOLATION_START,
-        DSTRING_START,
-        STRING_CONTENT,
-        DSTRING_END,
-        INTERPOLATION_END,
-        STRING_CONTENT,
-        DSTRING_END,
+        SourceType.DSTRING_START,
+        SourceType.STRING_CONTENT,
+        SourceType.INTERPOLATION_START,
+        SourceType.DSTRING_START,
+        SourceType.STRING_CONTENT,
+        SourceType.DSTRING_END,
+        SourceType.INTERPOLATION_END,
+        SourceType.STRING_CONTENT,
+        SourceType.DSTRING_END,
       ]
     );
 
@@ -622,13 +550,13 @@ describe('SourceTokenListTest', () => {
    deepEqual(
      list.map(t => t.type),
      [
-       HEREGEXP_START,
-       STRING_CONTENT,
-       INTERPOLATION_START,
-       IDENTIFIER,
-       INTERPOLATION_END,
-       STRING_CONTENT,
-       HEREGEXP_END,
+       SourceType.HEREGEXP_START,
+       SourceType.STRING_CONTENT,
+       SourceType.INTERPOLATION_START,
+       SourceType.IDENTIFIER,
+       SourceType.INTERPOLATION_END,
+       SourceType.STRING_CONTENT,
+       SourceType.HEREGEXP_END,
      ]
    );
 
@@ -692,927 +620,927 @@ describe('streamTest', () => {
     checkLocations(
       stream(''),
       [
-        new SourceLocation(EOF, 0)
+        new SourceLocation(SourceType.EOF, 0)
       ]
     );
    });
 
-  it('identifies single-quoted strings', () => { 
+  it('identifies single-quoted strings', () => {
     checkLocations(
       stream(`'abc'`),
       [
-        new SourceLocation(SSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 1),
-        new SourceLocation(SSTRING_END, 4),
-        new SourceLocation(EOF, 5)
+        new SourceLocation(SourceType.SSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 1),
+        new SourceLocation(SourceType.SSTRING_END, 4),
+        new SourceLocation(SourceType.EOF, 5)
       ]
     );
    });
 
-  it('identifies double-quoted strings', () => { 
+  it('identifies double-quoted strings', () => {
     checkLocations(
       stream(`"abc"`),
       [
-        new SourceLocation(DSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 1),
-        new SourceLocation(DSTRING_END, 4),
-        new SourceLocation(EOF, 5)
+        new SourceLocation(SourceType.DSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 1),
+        new SourceLocation(SourceType.DSTRING_END, 4),
+        new SourceLocation(SourceType.EOF, 5)
       ]
     );
    });
 
-  it('identifies triple-single-quoted strings', () => { 
+  it('identifies triple-single-quoted strings', () => {
     checkLocations(
       stream(`'''abc'''`),
       [
-        new SourceLocation(TSSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 3),
-        new SourceLocation(TSSTRING_END, 6),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.TSSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 3),
+        new SourceLocation(SourceType.TSSTRING_END, 6),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies triple-double-quoted strings', () => { 
+  it('identifies triple-double-quoted strings', () => {
     checkLocations(
       stream(`"""abc"""`),
       [
-        new SourceLocation(TDSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 3),
-        new SourceLocation(TDSTRING_END, 6),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.TDSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 3),
+        new SourceLocation(SourceType.TDSTRING_END, 6),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies identifiers', () => { 
+  it('identifies identifiers', () => {
     checkLocations(
       stream(`a`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(EOF, 1)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.EOF, 1)
       ]
     );
    });
 
-  it('identifies whitespace', () => { 
+  it('identifies whitespace', () => {
     checkLocations(
       stream(`a b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(EOF, 3)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 2),
+        new SourceLocation(SourceType.EOF, 3)
       ]
     );
    });
 
-  it('transitions to INTERPOLATION_START at a string interpolation', () => { 
+  it('transitions to INTERPOLATION_START at a string interpolation', () => {
     checkLocations(
       stream(`"a#{b}c"`),
       [
-        new SourceLocation(DSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 1),
-        new SourceLocation(INTERPOLATION_START, 2),
-        new SourceLocation(IDENTIFIER, 4),
-        new SourceLocation(INTERPOLATION_END, 5),
-        new SourceLocation(STRING_CONTENT, 6),
-        new SourceLocation(DSTRING_END, 7),
-        new SourceLocation(EOF, 8)
+        new SourceLocation(SourceType.DSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 1),
+        new SourceLocation(SourceType.INTERPOLATION_START, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 4),
+        new SourceLocation(SourceType.INTERPOLATION_END, 5),
+        new SourceLocation(SourceType.STRING_CONTENT, 6),
+        new SourceLocation(SourceType.DSTRING_END, 7),
+        new SourceLocation(SourceType.EOF, 8)
       ]
     );
    });
 
-  it('handles nested string interpolation', () => { 
+  it('handles nested string interpolation', () => {
     checkLocations(
       stream(`"#{"#{}"}"`),
       [
-        new SourceLocation(DSTRING_START, 0),
-        new SourceLocation(STRING_CONTENT, 1),
-        new SourceLocation(INTERPOLATION_START, 1),
-        new SourceLocation(DSTRING_START, 3),
-        new SourceLocation(STRING_CONTENT, 4),
-        new SourceLocation(INTERPOLATION_START, 4),
-        new SourceLocation(INTERPOLATION_END, 6),
-        new SourceLocation(STRING_CONTENT, 7),
-        new SourceLocation(DSTRING_END, 7),
-        new SourceLocation(INTERPOLATION_END, 8),
-        new SourceLocation(STRING_CONTENT, 9),
-        new SourceLocation(DSTRING_END, 9),
-        new SourceLocation(EOF, 10)
+        new SourceLocation(SourceType.DSTRING_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 1),
+        new SourceLocation(SourceType.INTERPOLATION_START, 1),
+        new SourceLocation(SourceType.DSTRING_START, 3),
+        new SourceLocation(SourceType.STRING_CONTENT, 4),
+        new SourceLocation(SourceType.INTERPOLATION_START, 4),
+        new SourceLocation(SourceType.INTERPOLATION_END, 6),
+        new SourceLocation(SourceType.STRING_CONTENT, 7),
+        new SourceLocation(SourceType.DSTRING_END, 7),
+        new SourceLocation(SourceType.INTERPOLATION_END, 8),
+        new SourceLocation(SourceType.STRING_CONTENT, 9),
+        new SourceLocation(SourceType.DSTRING_END, 9),
+        new SourceLocation(SourceType.EOF, 10)
       ]
     );
    });
 
-  it('identifies integers as numbers', () => { 
+  it('identifies integers as numbers', () => {
     checkLocations(
       stream(`10`),
       [
-        new SourceLocation(NUMBER, 0),
-        new SourceLocation(EOF, 2)
+        new SourceLocation(SourceType.NUMBER, 0),
+        new SourceLocation(SourceType.EOF, 2)
       ]
     );
    });
 
-  it('identifies + as an operator', () => { 
+  it('identifies + as an operator', () => {
     checkLocations(
       stream(`a + b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(IDENTIFIER, 4),
-        new SourceLocation(EOF, 5)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.IDENTIFIER, 4),
+        new SourceLocation(SourceType.EOF, 5)
       ]
     );
    });
 
-  it('identifies opening and closing parentheses', () => { 
+  it('identifies opening and closing parentheses', () => {
     checkLocations(
       stream(`(b)*2`),
       [
-        new SourceLocation(LPAREN, 0),
-        new SourceLocation(IDENTIFIER, 1),
-        new SourceLocation(RPAREN, 2),
-        new SourceLocation(OPERATOR, 3),
-        new SourceLocation(NUMBER, 4),
-        new SourceLocation(EOF, 5)
+        new SourceLocation(SourceType.LPAREN, 0),
+        new SourceLocation(SourceType.IDENTIFIER, 1),
+        new SourceLocation(SourceType.RPAREN, 2),
+        new SourceLocation(SourceType.OPERATOR, 3),
+        new SourceLocation(SourceType.NUMBER, 4),
+        new SourceLocation(SourceType.EOF, 5)
       ]
     );
    });
 
-  it('identifies opening and closing braces', () => { 
+  it('identifies opening and closing braces', () => {
     checkLocations(
       stream(`{ a: '{}' }`),
       [
-        new SourceLocation(LBRACE, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(COLON, 3),
-        new SourceLocation(SPACE, 4),
-        new SourceLocation(SSTRING_START, 5),
-        new SourceLocation(STRING_CONTENT, 6),
-        new SourceLocation(SSTRING_END, 8),
-        new SourceLocation(SPACE, 9),
-        new SourceLocation(RBRACE, 10),
-        new SourceLocation(EOF, 11)
+        new SourceLocation(SourceType.LBRACE, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 2),
+        new SourceLocation(SourceType.COLON, 3),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.SSTRING_START, 5),
+        new SourceLocation(SourceType.STRING_CONTENT, 6),
+        new SourceLocation(SourceType.SSTRING_END, 8),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.RBRACE, 10),
+        new SourceLocation(SourceType.EOF, 11)
       ]
     );
    });
 
-  it('identifies opening and closing brackets', () => { 
+  it('identifies opening and closing brackets', () => {
     checkLocations(
       stream(`[ a[1], b['f]['] ]`),
       [
-        new SourceLocation(LBRACKET, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(LBRACKET, 3),
-        new SourceLocation(NUMBER, 4),
-        new SourceLocation(RBRACKET, 5),
-        new SourceLocation(COMMA, 6),
-        new SourceLocation(SPACE, 7),
-        new SourceLocation(IDENTIFIER, 8),
-        new SourceLocation(LBRACKET, 9),
-        new SourceLocation(SSTRING_START, 10),
-        new SourceLocation(STRING_CONTENT, 11),
-        new SourceLocation(SSTRING_END, 14),
-        new SourceLocation(RBRACKET, 15),
-        new SourceLocation(SPACE, 16),
-        new SourceLocation(RBRACKET, 17),
-        new SourceLocation(EOF, 18)
+        new SourceLocation(SourceType.LBRACKET, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 2),
+        new SourceLocation(SourceType.LBRACKET, 3),
+        new SourceLocation(SourceType.NUMBER, 4),
+        new SourceLocation(SourceType.RBRACKET, 5),
+        new SourceLocation(SourceType.COMMA, 6),
+        new SourceLocation(SourceType.SPACE, 7),
+        new SourceLocation(SourceType.IDENTIFIER, 8),
+        new SourceLocation(SourceType.LBRACKET, 9),
+        new SourceLocation(SourceType.SSTRING_START, 10),
+        new SourceLocation(SourceType.STRING_CONTENT, 11),
+        new SourceLocation(SourceType.SSTRING_END, 14),
+        new SourceLocation(SourceType.RBRACKET, 15),
+        new SourceLocation(SourceType.SPACE, 16),
+        new SourceLocation(SourceType.RBRACKET, 17),
+        new SourceLocation(SourceType.EOF, 18)
       ]
     );
    });
 
-  it('identifies embedded JavaScript', () => { 
+  it('identifies embedded JavaScript', () => {
     checkLocations(
       stream('`1` + 2'),
       [
-        new SourceLocation(JS, 0),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(OPERATOR, 4),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(NUMBER, 6),
-        new SourceLocation(EOF, 7)
+        new SourceLocation(SourceType.JS, 0),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.OPERATOR, 4),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.NUMBER, 6),
+        new SourceLocation(SourceType.EOF, 7)
       ]
     );
    });
 
-  it('identifies LF as a newline', () => { 
+  it('identifies LF as a newline', () => {
     checkLocations(
       stream(`a\nb`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(NEWLINE, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(EOF, 3)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.NEWLINE, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 2),
+        new SourceLocation(SourceType.EOF, 3)
       ]
     );
    });
 
-  it('identifies @', () => { 
+  it('identifies @', () => {
     checkLocations(
       stream(`@a`),
       [
-        new SourceLocation(AT, 0),
-        new SourceLocation(IDENTIFIER, 1),
-        new SourceLocation(EOF, 2)
+        new SourceLocation(SourceType.AT, 0),
+        new SourceLocation(SourceType.IDENTIFIER, 1),
+        new SourceLocation(SourceType.EOF, 2)
       ]
     );
    });
 
-  it('identifies semicolons', () => { 
+  it('identifies semicolons', () => {
     checkLocations(
       stream(`a; b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SEMICOLON, 1),
-        new SourceLocation(SPACE, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SEMICOLON, 1),
+        new SourceLocation(SourceType.SPACE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies adjacent operators as distinct', () => { 
+  it('identifies adjacent operators as distinct', () => {
     checkLocations(
       stream(`a=++b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(OPERATOR, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(IDENTIFIER, 4),
-        new SourceLocation(EOF, 5)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.OPERATOR, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 4),
+        new SourceLocation(SourceType.EOF, 5)
       ]
     );
    });
 
-  it('identifies comparison operators', () => { 
+  it('identifies comparison operators', () => {
     checkLocations(
       stream(`a < b <= c; a > b >= c`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(IDENTIFIER, 4),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(OPERATOR, 6),
-        new SourceLocation(SPACE, 8),
-        new SourceLocation(IDENTIFIER, 9),
-        new SourceLocation(SEMICOLON, 10),
-        new SourceLocation(SPACE, 11),
-        new SourceLocation(IDENTIFIER, 12),
-        new SourceLocation(SPACE, 13),
-        new SourceLocation(OPERATOR, 14),
-        new SourceLocation(SPACE, 15),
-        new SourceLocation(IDENTIFIER, 16),
-        new SourceLocation(SPACE, 17),
-        new SourceLocation(OPERATOR, 18),
-        new SourceLocation(SPACE, 20),
-        new SourceLocation(IDENTIFIER, 21),
-        new SourceLocation(EOF, 22)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.IDENTIFIER, 4),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.OPERATOR, 6),
+        new SourceLocation(SourceType.SPACE, 8),
+        new SourceLocation(SourceType.IDENTIFIER, 9),
+        new SourceLocation(SourceType.SEMICOLON, 10),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.IDENTIFIER, 12),
+        new SourceLocation(SourceType.SPACE, 13),
+        new SourceLocation(SourceType.OPERATOR, 14),
+        new SourceLocation(SourceType.SPACE, 15),
+        new SourceLocation(SourceType.IDENTIFIER, 16),
+        new SourceLocation(SourceType.SPACE, 17),
+        new SourceLocation(SourceType.OPERATOR, 18),
+        new SourceLocation(SourceType.SPACE, 20),
+        new SourceLocation(SourceType.IDENTIFIER, 21),
+        new SourceLocation(SourceType.EOF, 22)
       ]
     );
    });
 
-  it('identifies dots', () => { 
+  it('identifies dots', () => {
     checkLocations(
       stream(`a.b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(DOT, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(EOF, 3)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.DOT, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 2),
+        new SourceLocation(SourceType.EOF, 3)
       ]
     );
    });
 
-  it('identifies block comments', () => { 
+  it('identifies block comments', () => {
     checkLocations(
       stream(`### a ###`),
       [
-        new SourceLocation(HERECOMMENT, 0),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.HERECOMMENT, 0),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('does not treat markdown-style headings as block comments', () => { 
+  it('does not treat markdown-style headings as block comments', () => {
     checkLocations(
       stream(`#### FOO`),
       [
-        new SourceLocation(COMMENT, 0),
-        new SourceLocation(EOF, 8)
+        new SourceLocation(SourceType.COMMENT, 0),
+        new SourceLocation(SourceType.EOF, 8)
       ]
     );
    });
 
-  it('treats `->` as a function', () => { 
+  it('treats `->` as a function', () => {
     checkLocations(
       stream(`-> a`),
       [
-        new SourceLocation(FUNCTION, 0),
-        new SourceLocation(SPACE, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.FUNCTION, 0),
+        new SourceLocation(SourceType.SPACE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('treats `=>` as a function', () => { 
+  it('treats `=>` as a function', () => {
     checkLocations(
       stream(`=> a`),
       [
-        new SourceLocation(FUNCTION, 0),
-        new SourceLocation(SPACE, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.FUNCTION, 0),
+        new SourceLocation(SourceType.SPACE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies division as distinct from regular expressions', () => { 
+  it('identifies division as distinct from regular expressions', () => {
     checkLocations(
       stream(`1/0 + 2/4`),
       [
-        new SourceLocation(NUMBER, 0),
-        new SourceLocation(OPERATOR, 1),
-        new SourceLocation(NUMBER, 2),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(OPERATOR, 4),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(NUMBER, 6),
-        new SourceLocation(OPERATOR, 7),
-        new SourceLocation(NUMBER, 8),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.NUMBER, 0),
+        new SourceLocation(SourceType.OPERATOR, 1),
+        new SourceLocation(SourceType.NUMBER, 2),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.OPERATOR, 4),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.NUMBER, 6),
+        new SourceLocation(SourceType.OPERATOR, 7),
+        new SourceLocation(SourceType.NUMBER, 8),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies regular expressions as RHS in assignment', () => { 
+  it('identifies regular expressions as RHS in assignment', () => {
     checkLocations(
       stream(`a = /foo/`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(REGEXP, 4),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.REGEXP, 4),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies regular expressions at the start of the source', () => { 
+  it('identifies regular expressions at the start of the source', () => {
     checkLocations(
       stream(`/foo/.test 'abc'`),
       [
-        new SourceLocation(REGEXP, 0),
-        new SourceLocation(DOT, 5),
-        new SourceLocation(IDENTIFIER, 6),
-        new SourceLocation(SPACE, 10),
-        new SourceLocation(SSTRING_START, 11),
-        new SourceLocation(STRING_CONTENT, 12),
-        new SourceLocation(SSTRING_END, 15),
-        new SourceLocation(EOF, 16)
+        new SourceLocation(SourceType.REGEXP, 0),
+        new SourceLocation(SourceType.DOT, 5),
+        new SourceLocation(SourceType.IDENTIFIER, 6),
+        new SourceLocation(SourceType.SPACE, 10),
+        new SourceLocation(SourceType.SSTRING_START, 11),
+        new SourceLocation(SourceType.STRING_CONTENT, 12),
+        new SourceLocation(SourceType.SSTRING_END, 15),
+        new SourceLocation(SourceType.EOF, 16)
       ]
     );
    });
 
-  it('identifies simple heregexes', () => { 
+  it('identifies simple heregexes', () => {
     checkLocations(
       stream(`///abc///g.test 'foo'`),
       [
-        new SourceLocation(HEREGEXP_START, 0),
-        new SourceLocation(STRING_CONTENT, 3),
-        new SourceLocation(HEREGEXP_END, 6),
-        new SourceLocation(DOT, 10),
-        new SourceLocation(IDENTIFIER, 11),
-        new SourceLocation(SPACE, 15),
-        new SourceLocation(SSTRING_START, 16),
-        new SourceLocation(STRING_CONTENT, 17),
-        new SourceLocation(SSTRING_END, 20),
-        new SourceLocation(EOF, 21)
+        new SourceLocation(SourceType.HEREGEXP_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 3),
+        new SourceLocation(SourceType.HEREGEXP_END, 6),
+        new SourceLocation(SourceType.DOT, 10),
+        new SourceLocation(SourceType.IDENTIFIER, 11),
+        new SourceLocation(SourceType.SPACE, 15),
+        new SourceLocation(SourceType.SSTRING_START, 16),
+        new SourceLocation(SourceType.STRING_CONTENT, 17),
+        new SourceLocation(SourceType.SSTRING_END, 20),
+        new SourceLocation(SourceType.EOF, 21)
       ]
     );
    });
 
-  it('identifies heregexes with interpolations', () => { 
+  it('identifies heregexes with interpolations', () => {
     checkLocations(
       stream(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`),
       [
-        new SourceLocation(HEREGEXP_START, 0),
-        new SourceLocation(STRING_CONTENT, 3),
-        new SourceLocation(INTERPOLATION_START, 10),
-        new SourceLocation(IDENTIFIER, 12),
-        new SourceLocation(INTERPOLATION_END, 13),
-        new SourceLocation(STRING_CONTENT, 14),
-        new SourceLocation(HEREGEXP_END, 39),
-        new SourceLocation(DOT, 43),
-        new SourceLocation(IDENTIFIER, 44),
-        new SourceLocation(SPACE, 48),
-        new SourceLocation(SSTRING_START, 49),
-        new SourceLocation(STRING_CONTENT, 50),
-        new SourceLocation(SSTRING_END, 53),
-        new SourceLocation(EOF, 54)
+        new SourceLocation(SourceType.HEREGEXP_START, 0),
+        new SourceLocation(SourceType.STRING_CONTENT, 3),
+        new SourceLocation(SourceType.INTERPOLATION_START, 10),
+        new SourceLocation(SourceType.IDENTIFIER, 12),
+        new SourceLocation(SourceType.INTERPOLATION_END, 13),
+        new SourceLocation(SourceType.STRING_CONTENT, 14),
+        new SourceLocation(SourceType.HEREGEXP_END, 39),
+        new SourceLocation(SourceType.DOT, 43),
+        new SourceLocation(SourceType.IDENTIFIER, 44),
+        new SourceLocation(SourceType.SPACE, 48),
+        new SourceLocation(SourceType.SSTRING_START, 49),
+        new SourceLocation(SourceType.STRING_CONTENT, 50),
+        new SourceLocation(SourceType.SSTRING_END, 53),
+        new SourceLocation(SourceType.EOF, 54)
       ]
     );
    });
 
-  it('computes the right padding for heregexes with interpolations', () => { 
+  it('computes the right padding for heregexes with interpolations', () => {
     deepEqual(
       lex(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toArray(),
       [
-        new SourceToken(HEREGEXP_START, 0, 3),
-        new SourceToken(STRING_CONTENT, 3, 6),
-        new SourceToken(STRING_PADDING, 6, 7),
-        new SourceToken(STRING_CONTENT, 7, 10),
-        new SourceToken(INTERPOLATION_START, 10, 12),
-        new SourceToken(IDENTIFIER, 12, 13),
-        new SourceToken(INTERPOLATION_END, 13, 14),
-        new SourceToken(STRING_PADDING, 14, 36),
-        new SourceToken(STRING_CONTENT, 36, 39),
-        new SourceToken(HEREGEXP_END, 39, 43),
-        new SourceToken(DOT, 43, 44),
-        new SourceToken(IDENTIFIER, 44, 48),
-        new SourceToken(SSTRING_START, 49, 50),
-        new SourceToken(STRING_CONTENT, 50, 53),
-        new SourceToken(SSTRING_END, 53, 54),
+        new SourceToken(SourceType.HEREGEXP_START, 0, 3),
+        new SourceToken(SourceType.STRING_CONTENT, 3, 6),
+        new SourceToken(SourceType.STRING_PADDING, 6, 7),
+        new SourceToken(SourceType.STRING_CONTENT, 7, 10),
+        new SourceToken(SourceType.INTERPOLATION_START, 10, 12),
+        new SourceToken(SourceType.IDENTIFIER, 12, 13),
+        new SourceToken(SourceType.INTERPOLATION_END, 13, 14),
+        new SourceToken(SourceType.STRING_PADDING, 14, 36),
+        new SourceToken(SourceType.STRING_CONTENT, 36, 39),
+        new SourceToken(SourceType.HEREGEXP_END, 39, 43),
+        new SourceToken(SourceType.DOT, 43, 44),
+        new SourceToken(SourceType.IDENTIFIER, 44, 48),
+        new SourceToken(SourceType.SSTRING_START, 49, 50),
+        new SourceToken(SourceType.STRING_CONTENT, 50, 53),
+        new SourceToken(SourceType.SSTRING_END, 53, 54),
       ]
     );
    });
 
-  it('identifies keywords for conditionals', () => { 
+  it('identifies keywords for conditionals', () => {
     checkLocations(
       stream(`if a then b else c`),
       [
-        new SourceLocation(IF, 0),
-        new SourceLocation(SPACE, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(SPACE, 4),
-        new SourceLocation(THEN, 5),
-        new SourceLocation(SPACE, 9),
-        new SourceLocation(IDENTIFIER, 10),
-        new SourceLocation(SPACE, 11),
-        new SourceLocation(ELSE, 12),
-        new SourceLocation(SPACE, 16),
-        new SourceLocation(IDENTIFIER, 17),
-        new SourceLocation(EOF, 18)
+        new SourceLocation(SourceType.IF, 0),
+        new SourceLocation(SourceType.SPACE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.THEN, 5),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.IDENTIFIER, 10),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.ELSE, 12),
+        new SourceLocation(SourceType.SPACE, 16),
+        new SourceLocation(SourceType.IDENTIFIER, 17),
+        new SourceLocation(SourceType.EOF, 18)
       ]
     );
    });
 
-  it('identifies keywords for `unless` conditionals', () => { 
+  it('identifies keywords for `unless` conditionals', () => {
     checkLocations(
       stream(`b unless a`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(IF, 2),
-        new SourceLocation(SPACE, 8),
-        new SourceLocation(IDENTIFIER, 9),
-        new SourceLocation(EOF, 10)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.IF, 2),
+        new SourceLocation(SourceType.SPACE, 8),
+        new SourceLocation(SourceType.IDENTIFIER, 9),
+        new SourceLocation(SourceType.EOF, 10)
       ]
     );
    });
 
-  it('identifies keywords for switch', () => { 
+  it('identifies keywords for switch', () => {
     checkLocations(
       stream(`switch a\n  when b\n    c\n  else d`),
       [
-        new SourceLocation(SWITCH, 0),
-        new SourceLocation(SPACE, 6),
-        new SourceLocation(IDENTIFIER, 7),
-        new SourceLocation(NEWLINE, 8),
-        new SourceLocation(SPACE, 9),
-        new SourceLocation(WHEN, 11),
-        new SourceLocation(SPACE, 15),
-        new SourceLocation(IDENTIFIER, 16),
-        new SourceLocation(NEWLINE, 17),
-        new SourceLocation(SPACE, 18),
-        new SourceLocation(IDENTIFIER, 22),
-        new SourceLocation(NEWLINE, 23),
-        new SourceLocation(SPACE, 24),
-        new SourceLocation(ELSE, 26),
-        new SourceLocation(SPACE, 30),
-        new SourceLocation(IDENTIFIER, 31),
-        new SourceLocation(EOF, 32)
+        new SourceLocation(SourceType.SWITCH, 0),
+        new SourceLocation(SourceType.SPACE, 6),
+        new SourceLocation(SourceType.IDENTIFIER, 7),
+        new SourceLocation(SourceType.NEWLINE, 8),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.WHEN, 11),
+        new SourceLocation(SourceType.SPACE, 15),
+        new SourceLocation(SourceType.IDENTIFIER, 16),
+        new SourceLocation(SourceType.NEWLINE, 17),
+        new SourceLocation(SourceType.SPACE, 18),
+        new SourceLocation(SourceType.IDENTIFIER, 22),
+        new SourceLocation(SourceType.NEWLINE, 23),
+        new SourceLocation(SourceType.SPACE, 24),
+        new SourceLocation(SourceType.ELSE, 26),
+        new SourceLocation(SourceType.SPACE, 30),
+        new SourceLocation(SourceType.IDENTIFIER, 31),
+        new SourceLocation(SourceType.EOF, 32)
       ]
     );
    });
 
-  it('identifies keywords for `for` loops', () => { 
+  it('identifies keywords for `for` loops', () => {
     checkLocations(
       stream(`for own a in b then a`),
       [
-        new SourceLocation(FOR, 0),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(OWN, 4),
-        new SourceLocation(SPACE, 7),
-        new SourceLocation(IDENTIFIER, 8),
-        new SourceLocation(SPACE, 9),
-        new SourceLocation(RELATION, 10),
-        new SourceLocation(SPACE, 12),
-        new SourceLocation(IDENTIFIER, 13),
-        new SourceLocation(SPACE, 14),
-        new SourceLocation(THEN, 15),
-        new SourceLocation(SPACE, 19),
-        new SourceLocation(IDENTIFIER, 20),
-        new SourceLocation(EOF, 21)
+        new SourceLocation(SourceType.FOR, 0),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.OWN, 4),
+        new SourceLocation(SourceType.SPACE, 7),
+        new SourceLocation(SourceType.IDENTIFIER, 8),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.RELATION, 10),
+        new SourceLocation(SourceType.SPACE, 12),
+        new SourceLocation(SourceType.IDENTIFIER, 13),
+        new SourceLocation(SourceType.SPACE, 14),
+        new SourceLocation(SourceType.THEN, 15),
+        new SourceLocation(SourceType.SPACE, 19),
+        new SourceLocation(SourceType.IDENTIFIER, 20),
+        new SourceLocation(SourceType.EOF, 21)
       ]
     );
    });
 
-  it('identifies keywords for `while` loops', () => { 
+  it('identifies keywords for `while` loops', () => {
     checkLocations(
       stream(`loop then until a then while b then c`),
       [
-        new SourceLocation(LOOP, 0),
-        new SourceLocation(SPACE, 4),
-        new SourceLocation(THEN, 5),
-        new SourceLocation(SPACE, 9),
-        new SourceLocation(WHILE, 10),
-        new SourceLocation(SPACE, 15),
-        new SourceLocation(IDENTIFIER, 16),
-        new SourceLocation(SPACE, 17),
-        new SourceLocation(THEN, 18),
-        new SourceLocation(SPACE, 22),
-        new SourceLocation(WHILE, 23),
-        new SourceLocation(SPACE, 28),
-        new SourceLocation(IDENTIFIER, 29),
-        new SourceLocation(SPACE, 30),
-        new SourceLocation(THEN, 31),
-        new SourceLocation(SPACE, 35),
-        new SourceLocation(IDENTIFIER, 36),
-        new SourceLocation(EOF, 37)
+        new SourceLocation(SourceType.LOOP, 0),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.THEN, 5),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.WHILE, 10),
+        new SourceLocation(SourceType.SPACE, 15),
+        new SourceLocation(SourceType.IDENTIFIER, 16),
+        new SourceLocation(SourceType.SPACE, 17),
+        new SourceLocation(SourceType.THEN, 18),
+        new SourceLocation(SourceType.SPACE, 22),
+        new SourceLocation(SourceType.WHILE, 23),
+        new SourceLocation(SourceType.SPACE, 28),
+        new SourceLocation(SourceType.IDENTIFIER, 29),
+        new SourceLocation(SourceType.SPACE, 30),
+        new SourceLocation(SourceType.THEN, 31),
+        new SourceLocation(SourceType.SPACE, 35),
+        new SourceLocation(SourceType.IDENTIFIER, 36),
+        new SourceLocation(SourceType.EOF, 37)
       ]
     );
    });
 
-  it('identifies `class` as a keyword', () => { 
+  it('identifies `class` as a keyword', () => {
     checkLocations(
       stream(`class A`),
       [
-        new SourceLocation(CLASS, 0),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(IDENTIFIER, 6),
-        new SourceLocation(EOF, 7)
+        new SourceLocation(SourceType.CLASS, 0),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.IDENTIFIER, 6),
+        new SourceLocation(SourceType.EOF, 7)
       ]
     );
    });
 
-  it('identifies `return` as a keyword', () => { 
+  it('identifies `return` as a keyword', () => {
     checkLocations(
       stream(`return 0`),
       [
-        new SourceLocation(RETURN, 0),
-        new SourceLocation(SPACE, 6),
-        new SourceLocation(NUMBER, 7),
-        new SourceLocation(EOF, 8)
+        new SourceLocation(SourceType.RETURN, 0),
+        new SourceLocation(SourceType.SPACE, 6),
+        new SourceLocation(SourceType.NUMBER, 7),
+        new SourceLocation(SourceType.EOF, 8)
       ]
     );
    });
 
-  it('identifies `break` and `continue` as keywords', () => { 
+  it('identifies `break` and `continue` as keywords', () => {
     checkLocations(
       stream(`break;continue;`),
       [
-        new SourceLocation(BREAK, 0),
-        new SourceLocation(SEMICOLON, 5),
-        new SourceLocation(CONTINUE, 6),
-        new SourceLocation(SEMICOLON, 14),
-        new SourceLocation(EOF, 15)
+        new SourceLocation(SourceType.BREAK, 0),
+        new SourceLocation(SourceType.SEMICOLON, 5),
+        new SourceLocation(SourceType.CONTINUE, 6),
+        new SourceLocation(SourceType.SEMICOLON, 14),
+        new SourceLocation(SourceType.EOF, 15)
       ]
     );
    });
 
-  it('identifies identifiers with keyword names after dot access', () => { 
+  it('identifies identifiers with keyword names after dot access', () => {
     checkLocations(
       stream(`s.else(0)`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(DOT, 1),
-        new SourceLocation(IDENTIFIER, 2),
-        new SourceLocation(CALL_START, 6),
-        new SourceLocation(NUMBER, 7),
-        new SourceLocation(CALL_END, 8),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.DOT, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 2),
+        new SourceLocation(SourceType.CALL_START, 6),
+        new SourceLocation(SourceType.NUMBER, 7),
+        new SourceLocation(SourceType.CALL_END, 8),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies identifiers with keyword names after dot access after a newline', () => { 
+  it('identifies identifiers with keyword names after dot access after a newline', () => {
     checkLocations(
       stream(`s.
 else(0)`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(DOT, 1),
-        new SourceLocation(NEWLINE, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(CALL_START, 7),
-        new SourceLocation(NUMBER, 8),
-        new SourceLocation(CALL_END, 9),
-        new SourceLocation(EOF, 10)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.DOT, 1),
+        new SourceLocation(SourceType.NEWLINE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.CALL_START, 7),
+        new SourceLocation(SourceType.NUMBER, 8),
+        new SourceLocation(SourceType.CALL_END, 9),
+        new SourceLocation(SourceType.EOF, 10)
       ]
     );
    });
 
-  it('identifies identifiers with keyword names after proto access', () => { 
+  it('identifies identifiers with keyword names after proto access', () => {
     checkLocations(
       stream(`s::delete`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(PROTO, 1),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.PROTO, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies `null`', () => { 
+  it('identifies `null`', () => {
     checkLocations(
       stream(`null`),
       [
-        new SourceLocation(NULL, 0),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.NULL, 0),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies `undefined`', () => { 
+  it('identifies `undefined`', () => {
     checkLocations(
       stream(`undefined`),
       [
-        new SourceLocation(UNDEFINED, 0),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.UNDEFINED, 0),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies `this`', () => { 
+  it('identifies `this`', () => {
     checkLocations(
       stream(`this`),
       [
-        new SourceLocation(THIS, 0),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.THIS, 0),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies `super`', () => { 
+  it('identifies `super`', () => {
     checkLocations(
       stream(`super`),
       [
-        new SourceLocation(SUPER, 0),
-        new SourceLocation(EOF, 5)
+        new SourceLocation(SourceType.SUPER, 0),
+        new SourceLocation(SourceType.EOF, 5)
       ]
     );
    });
 
-  it('identifies `delete`', () => { 
+  it('identifies `delete`', () => {
     checkLocations(
       stream(`delete a.b`),
       [
-        new SourceLocation(DELETE, 0),
-        new SourceLocation(SPACE, 6),
-        new SourceLocation(IDENTIFIER, 7),
-        new SourceLocation(DOT, 8),
-        new SourceLocation(IDENTIFIER, 9),
-        new SourceLocation(EOF, 10)
+        new SourceLocation(SourceType.DELETE, 0),
+        new SourceLocation(SourceType.SPACE, 6),
+        new SourceLocation(SourceType.IDENTIFIER, 7),
+        new SourceLocation(SourceType.DOT, 8),
+        new SourceLocation(SourceType.IDENTIFIER, 9),
+        new SourceLocation(SourceType.EOF, 10)
       ]
     );
    });
 
-  it('identifies booleans', () => { 
+  it('identifies booleans', () => {
     checkLocations(
       stream(`true;false;yes;no;on;off`),
       [
-        new SourceLocation(BOOL, 0),
-        new SourceLocation(SEMICOLON, 4),
-        new SourceLocation(BOOL, 5),
-        new SourceLocation(SEMICOLON, 10),
-        new SourceLocation(BOOL, 11),
-        new SourceLocation(SEMICOLON, 14),
-        new SourceLocation(BOOL, 15),
-        new SourceLocation(SEMICOLON, 17),
-        new SourceLocation(BOOL, 18),
-        new SourceLocation(SEMICOLON, 20),
-        new SourceLocation(BOOL, 21),
-        new SourceLocation(EOF, 24)
+        new SourceLocation(SourceType.BOOL, 0),
+        new SourceLocation(SourceType.SEMICOLON, 4),
+        new SourceLocation(SourceType.BOOL, 5),
+        new SourceLocation(SourceType.SEMICOLON, 10),
+        new SourceLocation(SourceType.BOOL, 11),
+        new SourceLocation(SourceType.SEMICOLON, 14),
+        new SourceLocation(SourceType.BOOL, 15),
+        new SourceLocation(SourceType.SEMICOLON, 17),
+        new SourceLocation(SourceType.BOOL, 18),
+        new SourceLocation(SourceType.SEMICOLON, 20),
+        new SourceLocation(SourceType.BOOL, 21),
+        new SourceLocation(SourceType.EOF, 24)
       ]
     );
    });
 
-  it('identifies existence operators', () => { 
+  it('identifies existence operators', () => {
     checkLocations(
       stream(`a?.b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(EXISTENCE, 1),
-        new SourceLocation(DOT, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.EXISTENCE, 1),
+        new SourceLocation(SourceType.DOT, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies proto operators', () => { 
+  it('identifies proto operators', () => {
     checkLocations(
       stream(`a::b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(PROTO, 1),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.PROTO, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies inclusive ranges', () => { 
+  it('identifies inclusive ranges', () => {
     checkLocations(
       stream(`a..b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(RANGE, 1),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.RANGE, 1),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
 
-  it('identifies line continuations', () => { 
+  it('identifies line continuations', () => {
     checkLocations(
       stream(`a = \\\n  b`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(CONTINUATION, 4),
-        new SourceLocation(NEWLINE, 5),
-        new SourceLocation(SPACE, 6),
-        new SourceLocation(IDENTIFIER, 8),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.CONTINUATION, 4),
+        new SourceLocation(SourceType.NEWLINE, 5),
+        new SourceLocation(SourceType.SPACE, 6),
+        new SourceLocation(SourceType.IDENTIFIER, 8),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies floor division', () => { 
+  it('identifies floor division', () => {
     checkLocations(
       stream(`7 // 3`),
       [
-        new SourceLocation(NUMBER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 4),
-        new SourceLocation(NUMBER, 5),
-        new SourceLocation(EOF, 6)
+        new SourceLocation(SourceType.NUMBER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.NUMBER, 5),
+        new SourceLocation(SourceType.EOF, 6)
       ]
     );
    });
 
-  it('identifies compound assignment', () => { 
+  it('identifies compound assignment', () => {
     checkLocations(
       stream(`a ?= 3`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 4),
-        new SourceLocation(NUMBER, 5),
-        new SourceLocation(EOF, 6)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.NUMBER, 5),
+        new SourceLocation(SourceType.EOF, 6)
       ]
     );
    });
 
-  it('identifies compound assignment with word operators', () => { 
+  it('identifies compound assignment with word operators', () => {
     checkLocations(
       stream(`a or= 3`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(NUMBER, 6),
-        new SourceLocation(EOF, 7)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.NUMBER, 6),
+        new SourceLocation(SourceType.EOF, 7)
       ]
     );
    });
 
-  it('identifies keyword operators', () => { 
+  it('identifies keyword operators', () => {
     checkLocations(
       stream(`a and b is c or d`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(OPERATOR, 2),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(IDENTIFIER, 6),
-        new SourceLocation(SPACE, 7),
-        new SourceLocation(OPERATOR, 8),
-        new SourceLocation(SPACE, 10),
-        new SourceLocation(IDENTIFIER, 11),
-        new SourceLocation(SPACE, 12),
-        new SourceLocation(OPERATOR, 13),
-        new SourceLocation(SPACE, 15),
-        new SourceLocation(IDENTIFIER, 16),
-        new SourceLocation(EOF, 17)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.IDENTIFIER, 6),
+        new SourceLocation(SourceType.SPACE, 7),
+        new SourceLocation(SourceType.OPERATOR, 8),
+        new SourceLocation(SourceType.SPACE, 10),
+        new SourceLocation(SourceType.IDENTIFIER, 11),
+        new SourceLocation(SourceType.SPACE, 12),
+        new SourceLocation(SourceType.OPERATOR, 13),
+        new SourceLocation(SourceType.SPACE, 15),
+        new SourceLocation(SourceType.IDENTIFIER, 16),
+        new SourceLocation(SourceType.EOF, 17)
       ]
     );
    });
 
-  it('identifies `in` and `of` as relations', () => { 
+  it('identifies `in` and `of` as relations', () => {
     checkLocations(
       stream(`a in b or c of d`),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(SPACE, 1),
-        new SourceLocation(RELATION, 2),
-        new SourceLocation(SPACE, 4),
-        new SourceLocation(IDENTIFIER, 5),
-        new SourceLocation(SPACE, 6),
-        new SourceLocation(OPERATOR, 7),
-        new SourceLocation(SPACE, 9),
-        new SourceLocation(IDENTIFIER, 10),
-        new SourceLocation(SPACE, 11),
-        new SourceLocation(RELATION, 12),
-        new SourceLocation(SPACE, 14),
-        new SourceLocation(IDENTIFIER, 15),
-        new SourceLocation(EOF, 16)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.RELATION, 2),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.IDENTIFIER, 5),
+        new SourceLocation(SourceType.SPACE, 6),
+        new SourceLocation(SourceType.OPERATOR, 7),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.IDENTIFIER, 10),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.RELATION, 12),
+        new SourceLocation(SourceType.SPACE, 14),
+        new SourceLocation(SourceType.IDENTIFIER, 15),
+        new SourceLocation(SourceType.EOF, 16)
       ]
     );
    });
 
-  it('identifies keywords for `try/catch/finally`', () => { 
+  it('identifies keywords for `try/catch/finally`', () => {
     checkLocations(
       stream('try a catch e then b finally c'),
       [
-        new SourceLocation(TRY, 0),
-        new SourceLocation(SPACE, 3),
-        new SourceLocation(IDENTIFIER, 4),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(CATCH, 6),
-        new SourceLocation(SPACE, 11),
-        new SourceLocation(IDENTIFIER, 12),
-        new SourceLocation(SPACE, 13),
-        new SourceLocation(THEN, 14),
-        new SourceLocation(SPACE, 18),
-        new SourceLocation(IDENTIFIER, 19),
-        new SourceLocation(SPACE, 20),
-        new SourceLocation(FINALLY, 21),
-        new SourceLocation(SPACE, 28),
-        new SourceLocation(IDENTIFIER, 29),
-        new SourceLocation(EOF, 30)
+        new SourceLocation(SourceType.TRY, 0),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.IDENTIFIER, 4),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.CATCH, 6),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.IDENTIFIER, 12),
+        new SourceLocation(SourceType.SPACE, 13),
+        new SourceLocation(SourceType.THEN, 14),
+        new SourceLocation(SourceType.SPACE, 18),
+        new SourceLocation(SourceType.IDENTIFIER, 19),
+        new SourceLocation(SourceType.SPACE, 20),
+        new SourceLocation(SourceType.FINALLY, 21),
+        new SourceLocation(SourceType.SPACE, 28),
+        new SourceLocation(SourceType.IDENTIFIER, 29),
+        new SourceLocation(SourceType.EOF, 30)
       ]
     );
    });
 
-  it('identifies `do` as a keyword', () => { 
+  it('identifies `do` as a keyword', () => {
     checkLocations(
       stream('do foo'),
       [
-        new SourceLocation(DO, 0),
-        new SourceLocation(SPACE, 2),
-        new SourceLocation(IDENTIFIER, 3),
-        new SourceLocation(EOF, 6)
+        new SourceLocation(SourceType.DO, 0),
+        new SourceLocation(SourceType.SPACE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.EOF, 6)
       ]
     );
    });
 
-  it('identifies `yield` as a keyword', () => { 
+  it('identifies `yield` as a keyword', () => {
     checkLocations(
       stream('yield foo'),
       [
-        new SourceLocation(YIELD, 0),
-        new SourceLocation(SPACE, 5),
-        new SourceLocation(IDENTIFIER, 6),
-        new SourceLocation(EOF, 9)
+        new SourceLocation(SourceType.YIELD, 0),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.IDENTIFIER, 6),
+        new SourceLocation(SourceType.EOF, 9)
       ]
     );
    });
 
-  it('identifies `yield from` as keyword', () => { 
+  it('identifies `yield from` as keyword', () => {
     checkLocations(
       stream('yield  from foo'),
       [
-        new SourceLocation(YIELDFROM, 0),
-        new SourceLocation(SPACE, 11),
-        new SourceLocation(IDENTIFIER, 12),
-        new SourceLocation(EOF, 15)
+        new SourceLocation(SourceType.YIELDFROM, 0),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.IDENTIFIER, 12),
+        new SourceLocation(SourceType.EOF, 15)
       ]
     );
    });
 
-  it('identifies `from` as an identifier without yield', () => { 
+  it('identifies `from` as an identifier without yield', () => {
     checkLocations(
       stream('from'),
       [
-        new SourceLocation(IDENTIFIER, 0),
-        new SourceLocation(EOF, 4)
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.EOF, 4)
       ]
     );
    });
