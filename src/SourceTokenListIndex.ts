@@ -4,8 +4,8 @@ import SourceTokenList from './SourceTokenList';
  * Represents a token at a particular index within a list of tokens.
  */
 export default class SourceTokenListIndex {
-  _sourceTokenList: SourceTokenList;
-  _index: number;
+  private _sourceTokenList: SourceTokenList;
+  private _index: number;
 
   constructor(sourceTokenList: SourceTokenList, index: number) {
     this._sourceTokenList = sourceTokenList;
@@ -21,7 +21,7 @@ export default class SourceTokenListIndex {
     if (newIndex < 0 || this._sourceTokenList.length < newIndex) {
       return null;
     }
-    return this._sourceTokenList._getIndex(newIndex);
+    return this._sourceTokenList['_getIndex'](newIndex);
   }
 
   /**

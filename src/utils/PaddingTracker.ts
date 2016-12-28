@@ -24,8 +24,8 @@ import BufferedStream from './BufferedStream';
  * paddingTracker.computeSourceLocations();
  */
 export default class PaddingTracker {
-  fragments: Array<TrackedFragment>;
-  _originalLocations: Array<SourceLocation>;
+  readonly fragments: Array<TrackedFragment>;
+  private _originalLocations: Array<SourceLocation>;
 
   constructor(source: string, stream: BufferedStream, endType: SourceType) {
     this.fragments = [];
