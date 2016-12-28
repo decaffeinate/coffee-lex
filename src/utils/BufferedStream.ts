@@ -2,8 +2,8 @@ import SourceLocation from '../SourceLocation';
 import SourceType from '../SourceType';
 
 export default class BufferedStream {
-  _getNextLocation: () => SourceLocation;
-  pending: Array<SourceLocation> = [];
+  private _getNextLocation: () => SourceLocation;
+  private pending: Array<SourceLocation> = [];
 
   constructor(stream: () => SourceLocation) {
     this._getNextLocation = stream;

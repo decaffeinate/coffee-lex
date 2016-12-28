@@ -9,14 +9,14 @@ export type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIn
  * finding tokens within it.
  */
 export default class SourceTokenList {
-  _tokens: Array<SourceToken>;
-  _indexCache: Array<SourceTokenListIndex>;
-  _indexBySourceIndex: Array<SourceTokenListIndex>;
-  _indexByStartSourceIndex: Array<SourceTokenListIndex>;
-  _indexByEndSourceIndex: Array<SourceTokenListIndex>;
-  length: number;
-  startIndex: SourceTokenListIndex;
-  endIndex: SourceTokenListIndex;
+  private _tokens: Array<SourceToken>;
+  private _indexCache: Array<SourceTokenListIndex>;
+  private _indexBySourceIndex: Array<SourceTokenListIndex>;
+  private _indexByStartSourceIndex: Array<SourceTokenListIndex>;
+  private _indexByEndSourceIndex: Array<SourceTokenListIndex>;
+  readonly length: number;
+  readonly startIndex: SourceTokenListIndex;
+  readonly endIndex: SourceTokenListIndex;
 
   constructor(tokens: Array<SourceToken>) {
     this._validateTokens(tokens);
@@ -74,10 +74,10 @@ export default class SourceTokenList {
    * Get a slice of this token list using the given indexes.
    */
   slice(start: SourceTokenListIndex, end: SourceTokenListIndex): SourceTokenList {
-    if (start._sourceTokenList !== this || end._sourceTokenList !== this) {
+    if (start['_sourceTokenList'] !== this || end['_sourceTokenList'] !== this) {
       throw new Error('cannot slice a list using indexes from another list');
     }
-    return new SourceTokenList(this._tokens.slice(start._index, end._index));
+    return new SourceTokenList(this._tokens.slice(start['_index'], end['_index']));
   }
 
   /**
@@ -88,7 +88,7 @@ export default class SourceTokenList {
    */
   tokenAtIndex(index: SourceTokenListIndex): SourceToken | null {
     this._validateIndex(index);
-    return this._tokens[index._index] || null;
+    return this._tokens[index['_index']] || null;
   }
 
   /**
@@ -335,7 +335,7 @@ export default class SourceTokenList {
   /**
    * @internal
    */
-  _validateTokens(tokens: Array<SourceToken>) {
+  private _validateTokens(tokens: Array<SourceToken>) {
     for (let i = 0; i < tokens.length - 1; i++) {
       if (tokens[i].end > tokens[i + 1].start) {
         throw new Error(
@@ -348,7 +348,7 @@ export default class SourceTokenList {
   /**
    * @internal
    */
-  _validateIndex(index: SourceTokenListIndex | null) {
+  private _validateIndex(index: SourceTokenListIndex | null) {
     if (!index) {
       throw new Error(
         `unexpected 'null' index, perhaps you forgot to check the result of ` +
@@ -361,7 +361,7 @@ export default class SourceTokenList {
         `use list.tokenAtIndex(list.startIndex.advance(${index}))`
       );
     }
-    if (index._sourceTokenList !== this) {
+    if (index['_sourceTokenList'] !== this) {
       throw new Error('cannot get token in one list using an index from another');
     }
   }
@@ -369,7 +369,7 @@ export default class SourceTokenList {
   /**
    * @internal
    */
-  _validateSourceIndex(index: number) {
+  private _validateSourceIndex(index: number) {
     if (typeof index !== 'number') {
       throw new Error(`expected source index to be a number, got: ${index}`);
     }
@@ -378,7 +378,7 @@ export default class SourceTokenList {
   /**
    * @internal
    */
-  _getIndex(index: number): SourceTokenListIndex {
+  private _getIndex(index: number): SourceTokenListIndex {
     let cached = this._indexCache[index];
 
     if (!cached) {

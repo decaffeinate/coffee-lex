@@ -1,9 +1,9 @@
 import SourceType from './SourceType';
 
 export default class SourceToken {
-  type: SourceType;
-  start: number;
-  end: number;
+  readonly type: SourceType;
+  readonly start: number;
+  readonly end: number;
 
   constructor(type: SourceType, start: number, end: number) {
     if (start > end) {
