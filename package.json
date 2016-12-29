@@ -38,7 +38,7 @@
     "decaffeinate-coffeescript": "^1.10.0-patch7",
     "mocha": "^3.2.0",
     "semantic-release": "^6.3.5",
-    "ts-node": "^1.7.2",
+    "ts-node": "^2.0.0",
     "tslint": "^4.0.2",
     "typescript": "^2.1.4"
   },
