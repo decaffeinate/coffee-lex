@@ -13,42 +13,33 @@ $ npm install [--save] coffee-lex
 The main `lex` function simply returns a list of tokens:
 
 ```js
-import lex from 'coffee-lex';
+import lex, { SourceType } from 'coffee-lex';
 
 let source = 'a?(b: c)';
 let tokens = lex(source);
 
-// Print each token object.
-tokens.forEach(token => console.log(token));
-// SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 0, end: 1 }
-// SourceToken { type: SourceType { name: 'EXISTENCE' }, start: 1, end: 2 }
-// SourceToken { type: SourceType { name: 'CALL_START' }, start: 2, end: 3 }
-// SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 3, end: 4 }
-// SourceToken { type: SourceType { name: 'COLON' }, start: 4, end: 5 }
-// SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 6, end: 7 }
-// SourceToken { type: SourceType { name: 'CALL_END' }, start: 7, end: 8 }
-
 // Print tokens along with their source.
 tokens.forEach(token =>
   console.log(
-    token.type.name,
-    JSON.stringify(source.slice(token.start, token.end))
+    SourceType[token.type],
+    JSON.stringify(source.slice(token.start, token.end)),
+    `${token.start}→${token.end}`
   )
 );
-// IDENTIFIER "a"
-// EXISTENCE "?"
-// CALL_START "("
-// IDENTIFIER "b"
-// COLON ":"
-// IDENTIFIER "c"
-// CALL_END ")"
+// IDENTIFIER "a" 0→1
+// EXISTENCE "?" 1→2
+// CALL_START "(" 2→3
+// IDENTIFIER "b" 3→4
+// COLON ":" 4→5
+// IDENTIFIER "c" 6→7
+// CALL_END ")" 7→8
 ```
 
 You can also get more fine control of what you'd like to lex by using the
 `stream` function:
 
 ```js
-import { stream, EOF } from 'coffee-lex';
+import { stream, SourceType } from 'coffee-lex';
 
 let source = 'a?(b: c)';
 let step = stream(source);
@@ -56,17 +47,17 @@ let location;
 
 do {
   location = step();
-  console.log(location);
-} while (location.type !== EOF);
-// SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 0 }
-// SourceLocation { type: SourceType { name: 'EXISTENCE' }, index: 1 }
-// SourceLocation { type: SourceType { name: 'CALL_START' }, index: 2 }
-// SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 3 }
-// SourceLocation { type: SourceType { name: 'COLON' }, index: 4 }
-// SourceLocation { type: SourceType { name: 'SPACE' }, index: 5 }
-// SourceLocation { type: SourceType { name: 'IDENTIFIER' }, index: 6 }
-// SourceLocation { type: SourceType { name: 'CALL_END' }, index: 7 }
-// SourceLocation { type: SourceType { name: 'EOF' }, index: 8 }
+  console.log(location.index, SourceType[location.type]);
+} while (location.type !== SourceType.EOF);
+// 0 IDENTIFIER
+// 1 EXISTENCE
+// 2 CALL_START
+// 3 IDENTIFIER
+// 4 COLON
+// 5 SPACE
+// 6 IDENTIFIER
+// 7 CALL_END
+// 8 EOF
 ```
 
 This function not only lets you control how far into the source you'd like to
@@ -126,19 +117,13 @@ the official lexer generates for `"a#{b}c"`:
 Here's what coffee-lex generates for the same source:
 
 ```js
-[ SourceToken { type: SourceType { name: 'DSTRING_START' }, start: 0, end: 1 },
-  SourceToken { type: SourceType { name: 'STRING_CONTENT' }, start: 1, end: 2 },
-  SourceToken {
-    type: SourceType { name: 'INTERPOLATION_START' },
-    start: 2,
-    end: 4 },
-  SourceToken { type: SourceType { name: 'IDENTIFIER' }, start: 4, end: 5 },
-  SourceToken {
-    type: SourceType { name: 'INTERPOLATION_END' },
-    start: 5,
-    end: 6 },
-  SourceToken { type: SourceType { name: 'STRING_CONTENT' }, start: 6, end: 7 },
-  SourceToken { type: SourceType { name: 'DSTRING_END' }, start: 7, end: 8 } ]
+[ SourceToken { type: DSTRING_START, start: 0, end: 1 },
+  SourceToken { type: STRING_CONTENT, start: 1, end: 2 },
+  SourceToken { type: INTERPOLATION_START, start: 2, end: 4 },
+  SourceToken { type: IDENTIFIER, start: 4, end: 5 },
+  SourceToken { type: INTERPOLATION_END, start: 5, end: 6 },
+  SourceToken { type: STRING_CONTENT, start: 6, end: 7 },
+  SourceToken { type: DSTRING_END, start: 7, end: 8 } ]
 ```
 
 ## License
