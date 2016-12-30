@@ -740,6 +740,26 @@ describe('streamTest', () => {
         new SourceLocation(SourceType.EOF, 2)
       ]
     );
+  });
+
+  it('identifies floats as numbers', () => {
+    checkLocations(
+      stream(`1.23`),
+      [
+        new SourceLocation(SourceType.NUMBER, 0),
+        new SourceLocation(SourceType.EOF, 4)
+      ]
+    );
+  });
+
+  it('identifies floats with leading dots as numbers', () => {
+    checkLocations(
+      stream(`.23`),
+      [
+        new SourceLocation(SourceType.NUMBER, 0),
+        new SourceLocation(SourceType.EOF, 3)
+      ]
+    );
    });
 
   it('identifies + as an operator', () => {

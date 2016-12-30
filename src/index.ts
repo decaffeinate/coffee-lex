@@ -216,6 +216,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             setType(SourceType.NEWLINE);
           } else if (consume('...') || consume('..')) {
             setType(SourceType.RANGE);
+          } else if (consume(NUMBER_PATTERN)) {
+            setType(SourceType.NUMBER);
           } else if (consume('.')) {
             setType(SourceType.DOT);
           } else if (consume('"""')) {
@@ -454,8 +456,6 @@ export function stream(source: string, index: number=0): () => SourceLocation {
                   setType(SourceType.IDENTIFIER);
               }
             }
-          } else if (consume(NUMBER_PATTERN)) {
-            setType(SourceType.NUMBER);
           } else if (consume('\\')) {
             setType(SourceType.CONTINUATION);
           } else {
