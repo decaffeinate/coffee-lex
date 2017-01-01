@@ -92,10 +92,10 @@ const CALLABLE = [
   SourceType.IDENTIFIER, SourceType.CALL_END, SourceType.RPAREN, SourceType.RBRACKET, SourceType.EXISTENCE, SourceType.AT, SourceType.THIS, SourceType.SUPER
 ];
 const INDEXABLE = CALLABLE.concat([
-  SourceType.NUMBER, ...STRING, SourceType.REGEXP,
+  SourceType.NUMBER, ...STRING, SourceType.REGEXP, SourceType.HEREGEXP_END,
   SourceType.BOOL, SourceType.NULL, SourceType.UNDEFINED, SourceType.RBRACE, SourceType.PROTO
 ]);
-const NOT_REGEXP = INDEXABLE; // .concat(['++', '--'])
+const NOT_REGEXP = INDEXABLE.concat([SourceType.INCREMENT, SourceType.DECREMENT]);
 
 const IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[$\w\x7f-\uffff])+)/;
 const NUMBER_PATTERN = /^0b[01]+|^0o[0-7]+|^0x[\da-f]+|^\d*\.?\d+(?:e[+-]?\d+)?/i;
@@ -160,6 +160,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SourceType.DOT:
         case SourceType.NUMBER:
         case SourceType.OPERATOR:
+        case SourceType.INCREMENT:
+        case SourceType.DECREMENT:
         case SourceType.COMMA:
         case SourceType.LPAREN:
         case SourceType.RPAREN:
@@ -320,6 +322,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           } else if (consumeAny(OPERATORS)) {
             if (consumed() === '?') {
               setType(SourceType.EXISTENCE);
+            } else if (consumed() === '++') {
+              setType(SourceType.INCREMENT);
+            } else if (consumed() === '--') {
+              setType(SourceType.DECREMENT);
             } else {
               setType(SourceType.OPERATOR);
             }
@@ -608,6 +614,9 @@ export function stream(source: string, index: number=0): () => SourceLocation {
       throw new Error('missing / (unclosed regex)');
     }
     index += regex.length;
+    while (consumeAny(REGEXP_FLAGS)) {
+      // condition has side-effect
+    }
     return true;
   }
 
