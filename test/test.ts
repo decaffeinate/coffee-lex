@@ -890,7 +890,7 @@ describe('streamTest', () => {
       [
         new SourceLocation(SourceType.IDENTIFIER, 0),
         new SourceLocation(SourceType.OPERATOR, 1),
-        new SourceLocation(SourceType.OPERATOR, 2),
+        new SourceLocation(SourceType.INCREMENT, 2),
         new SourceLocation(SourceType.IDENTIFIER, 4),
         new SourceLocation(SourceType.EOF, 5)
       ]
@@ -1029,6 +1029,54 @@ describe('streamTest', () => {
       ]
     );
    });
+
+  it('identifies regular expressions with flags', () => {
+    checkLocations(
+      stream(`/foo/g.test 'abc'`),
+      [
+        new SourceLocation(SourceType.REGEXP, 0),
+        new SourceLocation(SourceType.DOT, 6),
+        new SourceLocation(SourceType.IDENTIFIER, 7),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.SSTRING_START, 12),
+        new SourceLocation(SourceType.STRING_CONTENT, 13),
+        new SourceLocation(SourceType.SSTRING_END, 16),
+        new SourceLocation(SourceType.EOF, 17)
+      ]
+    );
+  });
+
+  it('identifies regex-like division operations after an increment', () => {
+    checkLocations(
+      stream(`a++ /b/g`),
+      [
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.INCREMENT, 1),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.OPERATOR, 4),
+        new SourceLocation(SourceType.IDENTIFIER, 5),
+        new SourceLocation(SourceType.OPERATOR, 6),
+        new SourceLocation(SourceType.IDENTIFIER, 7),
+        new SourceLocation(SourceType.EOF, 8)
+      ]
+    );
+  });
+
+  it('identifies regex-like division operations after a decrement', () => {
+    checkLocations(
+      stream(`a-- /b/g`),
+      [
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.DECREMENT, 1),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.OPERATOR, 4),
+        new SourceLocation(SourceType.IDENTIFIER, 5),
+        new SourceLocation(SourceType.OPERATOR, 6),
+        new SourceLocation(SourceType.IDENTIFIER, 7),
+        new SourceLocation(SourceType.EOF, 8)
+      ]
+    );
+  });
 
   it('identifies simple heregexes', () => {
     checkLocations(
