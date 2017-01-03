@@ -337,7 +337,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
               prevLocationIndex--;
             }
             let prev = locations[prevLocationIndex];
-            let nextIsColon = match(/\s*:/);
+            let nextIsColon = match(/^\s*:/);
             if (nextIsColon || (prev && (prev.type === SourceType.DOT || prev.type === SourceType.PROTO || prev.type === SourceType.AT))) {
               setType(SourceType.IDENTIFIER);
             } else {

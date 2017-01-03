@@ -1159,6 +1159,29 @@ describe('streamTest', () => {
         new SourceLocation(SourceType.EOF, 18)
       ]
     );
+  });
+
+  it('identifies keywords for conditionals when followed by semicolons (decaffeinate/decaffeinate#718)', () => {
+    checkLocations(
+      stream(`if a then { b: c }`),
+      [
+        new SourceLocation(SourceType.IF, 0),
+        new SourceLocation(SourceType.SPACE, 2),
+        new SourceLocation(SourceType.IDENTIFIER, 3),
+        new SourceLocation(SourceType.SPACE, 4),
+        new SourceLocation(SourceType.THEN, 5),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.LBRACE, 10),
+        new SourceLocation(SourceType.SPACE, 11),
+        new SourceLocation(SourceType.IDENTIFIER, 12),
+        new SourceLocation(SourceType.COLON, 13),
+        new SourceLocation(SourceType.SPACE, 14),
+        new SourceLocation(SourceType.IDENTIFIER, 15),
+        new SourceLocation(SourceType.SPACE, 16),
+        new SourceLocation(SourceType.RBRACE, 17),
+        new SourceLocation(SourceType.EOF, 18)
+      ]
+    );
    });
 
   it('identifies keywords for `unless` conditionals', () => {
