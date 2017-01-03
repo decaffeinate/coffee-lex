@@ -1283,6 +1283,29 @@ describe('streamTest', () => {
         new SourceLocation(SourceType.EOF, 15)
       ]
     );
+  });
+
+  it('identifies object keys with keyword names as identifiers', () => {
+    checkLocations(
+      stream(`{break:1,continue:2,this :3}`),
+      [
+        new SourceLocation(SourceType.LBRACE, 0),
+        new SourceLocation(SourceType.IDENTIFIER, 1),
+        new SourceLocation(SourceType.COLON, 6),
+        new SourceLocation(SourceType.NUMBER, 7),
+        new SourceLocation(SourceType.COMMA, 8),
+        new SourceLocation(SourceType.IDENTIFIER, 9),
+        new SourceLocation(SourceType.COLON, 17),
+        new SourceLocation(SourceType.NUMBER, 18),
+        new SourceLocation(SourceType.COMMA, 19),
+        new SourceLocation(SourceType.IDENTIFIER, 20),
+        new SourceLocation(SourceType.SPACE, 24),
+        new SourceLocation(SourceType.COLON, 25),
+        new SourceLocation(SourceType.NUMBER, 26),
+        new SourceLocation(SourceType.RBRACE, 27),
+        new SourceLocation(SourceType.EOF, 28)
+      ]
+    );
    });
 
   it('identifies identifiers with keyword names after dot access', () => {
