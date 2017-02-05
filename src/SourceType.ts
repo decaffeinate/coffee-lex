@@ -75,6 +75,7 @@ enum SourceType {
   YIELDFROM = 71,
   INCREMENT = 72,
   DECREMENT = 73,
+  NEW = 74,
 }
 
 export default SourceType;

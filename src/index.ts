@@ -167,6 +167,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SourceType.RPAREN:
         case SourceType.CALL_START:
         case SourceType.CALL_END:
+        case SourceType.NEW:
         case SourceType.LBRACE:
         case SourceType.RBRACE:
         case SourceType.LBRACKET:
@@ -394,6 +395,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'this':
                   setType(SourceType.THIS);
+                  break;
+
+                case 'new':
+                  setType(SourceType.NEW);
                   break;
 
                 case 'super':
