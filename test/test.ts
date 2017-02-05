@@ -247,6 +247,29 @@ describe('lexTest', () => {
     );
   });
 
+  it('identifies `new` as a NEW token', () => {
+    deepEqual(
+      lex('new A').toArray(),
+      [
+        new SourceToken(SourceType.NEW, 0, 3),
+        new SourceToken(SourceType.IDENTIFIER, 4, 5)
+      ]
+    );
+  });
+
+  it('identifies `new` as an IDENTIFIER in a property name', () => {
+    deepEqual(
+      lex('a\n  new: 5').toArray(),
+      [
+        new SourceToken(SourceType.IDENTIFIER, 0, 1),
+        new SourceToken(SourceType.NEWLINE, 1, 2),
+        new SourceToken(SourceType.IDENTIFIER, 4, 7),
+        new SourceToken(SourceType.COLON, 7, 8),
+        new SourceToken(SourceType.NUMBER, 9, 10)
+      ]
+    );
+  });
+
   it('identifies closing interpolations inside objects', () => {
     deepEqual(
       lex(`{ id: "#{a}" }`).toArray(),
