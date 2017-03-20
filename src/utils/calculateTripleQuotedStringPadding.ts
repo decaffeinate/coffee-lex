@@ -95,7 +95,9 @@ function getIndentForFragments(fragments: Array<TrackedFragment>): string {
       }
       hasSeenLine = true;
 
-      if (indent.length === 0 || indent === line) {
+      let isFullLine = i < lines.length - 1 || fragment.index === fragments.length - 1;
+      // Ignore zero-indentation lines and whitespace-only lines.
+      if (indent.length === 0 || (isFullLine && indent === line)) {
         continue;
       }
       if (smallestIndent === null || indent.length < smallestIndent.length) {

@@ -126,6 +126,13 @@ b#{c}
       ['    a\nb']);
   });
 
+  it('keeps leading spaces in a herestring with interpolations', () => {
+    verifyStringMatchesCoffeeScript(`"""
+  #{a}
+"""`,
+      []);
+  });
+
   it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
     let source = `"""\n#{a}\n"""`;
     deepEqual(
