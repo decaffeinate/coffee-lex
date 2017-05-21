@@ -133,6 +133,18 @@ b#{c}
       []);
   });
 
+  it('allows escaping newlines, even with spaces between the backslash and newline', () => {
+    verifyStringMatchesCoffeeScript(`"""a\\  
+b"""`,
+      ['ab']);
+  });
+
+  it('does not escape newlines on an even number of backslashes', () => {
+    verifyStringMatchesCoffeeScript(`"""a\\\\  
+b"""`,
+      ['a\\\\  \nb']);
+  });
+
   it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
     let source = `"""\n#{a}\n"""`;
     deepEqual(

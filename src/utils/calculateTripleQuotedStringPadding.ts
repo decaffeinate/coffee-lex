@@ -1,6 +1,7 @@
 import SourceLocation from '../SourceLocation';
 import SourceType from '../SourceType';
 import BufferedStream from './BufferedStream';
+import isNewlineEscaped from './isNewlineEscaped';
 import PaddingTracker from './PaddingTracker';
 import { TrackedFragment } from './PaddingTracker';
 
@@ -63,6 +64,11 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
 
   for (let fragment of paddingTracker.fragments) {
     for (let i = 0; i < fragment.content.length; i++) {
+      if (fragment.content[i] === '\n' && isNewlineEscaped(fragment.content, i)) {
+        let backslashPos = fragment.content.lastIndexOf('\\', i);
+        fragment.markPadding(backslashPos, i + 1);
+      }
+
       let isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
       let isStartOfString = fragment.index === 0 && i === 0;
       if (isStartOfLine || isStartOfString) {
