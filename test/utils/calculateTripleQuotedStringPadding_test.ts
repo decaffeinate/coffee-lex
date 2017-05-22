@@ -145,6 +145,14 @@ b"""`,
       ['a\\\\  \nb']);
   });
 
+  it('removes all whitespace following an escaped newline', () => {
+    verifyStringMatchesCoffeeScript(`"""a\\  
+     b
+   c
+     d"""`,
+      ['ab\nc\n  d']);
+  });
+
   it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
     let source = `"""\n#{a}\n"""`;
     deepEqual(
