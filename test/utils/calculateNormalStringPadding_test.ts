@@ -56,4 +56,11 @@ b"`, ['a   b']);
 a\\  
 b"`, ['ab']);
   });
+
+  it('does not add trailing spacing for an escaped newline at the end', () => {
+    verifyStringMatchesCoffeeScript(`"
+a
+\\
+"`, ['a']);
+  });
 });
