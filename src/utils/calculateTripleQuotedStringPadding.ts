@@ -66,7 +66,12 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
     for (let i = 0; i < fragment.content.length; i++) {
       if (fragment.content[i] === '\n' && isNewlineEscaped(fragment.content, i)) {
         let backslashPos = fragment.content.lastIndexOf('\\', i);
-        fragment.markPadding(backslashPos, i + 1);
+        let paddingEnd = i;
+        while (paddingEnd < fragment.content.length &&
+            ' \t\n'.includes(fragment.content[paddingEnd])) {
+          paddingEnd++;
+        }
+        fragment.markPadding(backslashPos, paddingEnd);
       }
 
       let isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
