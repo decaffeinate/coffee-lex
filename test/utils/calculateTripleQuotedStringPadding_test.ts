@@ -153,6 +153,24 @@ b"""`,
       ['ab\nc\n  d']);
   });
 
+  it('ignores the newline at the end of the last content line when followed by an escaped newline', () => {
+    verifyStringMatchesCoffeeScript(`"""  
+      first line
+      second line
+      \\
+      """`,
+      ['first line\nsecond line']);
+  });
+
+  it('properly trims the first line when there is an escaped newline', () => {
+    verifyStringMatchesCoffeeScript(`"""  
+      \\  
+      a
+      """`,
+      ['a']);
+  });
+
+
   it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
     let source = `"""\n#{a}\n"""`;
     deepEqual(
