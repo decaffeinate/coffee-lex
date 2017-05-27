@@ -46,11 +46,12 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
 
   let sharedIndent = getIndentForFragments(paddingTracker.fragments);
 
-  if (firstContent.indexOf('\n') > -1 && isWhitespace(firstContent.split('\n')[0])) {
-    firstFragment.markPadding(0, firstContent.indexOf('\n') + 1);
+  let firstContentLines = splitUnescapedNewlines(firstContent);
+  if (firstContentLines.length > 1 && isWhitespace(firstContentLines[0])) {
+    firstFragment.markPadding(0, firstContentLines[0].length + 1);
   }
   if (!shouldSkipRemovingLastLine(paddingTracker)) {
-    let lastLines = lastContent.split('\n');
+    let lastLines = splitUnescapedNewlines(lastContent);
     if (lastLines.length > 1) {
       let lastLine = lastLines[lastLines.length - 1];
       if (isWhitespace(lastLine)) {
@@ -144,6 +145,29 @@ function getLineIndent(line: string): string {
   }
 }
 
+function splitUnescapedNewlines(str: string): Array<string> {
+  let lines = [''];
+  let numBackslashes = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === '\n' && numBackslashes % 2 === 0) {
+      lines.push('');
+    } else {
+      if (str[i] === '\\') {
+        numBackslashes++;
+      } else {
+        numBackslashes = 0;
+      }
+      lines[lines.length - 1] += str[i];
+    }
+  }
+  return lines;
+}
+
 function isWhitespace(line: string): boolean {
-  return /^[^\n\S]*$/.test(line);
+  for (let i = 0; i < line.length; i++) {
+    if (!' \t\n'.includes(line[i]) && !(line[i] === '\\' && line[i + 1] === '\n')) {
+      return false;
+    }
+  }
+  return true;
 }
