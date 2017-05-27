@@ -48,6 +48,8 @@ function getCoffeeLexQuasis(code: string): Array<string> {
   // for adding these escape characters.
   if (tokens.toArray()[0].type === SourceType.HEREGEXP_START) {
     quasis = quasis.map(str => str.replace(/\\/g, '\\\\'));
+  } else {
+    quasis = quasis.map(normalizeSpaces);
   }
   return quasis.filter(quasi => quasi.length > 0);
 }
@@ -57,7 +59,7 @@ function getCoffeeScriptQuasis(code: string): Array<string> {
   let resultQuasis: Array<string> = [];
   for (let token of tokens) {
     if (token[0] === 'STRING') {
-      let stringForm = token[1].replace(/\t/g, '\\t');
+      let stringForm = normalizeSpaces(token[1].replace(/\t/g, '\\t'));
       if (stringForm[0] === '\'') {
         stringForm = `"${stringForm.slice(1, -1)}"`;
       }
@@ -74,4 +76,21 @@ function getCoffeeScriptQuasis(code: string): Array<string> {
     }
   }
   return resultQuasis.filter(quasi => quasi.length > 0);
+}
+
+function normalizeSpaces(str: string): string {
+  let fixedStr = '';
+  let numBackslashes = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === ' ' && numBackslashes % 2 === 1) {
+      fixedStr = fixedStr.slice(0, fixedStr.length - 1);
+    }
+    if (str[i] === '\\') {
+      numBackslashes++;
+    } else {
+      numBackslashes = 0;
+    }
+    fixedStr += str[i];
+  }
+  return fixedStr;
 }
