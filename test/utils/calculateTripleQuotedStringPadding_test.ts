@@ -170,6 +170,16 @@ b"""`,
       ['a']);
   });
 
+  it('handles escaped and unescaped newlines after the last content line', () => {
+    verifyStringMatchesCoffeeScript(`'''
+  first line
+  second line
+
+    \\
+
+'''`,
+      ['first line\nsecond line\n']);
+  });
 
   it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
     let source = `"""\n#{a}\n"""`;
