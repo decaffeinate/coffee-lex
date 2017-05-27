@@ -145,17 +145,31 @@ function getLineIndent(line: string): string {
   }
 }
 
+/**
+ * Mimic the STRING_OMIT regex from the CoffeeScript lexer, and split on all
+ * newlines that remain after that operation. That operation finds all escaped
+ * newlines (which may have a backslash, then any number of spaces, then a
+ * newline), and removes everything from the backslash to the next
+ * non-whitespace character (so it may skip later newlines).
+ */
 function splitUnescapedNewlines(str: string): Array<string> {
   let lines = [''];
   let numBackslashes = 0;
+  let isEatingWhitespace = false;
   for (let i = 0; i < str.length; i++) {
-    if (str[i] === '\n' && numBackslashes % 2 === 0) {
+    if (str[i] === '\n' && numBackslashes % 2 === 0 && !isEatingWhitespace) {
       lines.push('');
     } else {
+      if (str[i] === '\n' && numBackslashes % 2 === 1) {
+        isEatingWhitespace = true;
+      }
       if (str[i] === '\\') {
         numBackslashes++;
       } else {
         numBackslashes = 0;
+      }
+      if (!' \t\n'.includes(str[i])) {
+        isEatingWhitespace = false;
       }
       lines[lines.length - 1] += str[i];
     }
