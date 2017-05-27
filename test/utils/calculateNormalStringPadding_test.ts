@@ -63,4 +63,11 @@ a
 \\
 "`, ['a']);
   });
+
+  it('does not remove spacing to the right of an escaped space', () => {
+    verifyStringMatchesCoffeeScript(`"
+a
+   \\  b
+"`, ['a   b']);
+  });
 });

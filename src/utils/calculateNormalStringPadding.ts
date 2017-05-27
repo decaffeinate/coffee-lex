@@ -39,10 +39,10 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
         pos++;
         // Search forward until the next non-whitespace character. Even skip
         // newlines, so that two or more newlines with only spaces between them
-        // will result in a single line separator. Escaped whitespace characters
+        // will result in a single line separator. Escaped newline characters
         // are also allowed and should be skipped.
         while ((pos < content.length && ' \t\n'.includes(content[pos])) ||
-            (pos < content.length && content[pos] === '\\' && ' \t\n'.includes(content[pos + 1]))) {
+            (content.slice(pos, pos + 2) === '\\\n')) {
           pos++;
         }
         let endIndex = pos;
