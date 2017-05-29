@@ -5,13 +5,10 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "./script/build",
     "lint": "tslint --config tslint.json --project tsconfig.json --type-check",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix",
-    "pretest": "npm run lint",
-    "test": "mocha",
-    "prepublish": "npm run lint && npm run build",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "pretest": "yarn run lint",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

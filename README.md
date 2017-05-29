@@ -1,11 +1,14 @@
-# coffee-lex [![Build Status](https://travis-ci.org/decaffeinate/coffee-lex.svg?branch=master)](https://travis-ci.org/decaffeinate/coffee-lex) [![npm version](https://badge.fury.io/js/coffee-lex.svg)](https://badge.fury.io/js/coffee-lex) [![Greenkeeper badge](https://badges.greenkeeper.io/decaffeinate/coffee-lex.svg)](https://greenkeeper.io/)
+# coffee-lex [![Build Status](https://travis-ci.org/decaffeinate/coffee-lex.svg?branch=master)](https://travis-ci.org/decaffeinate/coffee-lex) [![package version](https://badge.fury.io/js/coffee-lex.svg)](https://badge.fury.io/js/coffee-lex) [![Greenkeeper badge](https://badges.greenkeeper.io/decaffeinate/coffee-lex.svg)](https://greenkeeper.io/)
 
 Stupid lexer for CoffeeScript.
 
 ## Install
 
-```
-$ npm install [--save] coffee-lex
+```bash
+# via yarn
+$ yarn add coffee-lex
+# via npm
+$ npm install coffee-lex
 ```
 
 ## Usage
