@@ -326,9 +326,9 @@ debug@2, debug@2.6.0, debug@^2.2.0:
   dependencies:
     ms "0.7.2"
 
-decaffeinate-coffeescript@^1.10.0-patch15:
-  version "1.10.0"
-  resolved "https://registry.npmjs.org/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0.tgz#919f1d1870acd8ff072fb0e6315472bace261be0"
+decaffeinate-coffeescript@^1.10.0-patch25:
+  version "1.10.0-patch25"
+  resolved "https://registry.npmjs.org/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch25.tgz#81816adc6361bd7d1e59d9034c8c5bfcea00677e"
 
 decamelize@^1.1.2:
   version "1.2.0"
