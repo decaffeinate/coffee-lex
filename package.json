@@ -30,14 +30,14 @@
   },
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
-    "@types/mocha": "^2.2.37",
-    "@types/node": "^8.0.0",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.9",
     "decaffeinate-coffeescript": "^1.10.0-patch25",
     "mocha": "^3.2.0",
     "semantic-release": "^6.3.5",
-    "ts-node": "^3.0.0",
-    "tslint": "^5.0.0",
-    "typescript": "^2.1.4"
+    "ts-node": "^3.2.0",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

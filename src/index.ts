@@ -212,6 +212,8 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SourceType.DO:
         case SourceType.YIELD:
         case SourceType.YIELDFROM:
+        case SourceType.THROW:
+        case SourceType.EXTENDS:
         case SourceType.CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SourceType.SPACE);
@@ -462,6 +464,14 @@ export function stream(source: string, index: number=0): () => SourceLocation {
 
                 case 'yield':
                   setType(SourceType.YIELD);
+                  break;
+
+                case 'throw':
+                  setType(SourceType.THROW);
+                  break;
+
+                case 'extends':
+                  setType(SourceType.EXTENDS);
                   break;
 
                 default:
