@@ -1682,6 +1682,32 @@ else(0)`),
     );
    });
 
+  it('identifies `extends` as a keyword', () => {
+    checkLocations(
+      stream('a extends b'),
+      [
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.SPACE, 1),
+        new SourceLocation(SourceType.EXTENDS, 2),
+        new SourceLocation(SourceType.SPACE, 9),
+        new SourceLocation(SourceType.IDENTIFIER, 10),
+        new SourceLocation(SourceType.EOF, 11)
+      ]
+    );
+  });
+
+  it('identifies `throw` as a keyword', () => {
+    checkLocations(
+      stream('throw a'),
+      [
+        new SourceLocation(SourceType.THROW, 0),
+        new SourceLocation(SourceType.SPACE, 5),
+        new SourceLocation(SourceType.IDENTIFIER, 6),
+        new SourceLocation(SourceType.EOF, 7)
+      ]
+    );
+  });
+
   it('does not infinite loop on incomplete string interpolations', () => {
     try {
       lex('a = "#{');
