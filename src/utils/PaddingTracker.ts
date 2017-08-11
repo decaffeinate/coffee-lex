@@ -55,8 +55,7 @@ export default class PaddingTracker {
     let rangeIndex = 0;
     for (let location of this._originalLocations) {
       let currentRange = this.fragments[rangeIndex];
-      if (location.type === SourceType.STRING_CONTENT &&
-          currentRange && location.index === currentRange.start) {
+      if (location.type === SourceType.STRING_CONTENT && currentRange && location.index === currentRange.start) {
         resultLocations.push(...currentRange.computeSourceLocations());
         rangeIndex++;
       } else {
@@ -70,7 +69,7 @@ export default class PaddingTracker {
   }
 }
 
-export type PaddingRange = { start: number, end: number };
+export type PaddingRange = { start: number; end: number };
 type LocationEvent = 'START_PADDING' | 'END_PADDING' | 'START_LINE_SEPARATOR' | 'END_LINE_SEPARATOR';
 
 export class TrackedFragment {
@@ -91,7 +90,7 @@ export class TrackedFragment {
   }
 
   markPadding(startIndex: number, endIndex: number) {
-    this._paddingRanges.push({start: startIndex, end: endIndex});
+    this._paddingRanges.push({ start: startIndex, end: endIndex });
   }
 
   markLineSeparator(index: number) {
@@ -137,7 +136,8 @@ export class TrackedFragment {
       }
       if (paddingDepth < 0 || lineSeparatorDepth < 0 || (paddingDepth > 0 && lineSeparatorDepth > 0)) {
         throw new Error(
-          `Illegal padding state: paddingDepth: ${paddingDepth}, lineSeparatorDepth: ${lineSeparatorDepth}`);
+          `Illegal padding state: paddingDepth: ${paddingDepth}, lineSeparatorDepth: ${lineSeparatorDepth}`
+        );
       }
 
       let sourceType;

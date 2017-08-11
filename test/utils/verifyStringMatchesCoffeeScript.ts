@@ -1,7 +1,7 @@
 import { deepEqual } from 'assert';
 import * as CoffeeScript from 'decaffeinate-coffeescript';
 
-import lex  from '../../src/index';
+import lex from '../../src/index';
 import SourceType from '../../src/SourceType';
 
 /**
@@ -19,16 +19,8 @@ import SourceType from '../../src/SourceType';
 export default function verifyStringMatchesCoffeeScript(code: string, expectedQuasis: Array<string>) {
   let coffeeLexResult = getCoffeeLexQuasis(code);
   let coffeeScriptResult = getCoffeeScriptQuasis(code);
-  deepEqual(
-    coffeeLexResult,
-    coffeeScriptResult,
-    'coffee-lex output and CoffeeScript output disagreed.'
-  );
-  deepEqual(
-    coffeeLexResult,
-    expectedQuasis,
-    'coffee-lex output and expected output disagreed.'
-  );
+  deepEqual(coffeeLexResult, coffeeScriptResult, 'coffee-lex output and CoffeeScript output disagreed.');
+  deepEqual(coffeeLexResult, expectedQuasis, 'coffee-lex output and expected output disagreed.');
 }
 
 function getCoffeeLexQuasis(code: string): Array<string> {
@@ -60,19 +52,13 @@ function getCoffeeScriptQuasis(code: string): Array<string> {
   for (let token of tokens) {
     if (token[0] === 'STRING') {
       let stringForm = normalizeSpaces(token[1].replace(/\t/g, '\\t'));
-      if (stringForm[0] === '\'') {
+      if (stringForm[0] === "'") {
         stringForm = `"${stringForm.slice(1, -1)}"`;
       }
-      resultQuasis.push(
-        JSON.parse(stringForm).replace(/\\/g, '\\\\')
-      );
+      resultQuasis.push(JSON.parse(stringForm).replace(/\\/g, '\\\\'));
     } else if (token[0] === 'REGEX') {
-      let stringForm = `"${token[1].slice(1, -1)}"`
-        .replace(/\\/g, '\\\\')
-        .replace(/\t/g, '\\t');
-      resultQuasis.push(
-        JSON.parse(stringForm).replace(/\\/g, '\\\\')
-      );
+      let stringForm = `"${token[1].slice(1, -1)}"`.replace(/\\/g, '\\\\').replace(/\t/g, '\\t');
+      resultQuasis.push(JSON.parse(stringForm).replace(/\\/g, '\\\\'));
     }
   }
   return resultQuasis.filter(quasi => quasi.length > 0);

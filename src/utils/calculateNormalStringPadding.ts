@@ -3,7 +3,7 @@ import PaddingTracker from './PaddingTracker';
 
 import SourceLocation from '../SourceLocation';
 import BufferedStream from './BufferedStream';
-import isNewlineEscaped from "./isNewlineEscaped";
+import isNewlineEscaped from './isNewlineEscaped';
 
 /**
  * Compute the whitespace to remove in a multiline single or double quoted
@@ -41,8 +41,7 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
         // newlines, so that two or more newlines with only spaces between them
         // will result in a single line separator. Escaped newline characters
         // are also allowed and should be skipped.
-        while ((pos < content.length && ' \t\n'.includes(content[pos])) ||
-            (content.slice(pos, pos + 2) === '\\\n')) {
+        while ((pos < content.length && ' \t\n'.includes(content[pos])) || content.slice(pos, pos + 2) === '\\\n') {
           pos++;
         }
         let endIndex = pos;
@@ -52,8 +51,10 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
           // escape character are removed.
           let backslashPos = content.lastIndexOf('\\', newlinePos);
           fragment.markPadding(backslashPos, endIndex);
-        } else if ((fragmentIndex === 0 && startIndex === 0) ||
-            (fragmentIndex === paddingTracker.fragments.length - 1 && endIndex === content.length)) {
+        } else if (
+          (fragmentIndex === 0 && startIndex === 0) ||
+          (fragmentIndex === paddingTracker.fragments.length - 1 && endIndex === content.length)
+        ) {
           // We only want spaces between, not around, lines, so if we're up
           // against the left side or right side of the string, mark the newline
           // as padding.

@@ -29,7 +29,10 @@ import { TrackedFragment } from './PaddingTracker';
  * See the stringToken function in lexer.coffee in the CoffeeScript source code
  * for CoffeeScript's implementation of this.
  */
-export default function calculateTripleQuotedStringPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
+export default function calculateTripleQuotedStringPadding(
+  source: string,
+  stream: BufferedStream
+): Array<SourceLocation> {
   let paddingTracker;
   if (stream.hasNext(SourceType.TSSTRING_START)) {
     paddingTracker = new PaddingTracker(source, stream, SourceType.TSSTRING_END);
@@ -55,10 +58,7 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
     if (lastLines.length > 1) {
       let lastLine = lastLines[lastLines.length - 1];
       if (isWhitespace(lastLine)) {
-        lastFragment.markPadding(
-          lastFragment.content.length - lastLine.length - 1,
-          lastFragment.content.length
-        );
+        lastFragment.markPadding(lastFragment.content.length - lastLine.length - 1, lastFragment.content.length);
       }
     }
   }
@@ -68,8 +68,7 @@ export default function calculateTripleQuotedStringPadding(source: string, strea
       if (fragment.content[i] === '\n' && isNewlineEscaped(fragment.content, i)) {
         let backslashPos = fragment.content.lastIndexOf('\\', i);
         let paddingEnd = i;
-        while (paddingEnd < fragment.content.length &&
-            ' \t\n'.includes(fragment.content[paddingEnd])) {
+        while (paddingEnd < fragment.content.length && ' \t\n'.includes(fragment.content[paddingEnd])) {
           paddingEnd++;
         }
         fragment.markPadding(backslashPos, paddingEnd);

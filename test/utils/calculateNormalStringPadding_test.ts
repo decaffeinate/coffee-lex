@@ -6,68 +6,101 @@ describe('calculateNormalStringPaddingTest', () => {
   });
 
   it('inserts spaces for newlines', () => {
-    verifyStringMatchesCoffeeScript(`"
+    verifyStringMatchesCoffeeScript(
+      `"
       a
       b
-    "`, ['a b']);
+    "`,
+      ['a b']
+    );
   });
 
   it('removes spaces when there is an interpolation', () => {
-    verifyStringMatchesCoffeeScript(`"
+    verifyStringMatchesCoffeeScript(
+      `"
       a  #{b}
       c
-    "`, ['a  ', ' c']);
+    "`,
+      ['a  ', ' c']
+    );
   });
 
   it('does not remove spaces when the only newline is across an interpolation', () => {
-    verifyStringMatchesCoffeeScript(`" a #{
-  b} c "`, [' a ', ' c ']);
+    verifyStringMatchesCoffeeScript(
+      `" a #{
+  b} c "`,
+      [' a ', ' c ']
+    );
   });
 
   it('removes leading and trailing tab characters', () => {
-    verifyStringMatchesCoffeeScript(`"
+    verifyStringMatchesCoffeeScript(
+      `"
 \ta
     b\t
-"`, ['a b']);
+"`,
+      ['a b']
+    );
   });
 
   it('does not add an intermediate space when a newline is escaped', () => {
-    verifyStringMatchesCoffeeScript(`"a\\
-b"`, ['ab']);
+    verifyStringMatchesCoffeeScript(
+      `"a\\
+b"`,
+      ['ab']
+    );
   });
 
   it('adds an intermediate space on a double backslash', () => {
-    verifyStringMatchesCoffeeScript(`"a\\\\
-b"`, ['a\\\\ b']);
+    verifyStringMatchesCoffeeScript(
+      `"a\\\\
+b"`,
+      ['a\\\\ b']
+    );
   });
 
   it('does not add an intermediate space on a triple backslash', () => {
-    verifyStringMatchesCoffeeScript(`"a\\\\\\
-b"`, ['a\\\\b']);
+    verifyStringMatchesCoffeeScript(
+      `"a\\\\\\
+b"`,
+      ['a\\\\b']
+    );
   });
 
   it('does not remove spaces to the left of an escaped newline', () => {
-    verifyStringMatchesCoffeeScript(`"a   \\
-b"`, ['a   b']);
+    verifyStringMatchesCoffeeScript(
+      `"a   \\
+b"`,
+      ['a   b']
+    );
   });
 
   it('treats a backslash, then spaces, then a newline as an escaped newline', () => {
-    verifyStringMatchesCoffeeScript(`"
+    verifyStringMatchesCoffeeScript(
+      `"
 a\\  
-b"`, ['ab']);
+b"`,
+      ['ab']
+    );
   });
 
   it('does not add trailing spacing for an escaped newline at the end', () => {
-    verifyStringMatchesCoffeeScript(`"
+    verifyStringMatchesCoffeeScript(
+      `"
 a
 \\
-"`, ['a']);
+"`,
+      ['a']
+    );
   });
 
   it('does not remove spacing to the right of an escaped space', () => {
-    verifyStringMatchesCoffeeScript(`"
+    verifyStringMatchesCoffeeScript(
+      `"
 a
    \\  b
-"`, ['a   b']);
+"`,
+      ['a   b']
+    );
   });
 });
