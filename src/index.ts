@@ -16,27 +16,13 @@ export default function lex(source: string): SourceTokenList {
   let tokens: Array<SourceToken> = [];
   let pending = new BufferedStream(stream(source));
   do {
-    pending.unshift(
-      ...calculateNormalStringPadding(source, pending)
-    );
-    pending.unshift(
-      ...calculateTripleQuotedStringPadding(source, pending)
-    );
-    pending.unshift(
-      ...calculateHeregexpPadding(source, pending)
-    );
-    pending.unshift(
-      ...combinedLocationsForMultiwordOperators(pending, source)
-    );
+    pending.unshift(...calculateNormalStringPadding(source, pending));
+    pending.unshift(...calculateTripleQuotedStringPadding(source, pending));
+    pending.unshift(...calculateHeregexpPadding(source, pending));
+    pending.unshift(...combinedLocationsForMultiwordOperators(pending, source));
     location = pending.shift();
     if (previousLocation && previousLocation.type !== SourceType.SPACE) {
-      tokens.push(
-        new SourceToken(
-          previousLocation.type,
-          previousLocation.index,
-          location.index
-        )
-      );
+      tokens.push(new SourceToken(previousLocation.type, previousLocation.index, location.index));
     }
     previousLocation = location;
   } while (location.type !== SourceType.EOF);
@@ -44,7 +30,10 @@ export default function lex(source: string): SourceTokenList {
 }
 
 function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: string): Array<SourceLocation> {
-  if (!stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.OPERATOR) && !stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.RELATION)) {
+  if (
+    !stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.OPERATOR) &&
+    !stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.RELATION)
+  ) {
     return [];
   }
 
@@ -58,27 +47,16 @@ function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: 
     switch (op) {
       case 'in':
       case 'of':
-        return [
-          new SourceLocation(
-            SourceType.RELATION,
-            not.index
-          )
-        ];
+        return [new SourceLocation(SourceType.RELATION, not.index)];
 
       case 'instanceof':
-        return [
-          new SourceLocation(
-            SourceType.OPERATOR,
-            not.index
-          )
-        ];
+        return [new SourceLocation(SourceType.OPERATOR, not.index)];
     }
   }
 
   // Doesn't match, so put them back.
   return [not, space, operator];
 }
-
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 
@@ -89,11 +67,25 @@ export { SourceType };
  */
 const STRING = [SourceType.SSTRING_END, SourceType.DSTRING_END, SourceType.TSSTRING_END, SourceType.TDSTRING_END];
 const CALLABLE = [
-  SourceType.IDENTIFIER, SourceType.CALL_END, SourceType.RPAREN, SourceType.RBRACKET, SourceType.EXISTENCE, SourceType.AT, SourceType.THIS, SourceType.SUPER
+  SourceType.IDENTIFIER,
+  SourceType.CALL_END,
+  SourceType.RPAREN,
+  SourceType.RBRACKET,
+  SourceType.EXISTENCE,
+  SourceType.AT,
+  SourceType.THIS,
+  SourceType.SUPER
 ];
 const INDEXABLE = CALLABLE.concat([
-  SourceType.NUMBER, ...STRING, SourceType.REGEXP, SourceType.HEREGEXP_END,
-  SourceType.BOOL, SourceType.NULL, SourceType.UNDEFINED, SourceType.RBRACE, SourceType.PROTO
+  SourceType.NUMBER,
+  ...STRING,
+  SourceType.REGEXP,
+  SourceType.HEREGEXP_END,
+  SourceType.BOOL,
+  SourceType.NULL,
+  SourceType.UNDEFINED,
+  SourceType.RBRACE,
+  SourceType.PROTO
 ]);
 const NOT_REGEXP = INDEXABLE.concat([SourceType.INCREMENT, SourceType.DECREMENT]);
 
@@ -105,41 +97,76 @@ const YIELDFROM_PATTERN = /^yield[^\n\r\S]+from/;
 
 const OPERATORS = [
   // equality
-  '===', '==', '!==', '!=',
+  '===',
+  '==',
+  '!==',
+  '!=',
   // assignment
   '=',
-  '+=', '-=', '/=', '*=', '%=', '%%=',
-  '||=', '&&=', '^=', 'or=', 'and=',
+  '+=',
+  '-=',
+  '/=',
+  '*=',
+  '%=',
+  '%%=',
+  '||=',
+  '&&=',
+  '^=',
+  'or=',
+  'and=',
   '?=',
-  '|=', '&=', '~=', '<<=', '>>>=', '>>=',
+  '|=',
+  '&=',
+  '~=',
+  '<<=',
+  '>>>=',
+  '>>=',
   // increment/decrement
-  '++', '--',
+  '++',
+  '--',
   // math
-  '+', '-', '//', '/', '*', '%', '%%',
+  '+',
+  '-',
+  '//',
+  '/',
+  '*',
+  '%',
+  '%%',
   // logical
-  '||', '&&', '^', '!',
+  '||',
+  '&&',
+  '^',
+  '!',
   // existence
   '?',
   // bitwise
-  '|', '&', '~', '<<', '>>>', '>>',
+  '|',
+  '&',
+  '~',
+  '<<',
+  '>>>',
+  '>>',
   // comparison
-  '<=', '<', '>=', '>',
+  '<=',
+  '<',
+  '>=',
+  '>',
   // prototype access
-  '::',
+  '::'
 ];
 
 /**
  * Provides a stream of source type change locations.
  */
-export function stream(source: string, index: number=0): () => SourceLocation {
+export function stream(source: string, index: number = 0): () => SourceLocation {
   let location = new SourceLocation(SourceType.NORMAL, index);
-  let interpolationStack: Array<{ type: SourceType, braces: Array<number> }> = [];
+  let interpolationStack: Array<{ type: SourceType; braces: Array<number> }> = [];
   let braceStack: Array<number> = [];
   let parenStack: Array<SourceType> = [];
   let stringStack: Array<{
-    allowInterpolations: boolean,
-    endingDelimiter: string,
-    endSourceType: SourceType
+    allowInterpolations: boolean;
+    endingDelimiter: string;
+    endSourceType: SourceType;
   }> = [];
   let start = index;
   let locations: Array<SourceLocation> = [];
@@ -229,28 +256,28 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '"""',
-              endSourceType: SourceType.TDSTRING_END,
+              endSourceType: SourceType.TDSTRING_END
             });
             setType(SourceType.TDSTRING_START);
           } else if (consume('"')) {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '"',
-              endSourceType: SourceType.DSTRING_END,
+              endSourceType: SourceType.DSTRING_END
             });
             setType(SourceType.DSTRING_START);
-          } else if (consume('\'\'\'')) {
+          } else if (consume("'''")) {
             stringStack.push({
               allowInterpolations: false,
-              endingDelimiter: '\'\'\'',
-              endSourceType: SourceType.TSSTRING_END,
+              endingDelimiter: "'''",
+              endSourceType: SourceType.TSSTRING_END
             });
             setType(SourceType.TSSTRING_START);
-          } else if (consume('\'')) {
+          } else if (consume("'")) {
             stringStack.push({
               allowInterpolations: false,
-              endingDelimiter: '\'',
-              endSourceType: SourceType.SSTRING_END,
+              endingDelimiter: "'",
+              endSourceType: SourceType.SSTRING_END
             });
             setType(SourceType.SSTRING_START);
           } else if (consume(/^###[^#]/)) {
@@ -261,7 +288,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             stringStack.push({
               allowInterpolations: true,
               endingDelimiter: '///',
-              endSourceType: SourceType.HEREGEXP_END,
+              endSourceType: SourceType.HEREGEXP_END
             });
             setType(SourceType.HEREGEXP_START);
           } else if (consume('(')) {
@@ -341,7 +368,10 @@ export function stream(source: string, index: number=0): () => SourceLocation {
             }
             let prev = locations[prevLocationIndex];
             let nextIsColon = match(/^\s*:/);
-            if (nextIsColon || (prev && (prev.type === SourceType.DOT || prev.type === SourceType.PROTO || prev.type === SourceType.AT))) {
+            if (
+              nextIsColon ||
+              (prev && (prev.type === SourceType.DOT || prev.type === SourceType.PROTO || prev.type === SourceType.AT))
+            ) {
               setType(SourceType.IDENTIFIER);
             } else {
               switch (consumed()) {
@@ -496,8 +526,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SourceType.STRING_CONTENT: {
           let stringOptions = stringStack[stringStack.length - 1];
           if (!stringOptions) {
-            throw new Error(
-              'Unexpected STRING_CONTENT without anything on the string stack.');
+            throw new Error('Unexpected STRING_CONTENT without anything on the string stack.');
           }
           if (consume('\\')) {
             index++;
@@ -558,8 +587,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
         case SourceType.EOF:
           if (braceStack.length !== 0) {
             throw new Error(
-              `unexpected EOF while looking for '}' to match '{' ` +
-              `at ${braceStack[braceStack.length - 1]}`
+              `unexpected EOF while looking for '}' to match '{' ` + `at ${braceStack[braceStack.length - 1]}`
             );
           }
           if (stringStack.length !== 0) {
@@ -576,15 +604,11 @@ export function stream(source: string, index: number=0): () => SourceLocation {
           throw new Error(`unknown source type at offset ${location.index}: ${SourceType[location.type]}`);
       }
 
-      shouldStepAgain = (
+      shouldStepAgain =
         // Don't report on going back to "normal" source code.
         location.type === SourceType.NORMAL ||
         // Don't report if nothing has changed, unless we're at the end.
-        (
-          location === lastLocation &&
-          location.type !== SourceType.EOF
-        )
-      );
+        (location === lastLocation && location.type !== SourceType.EOF);
     } while (shouldStepAgain);
 
     locations.push(location);
@@ -595,7 +619,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     return strings.some(string => consume(string));
   }
 
-  function consume(value: string|RegExp): boolean {
+  function consume(value: string | RegExp): boolean {
     let matchData = match(value);
     if (matchData) {
       index += matchData[0].length;
@@ -610,7 +634,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     if (!matchData) {
       return false;
     }
-    let [ regex, , closed ] = matchData;
+    let [regex, , closed] = matchData;
     let prev = locations[locations.length - 1];
     if (prev) {
       let spaced = false;
@@ -644,7 +668,7 @@ export function stream(source: string, index: number=0): () => SourceLocation {
     location = new SourceLocation(newType, start);
   }
 
-  function match(value: string|RegExp): Array<string> | null {
+  function match(value: string | RegExp): Array<string> | null {
     if (typeof value === 'string') {
       let matches = source.slice(index, index + value.length) === value;
       return matches ? [value] : null;

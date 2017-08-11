@@ -5,7 +5,11 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
+    "check-format": "prettier-check --parser typescript --print-width 120 --single-quote '{src,test}/**/*.ts'",
+    "reformat": "prettier --parser typescript --print-width 120 --single-quote --write '{src,test}/**/*.ts'",
+    "prelint": "yarn run check-format",
     "lint": "tslint --config tslint.json --project tsconfig.json --type-check",
+    "prelint-fix": "yarn run reformat",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix",
     "pretest": "yarn run lint",
     "test": "mocha"
@@ -34,7 +38,9 @@
     "@types/node": "^8.0.9",
     "decaffeinate-coffeescript": "^1.10.0-patch25",
     "mocha": "^3.2.0",
-    "semantic-release": "^7.0.2",
+    "prettier": "1.5.3",
+    "prettier-check": "1.0.0",
+    "semantic-release": "^6.3.5",
     "ts-node": "^3.2.0",
     "tslint": "^5.5.0",
     "typescript": "^2.4.1"

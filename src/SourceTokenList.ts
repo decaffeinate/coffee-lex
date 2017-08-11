@@ -53,14 +53,18 @@ export default class SourceTokenList {
    */
   map<T>(mapper: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => T): Array<T> {
     let result: Array<T> = [];
-    this.forEach((token, index, list) => { result.push(mapper(token, index, list)); });
+    this.forEach((token, index, list) => {
+      result.push(mapper(token, index, list));
+    });
     return result;
   }
 
   /**
    * Filter tokens by a predicate.
    */
-  filter(predicate: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => boolean): SourceTokenList {
+  filter(
+    predicate: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => boolean
+  ): SourceTokenList {
     let result: Array<SourceToken> = [];
     this.forEach((token, index, list) => {
       if (predicate(token, index, list)) {
@@ -99,15 +103,16 @@ export default class SourceTokenList {
   rangeOfInterpolatedStringTokensContainingTokenIndex(index: SourceTokenListIndex): SourceTokenListIndexRange | null {
     let bestRange: SourceTokenListIndexRange | null = null;
     for (let [startType, endType] of [
-        [SourceType.DSTRING_START, SourceType.DSTRING_END], [SourceType.TDSTRING_START, SourceType.TDSTRING_END], [SourceType.HEREGEXP_START, SourceType.HEREGEXP_END]]) {
-      let range = this.rangeOfMatchingTokensContainingTokenIndex(
-        startType,
-        endType,
-        index
-      );
-      if (bestRange === null || bestRange === undefined ||
-          (range !== null && range !== undefined &&
-            range[0].distance(range[1]) < bestRange[0].distance(bestRange[1]))) {
+      [SourceType.DSTRING_START, SourceType.DSTRING_END],
+      [SourceType.TDSTRING_START, SourceType.TDSTRING_END],
+      [SourceType.HEREGEXP_START, SourceType.HEREGEXP_END]
+    ]) {
+      let range = this.rangeOfMatchingTokensContainingTokenIndex(startType, endType, index);
+      if (
+        bestRange === null ||
+        bestRange === undefined ||
+        (range !== null && range !== undefined && range[0].distance(range[1]) < bestRange[0].distance(bestRange[1]))
+      ) {
         bestRange = range;
       }
     }
@@ -121,7 +126,11 @@ export default class SourceTokenList {
    * This range will contain `index`. If no such range can be found, `null` is
    * returned.
    */
-  rangeOfMatchingTokensContainingTokenIndex(startType: SourceType, endType: SourceType, index: SourceTokenListIndex): SourceTokenListIndexRange | null {
+  rangeOfMatchingTokensContainingTokenIndex(
+    startType: SourceType,
+    endType: SourceType,
+    index: SourceTokenListIndex
+  ): SourceTokenListIndexRange | null {
     this._validateIndex(index);
 
     let token = this.tokenAtIndex(index);
@@ -130,8 +139,7 @@ export default class SourceTokenList {
     }
 
     switch (token.type) {
-      case startType:
-      {
+      case startType: {
         let level = 0;
         let start = index;
 
@@ -158,8 +166,7 @@ export default class SourceTokenList {
         }
       }
 
-      case endType:
-      {
+      case endType: {
         let level = 0;
         let endIndex = index;
 
@@ -187,8 +194,7 @@ export default class SourceTokenList {
         }
       }
 
-      default:
-      {
+      default: {
         let level = 0;
         let startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
           if (token.type === startType) {
@@ -256,7 +262,11 @@ export default class SourceTokenList {
   /**
    * Finds the index of the first token matching a predicate.
    */
-  indexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start: SourceTokenListIndex | null = null, end: SourceTokenListIndex | null = null): SourceTokenListIndex | null {
+  indexOfTokenMatchingPredicate(
+    predicate: (token: SourceToken) => boolean,
+    start: SourceTokenListIndex | null = null,
+    end: SourceTokenListIndex | null = null
+  ): SourceTokenListIndex | null {
     if (!start) {
       start = this.startIndex;
     }
@@ -282,7 +292,11 @@ export default class SourceTokenList {
    * Finds the index of the first token matching a predicate, traversing
    * backwards.
    */
-  lastIndexOfTokenMatchingPredicate(predicate: (token: SourceToken) => boolean, start: SourceTokenListIndex | null = null, end: SourceTokenListIndex | null = null): SourceTokenListIndex | null {
+  lastIndexOfTokenMatchingPredicate(
+    predicate: (token: SourceToken) => boolean,
+    start: SourceTokenListIndex | null = null,
+    end: SourceTokenListIndex | null = null
+  ): SourceTokenListIndex | null {
     if (!start) {
       start = this.endIndex.previous();
       if (!start) {
@@ -315,7 +329,7 @@ export default class SourceTokenList {
   [Symbol.iterator]() {
     let index = this.startIndex;
     let { endIndex } = this;
-    return (): { done: boolean, value: SourceToken | null | undefined } => {
+    return (): { done: boolean; value: SourceToken | null | undefined } => {
       if (index === endIndex) {
         return { done: true, value: undefined };
       } else {
@@ -339,8 +353,8 @@ export default class SourceTokenList {
     for (let i = 0; i < tokens.length - 1; i++) {
       if (tokens[i].end > tokens[i + 1].start) {
         throw new Error(
-          `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` +
-          `${JSON.stringify(tokens[i + 1])}`);
+          `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` + `${JSON.stringify(tokens[i + 1])}`
+        );
       }
     }
   }
@@ -351,14 +365,12 @@ export default class SourceTokenList {
   private _validateIndex(index: SourceTokenListIndex | null) {
     if (!index) {
       throw new Error(
-        `unexpected 'null' index, perhaps you forgot to check the result of ` +
-        `'indexOfTokenContainingSourceIndex'?`
+        `unexpected 'null' index, perhaps you forgot to check the result of ` + `'indexOfTokenContainingSourceIndex'?`
       );
     }
     if (typeof index === 'number') {
       throw new Error(
-        `to get a token at index ${index}, ` +
-        `use list.tokenAtIndex(list.startIndex.advance(${index}))`
+        `to get a token at index ${index}, ` + `use list.tokenAtIndex(list.startIndex.advance(${index}))`
       );
     }
     if (index['_sourceTokenList'] !== this) {
