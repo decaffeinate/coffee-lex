@@ -34,7 +34,7 @@
     "@types/node": "^8.0.9",
     "decaffeinate-coffeescript": "^1.10.0-patch25",
     "mocha": "^3.2.0",
-    "semantic-release": "^6.3.5",
+    "semantic-release": "^7.0.2",
     "ts-node": "^3.2.0",
     "tslint": "^5.5.0",
     "typescript": "^2.4.1"
