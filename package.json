@@ -38,7 +38,7 @@
     "@types/node": "^8.0.9",
     "decaffeinate-coffeescript": "^1.10.0-patch25",
     "mocha": "^3.2.0",
-    "prettier": "1.6.1",
+    "prettier": "1.7.0",
     "prettier-check": "1.0.0",
     "semantic-release": "^6.3.5",
     "ts-node": "^3.2.0",
