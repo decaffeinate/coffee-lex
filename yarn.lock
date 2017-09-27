@@ -1255,9 +1255,9 @@ prettier-check@1.0.0:
     execa "^0.6.0"
     prettier "^0.21.0"
 
-prettier@1.6.1:
-  version "1.6.1"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-1.6.1.tgz#850f411a3116226193e32ea5acfc21c0f9a76d7d"
+prettier@1.7.2:
+  version "1.7.2"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-1.7.2.tgz#81371e64018aafc69cf1031956c70e029339f54e"
 
 prettier@^0.21.0:
   version "0.21.0"
