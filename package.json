@@ -37,7 +37,7 @@
     "@types/mocha": "^2.2.41",
     "@types/node": "^8.0.9",
     "decaffeinate-coffeescript": "^1.10.0-patch25",
-    "mocha": "^3.2.0",
+    "mocha": "^4.0.0",
     "prettier": "1.6.1",
     "prettier-check": "2.0.0",
     "prettier": "1.7.2",
