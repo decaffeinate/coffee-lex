@@ -35,7 +35,7 @@
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
     "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.9",
+    "@types/node": "^9.3.0",
     "decaffeinate-coffeescript": "^1.10.0-patch25",
     "mocha": "^4.0.1",
     "prettier": "1.9.2",
