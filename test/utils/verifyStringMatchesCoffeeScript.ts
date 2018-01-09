@@ -67,16 +67,16 @@ function getCoffeeScriptQuasis(code: string): Array<string> {
 function normalizeSpaces(str: string): string {
   let fixedStr = '';
   let numBackslashes = 0;
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === ' ' && numBackslashes % 2 === 1) {
+  for (let chr of str) {
+    if (chr === ' ' && numBackslashes % 2 === 1) {
       fixedStr = fixedStr.slice(0, fixedStr.length - 1);
     }
-    if (str[i] === '\\') {
+    if (chr === '\\') {
       numBackslashes++;
     } else {
       numBackslashes = 0;
     }
-    fixedStr += str[i];
+    fixedStr += chr;
   }
   return fixedStr;
 }

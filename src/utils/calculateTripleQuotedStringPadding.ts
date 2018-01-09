@@ -155,22 +155,22 @@ function splitUnescapedNewlines(str: string): Array<string> {
   let lines = [''];
   let numBackslashes = 0;
   let isEatingWhitespace = false;
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === '\n' && numBackslashes % 2 === 0 && !isEatingWhitespace) {
+  for (let chr of str) {
+    if (chr === '\n' && numBackslashes % 2 === 0 && !isEatingWhitespace) {
       lines.push('');
     } else {
-      if (str[i] === '\n' && numBackslashes % 2 === 1) {
+      if (chr === '\n' && numBackslashes % 2 === 1) {
         isEatingWhitespace = true;
       }
-      if (str[i] === '\\') {
+      if (chr === '\\') {
         numBackslashes++;
       } else {
         numBackslashes = 0;
       }
-      if (!' \t\n'.includes(str[i])) {
+      if (!' \t\n'.includes(chr)) {
         isEatingWhitespace = false;
       }
-      lines[lines.length - 1] += str[i];
+      lines[lines.length - 1] += chr;
     }
   }
   return lines;

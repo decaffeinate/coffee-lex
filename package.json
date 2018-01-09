@@ -5,12 +5,12 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "check-format": "prettier-check --parser typescript --print-width 120 --single-quote '{src,test}/**/*.ts'",
-    "reformat": "prettier --parser typescript --print-width 120 --single-quote --write '{src,test}/**/*.ts'",
+    "check-format": "prettier-check --parser typescript '{src,test}/**/*.ts'",
+    "reformat": "prettier --parser typescript --write '{src,test}/**/*.ts'",
     "prelint": "yarn run check-format",
-    "lint": "tslint --config tslint.json --project tsconfig.json --type-check",
+    "lint": "tslint --config tslint.json --project tsconfig.json",
     "prelint-fix": "yarn run reformat",
-    "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix",
+    "lint-fix": "tslint --config tslint.json --project tsconfig.json --fix",
     "pretest": "yarn run lint",
     "test": "mocha"
   },
@@ -34,18 +34,16 @@
   },
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.9",
-    "decaffeinate-coffeescript": "^1.10.0-patch25",
-    "mocha": "^4.0.1",
-    "prettier": "1.9.2",
-    "prettier-check": "2.0.0",
+    "@types/mocha": "^2.2.46",
+    "@types/node": "^9.3.0",
+    "decaffeinate-coffeescript": "^1.10.0-patch26",
+    "mocha": "^4.1.0",
     "prettier": "1.9.2",
     "prettier-check": "2.0.0",
     "semantic-release": "^6.3.5",
-    "ts-node": "^4.0.1",
-    "tslint": "^5.5.0",
-    "typescript": "^2.4.1"
+    "ts-node": "^4.1.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
