@@ -1230,9 +1230,9 @@ prettier-check@2.0.0:
   dependencies:
     execa "^0.6.0"
 
-prettier@1.9.2:
-  version "1.9.2"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-1.9.2.tgz#96bc2132f7a32338e6078aeb29727178c6335827"
+prettier@1.10.0:
+  version "1.10.0"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-1.10.0.tgz#0b89c9b0d55d0862d9c977e4b459696bdea564fb"
 
 process-nextick-args@~1.0.6:
   version "1.0.7"
