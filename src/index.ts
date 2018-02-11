@@ -241,6 +241,9 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
         case SourceType.YIELDFROM:
         case SourceType.THROW:
         case SourceType.EXTENDS:
+        case SourceType.IMPORT:
+        case SourceType.EXPORT:
+        case SourceType.DEFAULT:
         case SourceType.CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SourceType.SPACE);
@@ -347,6 +350,8 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
             setType(SourceType.AT);
           } else if (consume(';')) {
             setType(SourceType.SEMICOLON);
+          } else if (consume('```')) {
+            setType(SourceType.HEREJS);
           } else if (consume('`')) {
             setType(SourceType.JS);
           } else if (consumeAny(OPERATORS)) {
@@ -504,6 +509,18 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
                   setType(SourceType.EXTENDS);
                   break;
 
+                case 'import':
+                  setType(SourceType.IMPORT);
+                  break;
+
+                case 'export':
+                  setType(SourceType.EXPORT);
+                  break;
+
+                case 'default':
+                  setType(SourceType.DEFAULT);
+                  break;
+
                 default:
                   setType(SourceType.IDENTIFIER);
               }
@@ -578,6 +595,16 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           if (consume('\\')) {
             index++;
           } else if (consume('`')) {
+            setType(SourceType.NORMAL);
+          } else {
+            index++;
+          }
+          break;
+
+        case SourceType.HEREJS:
+          if (consume('\\')) {
+            index++;
+          } else if (consume('```')) {
             setType(SourceType.NORMAL);
           } else {
             index++;

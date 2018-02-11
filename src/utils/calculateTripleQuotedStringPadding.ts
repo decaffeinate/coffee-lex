@@ -75,8 +75,7 @@ export default function calculateTripleQuotedStringPadding(
       }
 
       let isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
-      let isStartOfString = fragment.index === 0 && i === 0;
-      if (isStartOfLine || isStartOfString) {
+      if (isStartOfLine) {
         let paddingStart = i;
         let paddingEnd = i + sharedIndent.length;
         if (fragment.content.slice(paddingStart, paddingEnd) === sharedIndent) {
