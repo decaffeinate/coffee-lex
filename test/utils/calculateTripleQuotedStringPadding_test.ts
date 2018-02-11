@@ -81,13 +81,13 @@ d'''`,
     );
   });
 
-  it('removes indentation from the first line if possible', () => {
+  it('does not remove indentation from the first line', () => {
     verifyStringMatchesCoffeeScript(
       `'''     a
       b
     c
       d'''`,
-      [' a\n  b\nc\n  d']
+      ['     a\n  b\nc\n  d']
     );
   });
 

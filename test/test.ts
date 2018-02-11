@@ -1368,6 +1368,46 @@ else(0)`),
     ]);
   });
 
+  it('handles normal import statements', () => {
+    checkLocations(stream('import a from "b"'), [
+      new SourceLocation(SourceType.IMPORT, 0),
+      new SourceLocation(SourceType.SPACE, 6),
+      new SourceLocation(SourceType.IDENTIFIER, 7),
+      new SourceLocation(SourceType.SPACE, 8),
+      new SourceLocation(SourceType.IDENTIFIER, 9),
+      new SourceLocation(SourceType.SPACE, 13),
+      new SourceLocation(SourceType.DSTRING_START, 14),
+      new SourceLocation(SourceType.STRING_CONTENT, 15),
+      new SourceLocation(SourceType.DSTRING_END, 16),
+      new SourceLocation(SourceType.EOF, 17)
+    ]);
+  });
+
+  it('handles normal export statements', () => {
+    checkLocations(stream('export default a'), [
+      new SourceLocation(SourceType.EXPORT, 0),
+      new SourceLocation(SourceType.SPACE, 6),
+      new SourceLocation(SourceType.DEFAULT, 7),
+      new SourceLocation(SourceType.SPACE, 14),
+      new SourceLocation(SourceType.IDENTIFIER, 15),
+      new SourceLocation(SourceType.EOF, 16)
+    ]);
+  });
+
+  it('handles herejs blocks', () => {
+    checkLocations(stream('```\na + `b`\n```'), [
+      new SourceLocation(SourceType.HEREJS, 0),
+      new SourceLocation(SourceType.EOF, 15)
+    ]);
+  });
+
+  it('handles inline js with escaped backticks', () => {
+    checkLocations(stream('`a + \\`b\\``'), [
+      new SourceLocation(SourceType.JS, 0),
+      new SourceLocation(SourceType.EOF, 11)
+    ]);
+  });
+
   it('does not infinite loop on incomplete string interpolations', () => {
     try {
       lex('a = "#{');
