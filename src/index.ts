@@ -58,7 +58,7 @@ function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: 
   return [not, space, operator];
 }
 
-const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
+const REGEXP_FLAGS = ['i', 'g', 'm', 'u', 'y'];
 
 export { SourceType };
 

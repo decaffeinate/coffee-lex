@@ -855,6 +855,13 @@ describe('streamTest', () => {
     ]);
   });
 
+  it('identifies all regex flags', () => {
+    checkLocations(stream(`/a/gimuy`), [
+      new SourceLocation(SourceType.REGEXP, 0),
+      new SourceLocation(SourceType.EOF, 8)
+    ]);
+  });
+
   it('identifies regex-like division operations after an increment', () => {
     checkLocations(stream(`a++ /b/g`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
