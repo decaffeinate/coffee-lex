@@ -151,6 +151,14 @@ describe('lexTest', () => {
     ]);
   });
 
+  it('identifies `!instanceof` as a single operator', () => {
+    deepEqual(lex('a !instanceof b').toArray(), [
+      new SourceToken(SourceType.IDENTIFIER, 0, 1),
+      new SourceToken(SourceType.OPERATOR, 2, 13),
+      new SourceToken(SourceType.IDENTIFIER, 14, 15)
+    ]);
+  });
+
   it('identifies `not in` as a single operator', () => {
     deepEqual(lex('a not in b').toArray(), [
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
@@ -159,11 +167,27 @@ describe('lexTest', () => {
     ]);
   });
 
+  it('identifies `!in` as a single operator', () => {
+    deepEqual(lex('a !in b').toArray(), [
+      new SourceToken(SourceType.IDENTIFIER, 0, 1),
+      new SourceToken(SourceType.RELATION, 2, 5),
+      new SourceToken(SourceType.IDENTIFIER, 6, 7)
+    ]);
+  });
+
   it('identifies `not of` as a single operator', () => {
     deepEqual(lex('a not of b').toArray(), [
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 8),
       new SourceToken(SourceType.IDENTIFIER, 9, 10)
+    ]);
+  });
+
+  it('identifies `!of` as a single operator', () => {
+    deepEqual(lex('a !of b').toArray(), [
+      new SourceToken(SourceType.IDENTIFIER, 0, 1),
+      new SourceToken(SourceType.RELATION, 2, 5),
+      new SourceToken(SourceType.IDENTIFIER, 6, 7)
     ]);
   });
 
