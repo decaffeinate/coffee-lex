@@ -19,7 +19,7 @@ export default function lex(source: string): SourceTokenList {
     pending.unshift(...calculateNormalStringPadding(source, pending));
     pending.unshift(...calculateTripleQuotedStringPadding(source, pending));
     pending.unshift(...calculateHeregexpPadding(source, pending));
-    pending.unshift(...combinedLocationsForMultiwordOperators(pending, source));
+    pending.unshift(...combinedLocationsForNegatedOperators(pending, source));
     location = pending.shift();
     if (previousLocation && previousLocation.type !== SourceType.SPACE) {
       tokens.push(new SourceToken(previousLocation.type, previousLocation.index, location.index));
@@ -29,33 +29,59 @@ export default function lex(source: string): SourceTokenList {
   return new SourceTokenList(tokens);
 }
 
-function combinedLocationsForMultiwordOperators(stream: BufferedStream, source: string): Array<SourceLocation> {
-  if (
-    !stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.OPERATOR) &&
-    !stream.hasNext(SourceType.OPERATOR, SourceType.SPACE, SourceType.RELATION)
-  ) {
+function combinedLocationsForNegatedOperators(stream: BufferedStream, source: string): Array<SourceLocation> {
+  if (!stream.hasNext(SourceType.OPERATOR)) {
     return [];
   }
 
-  let not = stream.shift();
-  let space = stream.shift();
-  let operator = stream.shift();
-  let next = stream.peek();
+  let locationsToRestore: Array<SourceLocation> = [];
 
-  if (source.slice(not.index, space.index) === 'not') {
-    let op = source.slice(operator.index, next.index);
-    switch (op) {
-      case 'in':
-      case 'of':
-        return [new SourceLocation(SourceType.RELATION, not.index)];
+  function shift(): SourceLocation {
+    let location = stream.shift();
+    locationsToRestore.push(location);
+    return location;
+  }
 
-      case 'instanceof':
-        return [new SourceLocation(SourceType.OPERATOR, not.index)];
+  let not = shift();
+  let space = shift();
+  let text = source.slice(not.index, space.index);
+  let operator: SourceLocation;
+
+  if (text === 'not') {
+    if (space.type === SourceType.SPACE) {
+      // It is a space, so the operator is at the next location.
+      operator = shift();
+    } else {
+      // `not` must be followed by a space, so this isn't a match.
+      return locationsToRestore;
     }
+  } else if (text === '!') {
+    if (space.type === SourceType.SPACE) {
+      // It is a space, so the operator is at the next location.
+      operator = shift();
+    } else {
+      // The optional space is missing, so the next thing must be the operator.
+      operator = space;
+    }
+  } else {
+    // Not a negation token, so put them back.
+    return locationsToRestore;
+  }
+
+  let next = stream.peek();
+  let op = source.slice(operator.index, next.index);
+
+  switch (op) {
+    case 'in':
+    case 'of':
+      return [new SourceLocation(SourceType.RELATION, not.index)];
+
+    case 'instanceof':
+      return [new SourceLocation(SourceType.OPERATOR, not.index)];
   }
 
   // Doesn't match, so put them back.
-  return [not, space, operator];
+  return locationsToRestore;
 }
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'u', 'y'];
