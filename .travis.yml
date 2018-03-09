@@ -21,6 +21,7 @@ branches:
 deploy:
   provider: script
   script:
+    - yarn install
     - ./script/build
     - npx semantic-release
   on:
