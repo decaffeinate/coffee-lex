@@ -20,9 +20,6 @@ branches:
     - /^v\d+\.\d+\.\d+$/
 deploy:
   provider: script
-  script:
-    - yarn install
-    - ./script/build
-    - npx semantic-release
+  script: 'yarn install && ./script/build && npx semantic-release'
   on:
     branch: master
