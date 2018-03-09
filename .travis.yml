@@ -18,8 +18,12 @@ after_script:
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
-deploy:
-  provider: script
-  script: 'yarn install && ./script/build && npx semantic-release'
-  on:
-    branch: master
+jobs:
+  include:
+    - stage: release
+      node_js: lts/*
+      deploy:
+        provider: script
+        script: 'yarn install && ./script/build && npx semantic-release'
+        on:
+          branch: master
