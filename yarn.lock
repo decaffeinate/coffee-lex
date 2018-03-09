@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@types/mocha@^2.2.46":
-  version "2.2.46"
-  resolved "https://registry.npmjs.org/@types/mocha/-/mocha-2.2.46.tgz#b04713f7759d1cf752effdaae7b3969e285ebc16"
+"@types/mocha@^2.2.48":
+  version "2.2.48"
+  resolved "https://registry.npmjs.org/@types/mocha/-/mocha-2.2.48.tgz#3523b126a0b049482e1c3c11877460f76622ffab"
 
-"@types/node@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.npmjs.org/@types/node/-/node-9.3.0.tgz#3a129cda7c4e5df2409702626892cb4b96546dd5"
+"@types/node@^9.4.7":
+  version "9.4.7"
+  resolved "https://registry.npmjs.org/@types/node/-/node-9.4.7.tgz#57d81cd98719df2c9de118f2d5f3b1120dcd7275"
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -23,6 +23,12 @@ ansi-styles@^3.1.0:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-3.1.0.tgz#09c202d5c917ec23188caa5c9cb9179cd9547750"
   dependencies:
     color-convert "^1.0.0"
+
+argparse@^1.0.7:
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/argparse/-/argparse-1.0.10.tgz#bcd6791ea5ae09725e17e5ad988134cd40b3d911"
+  dependencies:
+    sprintf-js "~1.0.2"
 
 arrify@^1.0.0:
   version "1.0.1"
@@ -47,9 +53,9 @@ brace-expansion@^1.1.7:
     balanced-match "^0.4.1"
     concat-map "0.0.1"
 
-browser-stdout@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/browser-stdout/-/browser-stdout-1.3.0.tgz#f351d32969d32fa5d7a5567154263d928ae3bd1f"
+browser-stdout@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/browser-stdout/-/browser-stdout-1.3.1.tgz#baa559ee14ced73452229bad7326467c61fabd60"
 
 builtin-modules@^1.1.1:
   version "1.1.1"
@@ -65,7 +71,7 @@ chalk@^1.1.0:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chalk@^2.1.0, chalk@^2.3.0:
+chalk@^2.3.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/chalk/-/chalk-2.3.0.tgz#b5ea48efc9c1793dccc9b4767c93914d3f2d52ba"
   dependencies:
@@ -87,11 +93,9 @@ commander@2.11.0:
   version "2.11.0"
   resolved "https://registry.npmjs.org/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
 
-commander@^2.9.0:
-  version "2.9.0"
-  resolved "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
-  dependencies:
-    graceful-readlink ">= 1.0.0"
+commander@^2.12.1:
+  version "2.15.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-2.15.0.tgz#ad2a23a1c3b036e392469b8012cec6b33b4c1322"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -115,9 +119,9 @@ decaffeinate-coffeescript@1.12.7-patch.2:
   version "1.12.7-patch.2"
   resolved "https://registry.npmjs.org/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
-diff@3.3.1:
-  version "3.3.1"
-  resolved "https://registry.npmjs.org/diff/-/diff-3.3.1.tgz#aa8567a6eed03c531fc89d3f711cd0e5259dec75"
+diff@3.5.0:
+  version "3.5.0"
+  resolved "https://registry.npmjs.org/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
 
 diff@^3.1.0, diff@^3.2.0:
   version "3.2.0"
@@ -126,6 +130,10 @@ diff@^3.1.0, diff@^3.2.0:
 escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
+
+esprima@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
 
 esutils@^2.0.2:
   version "2.0.2"
@@ -173,10 +181,6 @@ glob@^7.1.1:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-"graceful-readlink@>= 1.0.0":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
-
 growl@1.10.3:
   version "1.10.3"
   resolved "https://registry.npmjs.org/growl/-/growl-1.10.3.tgz#1926ba90cf3edfe2adb4927f5880bc22c66c790f"
@@ -218,6 +222,13 @@ js-tokens@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz#08e9f132484a2c45a30907e9dc4d5567b7f114d7"
 
+js-yaml@^3.7.0:
+  version "3.11.0"
+  resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-3.11.0.tgz#597c1a8bd57152f26d622ce4117851a51f5ebaef"
+  dependencies:
+    argparse "^1.0.7"
+    esprima "^4.0.0"
+
 lru-cache@^4.0.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-4.1.1.tgz#622e32e82488b49279114a4f9ecf45e7cd6bba55"
@@ -249,14 +260,14 @@ mkdirp@0.5.1, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
-mocha@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/mocha/-/mocha-5.0.0.tgz#cccac988b0bc5477119cba0e43de7af6d6ad8f4e"
+mocha@^5.0.4:
+  version "5.0.4"
+  resolved "https://registry.npmjs.org/mocha/-/mocha-5.0.4.tgz#6b7aa328472da1088e69d47e75925fd3a3bb63c6"
   dependencies:
-    browser-stdout "1.3.0"
+    browser-stdout "1.3.1"
     commander "2.11.0"
     debug "3.1.0"
-    diff "3.3.1"
+    diff "3.5.0"
     escape-string-regexp "1.0.5"
     glob "7.1.2"
     growl "1.10.3"
@@ -344,6 +355,10 @@ source-map@^0.6.0:
   version "0.6.1"
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
+sprintf-js@~1.0.2:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
+
 strip-ansi@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-3.0.1.tgz#6a385fb8853d952d5ff05d0e8aaf94278dc63dcf"
@@ -370,9 +385,9 @@ supports-color@^4.0.0:
   dependencies:
     has-flag "^2.0.0"
 
-ts-node@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/ts-node/-/ts-node-5.0.0.tgz#9aa573889ad7949411f972981c209e064705e36f"
+ts-node@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/ts-node/-/ts-node-5.0.1.tgz#78e5d1cb3f704de1b641e43b76be2d4094f06f81"
   dependencies:
     arrify "^1.0.0"
     chalk "^2.3.0"
@@ -383,28 +398,29 @@ ts-node@^5.0.0:
     source-map-support "^0.5.3"
     yn "^2.0.0"
 
-tslib@^1.7.1:
-  version "1.7.1"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
+tslib@^1.8.0:
+  version "1.9.0"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
 tslib@^1.8.1:
   version "1.8.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.8.1.tgz#6946af2d1d651a7b1863b531d6e5afa41aa44eac"
 
-tslint@^5.8.0:
-  version "5.8.0"
-  resolved "https://registry.npmjs.org/tslint/-/tslint-5.8.0.tgz#1f49ad5b2e77c76c3af4ddcae552ae4e3612eb13"
+tslint@^5.9.1:
+  version "5.9.1"
+  resolved "https://registry.npmjs.org/tslint/-/tslint-5.9.1.tgz#1255f87a3ff57eb0b0e1f0e610a8b4748046c9ae"
   dependencies:
     babel-code-frame "^6.22.0"
     builtin-modules "^1.1.1"
-    chalk "^2.1.0"
-    commander "^2.9.0"
+    chalk "^2.3.0"
+    commander "^2.12.1"
     diff "^3.2.0"
     glob "^7.1.1"
+    js-yaml "^3.7.0"
     minimatch "^3.0.4"
     resolve "^1.3.2"
     semver "^5.3.0"
-    tslib "^1.7.1"
+    tslib "^1.8.0"
     tsutils "^2.12.1"
 
 tsutils@^2.12.1:
@@ -413,9 +429,9 @@ tsutils@^2.12.1:
   dependencies:
     tslib "^1.8.1"
 
-typescript@^2.6.2:
-  version "2.6.2"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
+typescript@^2.7.2:
+  version "2.7.2"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
 which@^1.2.9:
   version "1.3.0"
