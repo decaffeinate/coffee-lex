@@ -10,6 +10,9 @@ import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStr
 enum ContextType {
   STRING = 'STRING',
   INTERPOLATION = 'INTERPOLATION',
+  CSX_OPEN_TAG = 'CSX_OPEN_TAG',
+  CSX_CLOSE_TAG = 'CSX_CLOSE_TAG',
+  CSX_BODY = 'CSX_BODY',
   BRACE = 'BRACE',
   PAREN = 'PAREN'
 }
@@ -21,6 +24,9 @@ type Context =
       endSourceType: SourceType;
     }
   | { type: ContextType.INTERPOLATION; interpolationType: SourceType }
+  | { type: ContextType.CSX_OPEN_TAG }
+  | { type: ContextType.CSX_CLOSE_TAG }
+  | { type: ContextType.CSX_BODY }
   | { type: ContextType.BRACE }
   | { type: ContextType.PAREN; sourceType: SourceType };
 
@@ -133,6 +139,8 @@ const INDEXABLE = CALLABLE.concat([
 const NOT_REGEXP = INDEXABLE.concat([SourceType.INCREMENT, SourceType.DECREMENT]);
 
 const IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[$\w\x7f-\uffff])+)/;
+// Like identifier, but includes '-' and '.'.
+const CSX_IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[\.\-$\w\x7f-\uffff])+)/;
 const NUMBER_PATTERN = /^0b[01]+|^0o[0-7]+|^0x[\da-f]+|^\d*\.?\d+(?:e[+-]?\d+)?/i;
 const SPACE_PATTERN = /^[^\n\r\S]+/;
 const REGEXP_PATTERN = /^\/(?!\/)((?:[^[\/\n\\]|\\[^\n]|\[(?:\\[^\n]|[^\]\n\\])*\])*)(\/)?/;
@@ -289,6 +297,8 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
         case SourceType.IMPORT:
         case SourceType.EXPORT:
         case SourceType.DEFAULT:
+        case SourceType.CSX_OPEN_TAG_START:
+        case SourceType.CSX_CLOSE_TAG_START:
         case SourceType.CONTINUATION:
           if (consume(SPACE_PATTERN)) {
             setType(SourceType.SPACE);
@@ -388,6 +398,18 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
             } else {
               throw new Error(`Unexpected context type: ${currentContextType()}`);
             }
+          } else if (consumeCSXOpenTagStart()) {
+            contextStack.push({ type: ContextType.CSX_OPEN_TAG });
+            setType(SourceType.CSX_OPEN_TAG_START);
+          } else if (currentContextType() === ContextType.CSX_OPEN_TAG && consume('>')) {
+            contextStack.pop();
+            setType(SourceType.CSX_OPEN_TAG_END);
+          } else if (currentContextType() === ContextType.CSX_OPEN_TAG && consume('/>')) {
+            contextStack.pop();
+            setType(SourceType.CSX_SELF_CLOSING_TAG_END);
+          } else if (currentContextType() === ContextType.CSX_CLOSE_TAG && consume('>')) {
+            contextStack.pop();
+            setType(SourceType.CSX_CLOSE_TAG_END);
           } else if (consumeAny(['->', '=>'])) {
             setType(SourceType.FUNCTION);
           } else if (consumeRegexp()) {
@@ -418,6 +440,8 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
             }
           } else if (consume(YIELDFROM_PATTERN)) {
             setType(SourceType.YIELDFROM);
+          } else if (currentContextType() === ContextType.CSX_OPEN_TAG && consume(CSX_IDENTIFIER_PATTERN)) {
+            setType(SourceType.IDENTIFIER);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prevLocationIndex = locations.length - 1;
             while (prevLocationIndex > 0 && locations[prevLocationIndex].type === SourceType.NEWLINE) {
@@ -663,6 +687,36 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           }
           break;
 
+        case SourceType.CSX_OPEN_TAG_END:
+          setType(SourceType.CSX_BODY);
+          contextStack.push({ type: ContextType.CSX_BODY });
+          break;
+
+        case SourceType.CSX_BODY: {
+          if (consume('</')) {
+            contextStack.pop();
+            setType(SourceType.CSX_CLOSE_TAG_START);
+            contextStack.push({ type: ContextType.CSX_CLOSE_TAG });
+          } else if (consumeCSXOpenTagStart()) {
+            setType(SourceType.CSX_OPEN_TAG_START);
+            contextStack.push({ type: ContextType.CSX_OPEN_TAG });
+          } else if (consume('{')) {
+            pushInterpolation();
+          } else {
+            index++;
+          }
+          break;
+        }
+
+        case SourceType.CSX_SELF_CLOSING_TAG_END:
+        case SourceType.CSX_CLOSE_TAG_END:
+          if (currentContextType() === ContextType.CSX_BODY) {
+            setType(SourceType.CSX_BODY);
+          } else {
+            setType(SourceType.NORMAL);
+          }
+          break;
+
         case SourceType.EOF:
           let context = currentContext();
           if (context !== null) {
@@ -732,6 +786,33 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
     while (consumeAny(REGEXP_FLAGS)) {
       // condition has side-effect
     }
+    return true;
+  }
+
+  /**
+   * CSX starts are identified by a less-than sign followed by a CSX identifier
+   * or `<>` token (no space allowed after the less-than).
+   *
+   * We also bail in cases like `a<b`: if we're not already in a CSX context,
+   * the less-than needs to be preceded by a space or a token other than identifier,
+   * close-paren, close-bracket, or number.
+   */
+  function consumeCSXOpenTagStart(): boolean {
+    if (!match('<')) {
+      return false;
+    }
+    if (source[index + 1] !== '>' && !source.slice(index + 1).match(CSX_IDENTIFIER_PATTERN)) {
+      return false;
+    }
+    let contextType = currentContextType();
+    if (
+      contextType !== ContextType.CSX_BODY &&
+      contextType !== ContextType.CSX_OPEN_TAG &&
+      [SourceType.IDENTIFIER, SourceType.RPAREN, SourceType.RBRACE, SourceType.NUMBER].includes(location.type)
+    ) {
+      return false;
+    }
+    consume('<');
     return true;
   }
 

@@ -7,7 +7,17 @@ import SourceTokenList from '../src/SourceTokenList';
 
 function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
   let actualLocations = consumeStream(stream);
-  deepEqual(actualLocations, expectedLocations);
+  deepEqual(
+    actualLocations,
+    expectedLocations,
+    `Mismatched tokens.\nExpected:\n${formatLocationsCode(expectedLocations)}\nFound:\n${formatLocationsCode(
+      actualLocations
+    )}\n`
+  );
+}
+
+function formatLocationsCode(locations: Array<SourceLocation>): string {
+  return locations.map(loc => `new SourceLocation(SourceType.${loc.type}, ${loc.index}),`).join('\n');
 }
 
 describe('lexTest', () => {
@@ -1436,6 +1446,138 @@ else(0)`),
     checkLocations(stream('`a + \\`b\\``'), [
       new SourceLocation(SourceType.JS, 0),
       new SourceLocation(SourceType.EOF, 11)
+    ]);
+  });
+
+  it('handles CSX with a simple interpolation', () => {
+    checkLocations(stream('x = <div>Hello {name}</div>'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 4),
+      new SourceLocation(SourceType.IDENTIFIER, 5),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_END, 8),
+      new SourceLocation(SourceType.CSX_BODY, 9),
+      new SourceLocation(SourceType.INTERPOLATION_START, 15),
+      new SourceLocation(SourceType.IDENTIFIER, 16),
+      new SourceLocation(SourceType.INTERPOLATION_END, 20),
+      new SourceLocation(SourceType.CSX_BODY, 21),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 21),
+      new SourceLocation(SourceType.IDENTIFIER, 23),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 26),
+      new SourceLocation(SourceType.EOF, 27)
+    ]);
+  });
+
+  it('handles nested CSX', () => {
+    checkLocations(stream('x = <div>a<span>b</span>c</div>'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 4),
+      new SourceLocation(SourceType.IDENTIFIER, 5),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_END, 8),
+      new SourceLocation(SourceType.CSX_BODY, 9),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 10),
+      new SourceLocation(SourceType.IDENTIFIER, 11),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_END, 15),
+      new SourceLocation(SourceType.CSX_BODY, 16),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 17),
+      new SourceLocation(SourceType.IDENTIFIER, 19),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 23),
+      new SourceLocation(SourceType.CSX_BODY, 24),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 25),
+      new SourceLocation(SourceType.IDENTIFIER, 27),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 30),
+      new SourceLocation(SourceType.EOF, 31)
+    ]);
+  });
+
+  it('handles CSX properties with a greater-than sign', () => {
+    checkLocations(stream('x = <Foo a={b>c}>test</Foo>'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 4),
+      new SourceLocation(SourceType.IDENTIFIER, 5),
+      new SourceLocation(SourceType.SPACE, 8),
+      new SourceLocation(SourceType.IDENTIFIER, 9),
+      new SourceLocation(SourceType.OPERATOR, 10),
+      new SourceLocation(SourceType.LBRACE, 11),
+      new SourceLocation(SourceType.IDENTIFIER, 12),
+      new SourceLocation(SourceType.OPERATOR, 13),
+      new SourceLocation(SourceType.IDENTIFIER, 14),
+      new SourceLocation(SourceType.RBRACE, 15),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_END, 16),
+      new SourceLocation(SourceType.CSX_BODY, 17),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 21),
+      new SourceLocation(SourceType.IDENTIFIER, 23),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 26),
+      new SourceLocation(SourceType.EOF, 27)
+    ]);
+  });
+
+  it('handles standalone self-closing CSX', () => {
+    checkLocations(stream('render(<Foo a={b} />)'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.CALL_START, 6),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 7),
+      new SourceLocation(SourceType.IDENTIFIER, 8),
+      new SourceLocation(SourceType.SPACE, 11),
+      new SourceLocation(SourceType.IDENTIFIER, 12),
+      new SourceLocation(SourceType.OPERATOR, 13),
+      new SourceLocation(SourceType.LBRACE, 14),
+      new SourceLocation(SourceType.IDENTIFIER, 15),
+      new SourceLocation(SourceType.RBRACE, 16),
+      new SourceLocation(SourceType.SPACE, 17),
+      new SourceLocation(SourceType.CSX_SELF_CLOSING_TAG_END, 18),
+      new SourceLocation(SourceType.CALL_END, 20),
+      new SourceLocation(SourceType.EOF, 21)
+    ]);
+  });
+
+  it('handles nested self-closing CSX', () => {
+    checkLocations(stream('x = <div><span /></div>'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 4),
+      new SourceLocation(SourceType.IDENTIFIER, 5),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_END, 8),
+      new SourceLocation(SourceType.CSX_BODY, 9),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 9),
+      new SourceLocation(SourceType.IDENTIFIER, 10),
+      new SourceLocation(SourceType.SPACE, 14),
+      new SourceLocation(SourceType.CSX_SELF_CLOSING_TAG_END, 15),
+      new SourceLocation(SourceType.CSX_BODY, 17),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 17),
+      new SourceLocation(SourceType.IDENTIFIER, 19),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 22),
+      new SourceLocation(SourceType.EOF, 23)
+    ]);
+  });
+
+  it('handles CSX fragments', () => {
+    checkLocations(stream('x = <><span /></>'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 4),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_END, 5),
+      new SourceLocation(SourceType.CSX_BODY, 6),
+      new SourceLocation(SourceType.CSX_OPEN_TAG_START, 6),
+      new SourceLocation(SourceType.IDENTIFIER, 7),
+      new SourceLocation(SourceType.SPACE, 11),
+      new SourceLocation(SourceType.CSX_SELF_CLOSING_TAG_END, 12),
+      new SourceLocation(SourceType.CSX_BODY, 14),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 14),
+      new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 16),
+      new SourceLocation(SourceType.EOF, 17)
     ]);
   });
 
