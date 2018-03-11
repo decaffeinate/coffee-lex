@@ -7,6 +7,23 @@ import calculateHeregexpPadding from './utils/calculateHeregexpPadding';
 import calculateNormalStringPadding from './utils/calculateNormalStringPadding';
 import calculateTripleQuotedStringPadding from './utils/calculateTripleQuotedStringPadding';
 
+enum ContextType {
+  STRING = 'STRING',
+  INTERPOLATION = 'INTERPOLATION',
+  BRACE = 'BRACE',
+  PAREN = 'PAREN'
+}
+type Context =
+  | {
+      type: ContextType.STRING;
+      allowInterpolations: boolean;
+      endingDelimiter: string;
+      endSourceType: SourceType;
+    }
+  | { type: ContextType.INTERPOLATION; interpolationType: SourceType }
+  | { type: ContextType.BRACE }
+  | { type: ContextType.PAREN; sourceType: SourceType };
+
 /**
  * Generate a list of tokens from CoffeeScript source code.
  */
@@ -186,16 +203,18 @@ const OPERATORS = [
  */
 export function stream(source: string, index: number = 0): () => SourceLocation {
   let location = new SourceLocation(SourceType.NORMAL, index);
-  let interpolationStack: Array<{ type: SourceType; braces: Array<number> }> = [];
-  let braceStack: Array<number> = [];
-  let parenStack: Array<SourceType> = [];
-  let stringStack: Array<{
-    allowInterpolations: boolean;
-    endingDelimiter: string;
-    endSourceType: SourceType;
-  }> = [];
+  let contextStack: Array<Context> = [];
   let start = index;
   let locations: Array<SourceLocation> = [];
+
+  function currentContext(): Context | null {
+    return contextStack[contextStack.length - 1] || null;
+  }
+  function currentContextType(): ContextType | null {
+    let context = currentContext();
+    return context ? context.type : null;
+  }
+
   return function step(): SourceLocation {
     let lastLocation = location;
     let shouldStepAgain = false;
@@ -282,28 +301,32 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume('.')) {
             setType(SourceType.DOT);
           } else if (consume('"""')) {
-            stringStack.push({
+            contextStack.push({
+              type: ContextType.STRING,
               allowInterpolations: true,
               endingDelimiter: '"""',
               endSourceType: SourceType.TDSTRING_END
             });
             setType(SourceType.TDSTRING_START);
           } else if (consume('"')) {
-            stringStack.push({
+            contextStack.push({
+              type: ContextType.STRING,
               allowInterpolations: true,
               endingDelimiter: '"',
               endSourceType: SourceType.DSTRING_END
             });
             setType(SourceType.DSTRING_START);
           } else if (consume("'''")) {
-            stringStack.push({
+            contextStack.push({
+              type: ContextType.STRING,
               allowInterpolations: false,
               endingDelimiter: "'''",
               endSourceType: SourceType.TSSTRING_END
             });
             setType(SourceType.TSSTRING_START);
           } else if (consume("'")) {
-            stringStack.push({
+            contextStack.push({
+              type: ContextType.STRING,
               allowInterpolations: false,
               endingDelimiter: "'",
               endSourceType: SourceType.SSTRING_END
@@ -314,7 +337,8 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume('#')) {
             setType(SourceType.COMMENT);
           } else if (consume('///')) {
-            stringStack.push({
+            contextStack.push({
+              type: ContextType.STRING,
               allowInterpolations: true,
               endingDelimiter: '///',
               endSourceType: SourceType.HEREGEXP_END
@@ -322,45 +346,47 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
             setType(SourceType.HEREGEXP_START);
           } else if (consume('(')) {
             if (CALLABLE.indexOf(location.type) >= 0) {
-              parenStack.push(SourceType.CALL_START);
+              contextStack.push({ type: ContextType.PAREN, sourceType: SourceType.CALL_START });
               setType(SourceType.CALL_START);
             } else {
-              parenStack.push(SourceType.LPAREN);
+              contextStack.push({ type: ContextType.PAREN, sourceType: SourceType.LPAREN });
               setType(SourceType.LPAREN);
             }
           } else if (consume(')')) {
-            if (parenStack.length === 0) {
+            let context = contextStack.pop();
+            if (!context || context.type !== ContextType.PAREN) {
               throw new Error(`unexpected ')' at ${start}`);
-            } else {
-              let lparen = parenStack.pop();
-              switch (lparen) {
-                case SourceType.LPAREN:
-                  setType(SourceType.RPAREN);
-                  break;
+            }
+            let { sourceType } = context;
+            switch (sourceType) {
+              case SourceType.LPAREN:
+                setType(SourceType.RPAREN);
+                break;
 
-                case SourceType.CALL_START:
-                  setType(SourceType.CALL_END);
-                  break;
+              case SourceType.CALL_START:
+                setType(SourceType.CALL_END);
+                break;
 
-                default:
-                  throw new Error(
-                    `unexpected token type for '(' matching ')' at ${start}: ${lparen ? lparen.toString() : '??'}`
-                  );
-              }
+              default:
+                throw new Error(
+                  `unexpected token type for '(' matching ')' at ${start}: ${sourceType ? sourceType.toString() : '??'}`
+                );
             }
           } else if (consume('[')) {
             setType(SourceType.LBRACKET);
           } else if (consume(']')) {
             setType(SourceType.RBRACKET);
           } else if (consume('{')) {
-            braceStack.push(start);
+            contextStack.push({ type: ContextType.BRACE });
             setType(SourceType.LBRACE);
           } else if (consume('}')) {
-            if (braceStack.length === 0) {
+            if (currentContextType() === ContextType.INTERPOLATION) {
               popInterpolation();
-            } else {
-              braceStack.pop();
+            } else if (currentContextType() === ContextType.BRACE) {
+              contextStack.pop();
               setType(SourceType.RBRACE);
+            } else {
+              throw new Error(`Unexpected context type: ${currentContextType()}`);
             }
           } else if (consumeAny(['->', '=>'])) {
             setType(SourceType.FUNCTION);
@@ -567,16 +593,17 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           break;
 
         case SourceType.STRING_CONTENT: {
-          let stringOptions = stringStack[stringStack.length - 1];
-          if (!stringOptions) {
+          let context = currentContext();
+          if (!context || context.type !== ContextType.STRING) {
             throw new Error('Unexpected STRING_CONTENT without anything on the string stack.');
           }
+          let { allowInterpolations, endingDelimiter, endSourceType } = context;
           if (consume('\\')) {
             index++;
-          } else if (consume(stringOptions.endingDelimiter)) {
-            stringStack.pop();
-            setType(stringOptions.endSourceType);
-          } else if (stringOptions.allowInterpolations && consume('#{')) {
+          } else if (consume(endingDelimiter)) {
+            contextStack.pop();
+            setType(endSourceType);
+          } else if (allowInterpolations && consume('#{')) {
             pushInterpolation();
           } else {
             index++;
@@ -600,15 +627,14 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           }
           break;
 
-        case SourceType.INTERPOLATION_END:
-          let lastInterpolation = interpolationStack.pop();
-          if (!lastInterpolation) {
+        case SourceType.INTERPOLATION_END: {
+          let context = contextStack.pop();
+          if (!context || context.type !== ContextType.INTERPOLATION) {
             throw new Error(`found interpolation end without any interpolation start`);
           }
-          let { type, braces } = lastInterpolation;
-          setType(type);
-          braceStack = braces;
+          setType(context.interpolationType);
           break;
+        }
 
         case SourceType.HEREGEXP_END:
           while (consumeAny(REGEXP_FLAGS)) {
@@ -638,13 +664,9 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           break;
 
         case SourceType.EOF:
-          if (braceStack.length !== 0) {
-            throw new Error(
-              `unexpected EOF while looking for '}' to match '{' ` + `at ${braceStack[braceStack.length - 1]}`
-            );
-          }
-          if (stringStack.length !== 0) {
-            throw new Error('unexpected EOF while parsing a string');
+          let context = currentContext();
+          if (context !== null) {
+            throw new Error(`unexpected EOF while in context ${context.type}`);
           }
           break;
 
@@ -731,13 +753,12 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
   }
 
   function pushInterpolation() {
-    interpolationStack.push({ type: location.type, braces: braceStack });
+    contextStack.push({ type: ContextType.INTERPOLATION, interpolationType: location.type });
     setType(SourceType.INTERPOLATION_START);
-    braceStack = [];
   }
 
   function popInterpolation() {
-    if (interpolationStack.length === 0) {
+    if (currentContextType() !== ContextType.INTERPOLATION) {
       throw new Error(`unexpected '}' found in string at ${index}: ${JSON.stringify(source)}`);
     }
     setType(SourceType.INTERPOLATION_END);

@@ -1444,7 +1444,7 @@ else(0)`),
       lex('a = "#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
-      ok(e.message.indexOf('unexpected EOF while parsing a string') > -1);
+      ok(e.message.indexOf('unexpected EOF while in context INTERPOLATION') > -1);
     }
   });
 
@@ -1453,7 +1453,7 @@ else(0)`),
       lex('a = """#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
-      ok(e.message.indexOf('unexpected EOF while parsing a string') > -1);
+      ok(e.message.indexOf('unexpected EOF while in context INTERPOLATION') > -1);
     }
   });
 });
