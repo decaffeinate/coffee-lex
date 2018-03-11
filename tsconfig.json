@@ -5,7 +5,7 @@
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,
-    "lib": ["es2015"],
+    "lib": ["es2016"],
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitAny": true,
