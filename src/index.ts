@@ -19,6 +19,7 @@ enum ContextType {
 type Context =
   | {
       type: ContextType.STRING;
+      allowComments: boolean;
       allowInterpolations: boolean;
       endingDelimiter: string;
       endSourceType: SourceType;
@@ -30,14 +31,22 @@ type Context =
   | { type: ContextType.BRACE }
   | { type: ContextType.PAREN; sourceType: SourceType };
 
+export type Options = {
+  useCS2: boolean;
+};
+
+export const DEFAULT_OPTIONS: Options = {
+  useCS2: false
+};
+
 /**
  * Generate a list of tokens from CoffeeScript source code.
  */
-export default function lex(source: string): SourceTokenList {
+export default function lex(source: string, options: Options = DEFAULT_OPTIONS): SourceTokenList {
   let location;
   let previousLocation;
   let tokens: Array<SourceToken> = [];
-  let pending = new BufferedStream(stream(source));
+  let pending = new BufferedStream(stream(source, 0, options));
   do {
     pending.unshift(...calculateNormalStringPadding(source, pending));
     pending.unshift(...calculateTripleQuotedStringPadding(source, pending));
@@ -209,7 +218,7 @@ const OPERATORS = [
 /**
  * Provides a stream of source type change locations.
  */
-export function stream(source: string, index: number = 0): () => SourceLocation {
+export function stream(source: string, index: number = 0, options: Options = DEFAULT_OPTIONS): () => SourceLocation {
   let location = new SourceLocation(SourceType.NORMAL, index);
   let contextStack: Array<Context> = [];
   let start = index;
@@ -313,6 +322,7 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume('"""')) {
             contextStack.push({
               type: ContextType.STRING,
+              allowComments: false,
               allowInterpolations: true,
               endingDelimiter: '"""',
               endSourceType: SourceType.TDSTRING_END
@@ -321,6 +331,7 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume('"')) {
             contextStack.push({
               type: ContextType.STRING,
+              allowComments: false,
               allowInterpolations: true,
               endingDelimiter: '"',
               endSourceType: SourceType.DSTRING_END
@@ -329,6 +340,7 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume("'''")) {
             contextStack.push({
               type: ContextType.STRING,
+              allowComments: false,
               allowInterpolations: false,
               endingDelimiter: "'''",
               endSourceType: SourceType.TSSTRING_END
@@ -337,6 +349,7 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume("'")) {
             contextStack.push({
               type: ContextType.STRING,
+              allowComments: false,
               allowInterpolations: false,
               endingDelimiter: "'",
               endSourceType: SourceType.SSTRING_END
@@ -349,6 +362,7 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           } else if (consume('///')) {
             contextStack.push({
               type: ContextType.STRING,
+              allowComments: true,
               allowInterpolations: true,
               endingDelimiter: '///',
               endSourceType: SourceType.HEREGEXP_END
@@ -621,7 +635,7 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
           if (!context || context.type !== ContextType.STRING) {
             throw new Error('Unexpected STRING_CONTENT without anything on the string stack.');
           }
-          let { allowInterpolations, endingDelimiter, endSourceType } = context;
+          let { allowComments, allowInterpolations, endingDelimiter, endSourceType } = context;
           if (consume('\\')) {
             index++;
           } else if (consume(endingDelimiter)) {
@@ -629,6 +643,8 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
             setType(endSourceType);
           } else if (allowInterpolations && consume('#{')) {
             pushInterpolation();
+          } else if (options.useCS2 && allowComments && match('#') && !match('#{')) {
+            setType(SourceType.HEREGEXP_COMMENT);
           } else {
             index++;
           }
@@ -646,6 +662,14 @@ export function stream(source: string, index: number = 0): () => SourceLocation 
         case SourceType.HERECOMMENT:
           if (consume('###')) {
             setType(SourceType.NORMAL);
+          } else {
+            index++;
+          }
+          break;
+
+        case SourceType.HEREGEXP_COMMENT:
+          if (consume('\n')) {
+            setType(SourceType.STRING_CONTENT);
           } else {
             index++;
           }

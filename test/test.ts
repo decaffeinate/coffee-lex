@@ -563,6 +563,23 @@ describe('SourceTokenListTest', () => {
 
     ok(!startIndex.isAfter(endIndex), `#isAfter should be false for indexes out of order`);
   });
+
+  it('handles heregex padding with comments when in CS2 mode', () => {
+    let list = lex('r = ///\na # #{b}c\n d///', { useCS2: true });
+
+    deepEqual(list.map(t => t.type), [
+      SourceType.IDENTIFIER,
+      SourceType.OPERATOR,
+      SourceType.HEREGEXP_START,
+      SourceType.STRING_PADDING,
+      SourceType.STRING_CONTENT,
+      SourceType.STRING_PADDING,
+      SourceType.HEREGEXP_COMMENT,
+      SourceType.STRING_PADDING,
+      SourceType.STRING_CONTENT,
+      SourceType.HEREGEXP_END
+    ]);
+  });
 });
 
 describe('streamTest', () => {
@@ -1578,6 +1595,38 @@ else(0)`),
       new SourceLocation(SourceType.CSX_CLOSE_TAG_START, 14),
       new SourceLocation(SourceType.CSX_CLOSE_TAG_END, 16),
       new SourceLocation(SourceType.EOF, 17)
+    ]);
+  });
+
+  it('does not ignore heregex comments when in CS1 mode', () => {
+    checkLocations(stream('r = ///\na # #{b}c\n///'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.HEREGEXP_START, 4),
+      new SourceLocation(SourceType.STRING_CONTENT, 7),
+      new SourceLocation(SourceType.INTERPOLATION_START, 12),
+      new SourceLocation(SourceType.IDENTIFIER, 14),
+      new SourceLocation(SourceType.INTERPOLATION_END, 15),
+      new SourceLocation(SourceType.STRING_CONTENT, 16),
+      new SourceLocation(SourceType.HEREGEXP_END, 18),
+      new SourceLocation(SourceType.EOF, 21)
+    ]);
+  });
+
+  it('ignores heregex comments when in CS2 mode', () => {
+    checkLocations(stream('r = ///\na # #{b}c\n///', 0, { useCS2: true }), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.HEREGEXP_START, 4),
+      new SourceLocation(SourceType.STRING_CONTENT, 7),
+      new SourceLocation(SourceType.HEREGEXP_COMMENT, 10),
+      new SourceLocation(SourceType.STRING_CONTENT, 17),
+      new SourceLocation(SourceType.HEREGEXP_END, 18),
+      new SourceLocation(SourceType.EOF, 21)
     ]);
   });
 
