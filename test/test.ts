@@ -1598,6 +1598,18 @@ else(0)`),
     ]);
   });
 
+  it('handles non-CSX after a close-bracket', () => {
+    checkLocations(stream('a[b]<c'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.LBRACKET, 1),
+      new SourceLocation(SourceType.IDENTIFIER, 2),
+      new SourceLocation(SourceType.RBRACKET, 3),
+      new SourceLocation(SourceType.OPERATOR, 4),
+      new SourceLocation(SourceType.IDENTIFIER, 5),
+      new SourceLocation(SourceType.EOF, 6)
+    ]);
+  });
+
   it('does not ignore heregex comments when in CS1 mode', () => {
     checkLocations(stream('r = ///\na # #{b}c\n///'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),

@@ -832,7 +832,7 @@ export function stream(source: string, index: number = 0, options: Options = DEF
     if (
       contextType !== ContextType.CSX_BODY &&
       contextType !== ContextType.CSX_OPEN_TAG &&
-      [SourceType.IDENTIFIER, SourceType.RPAREN, SourceType.RBRACE, SourceType.NUMBER].includes(location.type)
+      [SourceType.IDENTIFIER, SourceType.RPAREN, SourceType.RBRACKET, SourceType.NUMBER].includes(location.type)
     ) {
       return false;
     }
