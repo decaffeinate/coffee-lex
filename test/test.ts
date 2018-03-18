@@ -1630,6 +1630,19 @@ else(0)`),
     ]);
   });
 
+  it('does not consider a hash in a heregex to start a comment unless it its preceded by whitespace', () => {
+    checkLocations(stream('r = ///\n[a#]\n///', 0, { useCS2: true }), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.SPACE, 1),
+      new SourceLocation(SourceType.OPERATOR, 2),
+      new SourceLocation(SourceType.SPACE, 3),
+      new SourceLocation(SourceType.HEREGEXP_START, 4),
+      new SourceLocation(SourceType.STRING_CONTENT, 7),
+      new SourceLocation(SourceType.HEREGEXP_END, 13),
+      new SourceLocation(SourceType.EOF, 16)
+    ]);
+  });
+
   it('does not infinite loop on incomplete string interpolations', () => {
     try {
       lex('a = "#{');

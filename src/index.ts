@@ -643,7 +643,7 @@ export function stream(source: string, index: number = 0, options: Options = DEF
             setType(endSourceType);
           } else if (allowInterpolations && consume('#{')) {
             pushInterpolation();
-          } else if (options.useCS2 && allowComments && match('#') && !match('#{')) {
+          } else if (options.useCS2 && allowComments && source[index - 1].match(/\s/) && match('#') && !match('#{')) {
             setType(SourceType.HEREGEXP_COMMENT);
           } else {
             index++;
