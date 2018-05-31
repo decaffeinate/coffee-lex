@@ -313,9 +313,9 @@ prettier-check@2.0.0:
   dependencies:
     execa "^0.6.0"
 
-prettier@1.13.0:
-  version "1.13.0"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-1.13.0.tgz#054de8d5fb1a4405c845d16183f58a2c301f6f16"
+prettier@^1.13.3:
+  version "1.13.3"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-1.13.3.tgz#e74c09a7df6519d472ca6febaa37cf7addb48a20"
 
 pseudomap@^1.0.2:
   version "1.0.2"
