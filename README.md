@@ -82,39 +82,28 @@ official lexer turns it into a series of string tokens separated by (virtual)
 the official lexer generates for `"a#{b}c"`:
 
 ```js
-[ [ 'STRING_START',
+[
+  [
+    'STRING_START',
     '(',
     { first_line: 0, first_column: 0, last_line: 0, last_column: 0 },
-    origin: [ 'STRING', null, [Object] ] ],
-  [ 'STRING',
-    '"a"',
-    { first_line: 0, first_column: 0, last_line: 0, last_column: 1 } ],
-  [ '+',
-    '+',
-    { first_line: 0, first_column: 3, last_line: 0, last_column: 3 } ],
-  [ '(',
-    '(',
-    { first_line: 0, first_column: 3, last_line: 0, last_column: 3 } ],
-  [ 'IDENTIFIER',
-    'b',
-    { first_line: 0, first_column: 4, last_line: 0, last_column: 4 },
-    variable: true ],
-  [ ')',
+    (origin: ['STRING', null, [Object]])
+  ],
+  ['STRING', '"a"', { first_line: 0, first_column: 0, last_line: 0, last_column: 1 }],
+  ['+', '+', { first_line: 0, first_column: 3, last_line: 0, last_column: 3 }],
+  ['(', '(', { first_line: 0, first_column: 3, last_line: 0, last_column: 3 }],
+  ['IDENTIFIER', 'b', { first_line: 0, first_column: 4, last_line: 0, last_column: 4 }, (variable: true)],
+  [
+    ')',
     ')',
     { first_line: 0, first_column: 5, last_line: 0, last_column: 5 },
-    origin: [ '', 'end of interpolation', [Object] ] ],
-  [ '+',
-    '+',
-    { first_line: 0, first_column: 6, last_line: 0, last_column: 6 } ],
-  [ 'STRING',
-    '"c"',
-    { first_line: 0, first_column: 6, last_line: 0, last_column: 7 } ],
-  [ 'STRING_END',
-    ')',
-    { first_line: 0, first_column: 7, last_line: 0, last_column: 7 } ],
-  [ 'TERMINATOR',
-    '\n',
-    { first_line: 0, first_column: 8, last_line: 0, last_column: 8 } ] ]
+    (origin: ['', 'end of interpolation', [Object]])
+  ],
+  ['+', '+', { first_line: 0, first_column: 6, last_line: 0, last_column: 6 }],
+  ['STRING', '"c"', { first_line: 0, first_column: 6, last_line: 0, last_column: 7 }],
+  ['STRING_END', ')', { first_line: 0, first_column: 7, last_line: 0, last_column: 7 }],
+  ['TERMINATOR', '\n', { first_line: 0, first_column: 8, last_line: 0, last_column: 8 }]
+];
 ```
 
 Here's what coffee-lex generates for the same source:
