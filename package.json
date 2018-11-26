@@ -27,7 +27,7 @@
   "files": [
     "dist"
   ],
-  "author": "Brian Donovan <me@brian-donovan.com>",
+  "author": "Brian Donovan",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/decaffeinate/coffee-lex/issues"
