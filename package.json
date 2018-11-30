@@ -1,5 +1,6 @@
 {
   "name": "coffee-lex",
+  "version": "0.0.0-development",
   "description": "Stupid lexer for CoffeeScript.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -12,7 +13,7 @@
     "prelint-fix": "yarn reformat",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --fix",
     "pretest": "yarn lint",
-    "test": "mocha"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -34,12 +35,13 @@
   },
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
+    "@types/jest": "^23.3.10",
     "@types/node": "^10.12.10",
     "decaffeinate-coffeescript": "1.12.7-patch.2",
-    "mocha": "^5.2.0",
+    "jest": "^23.6.0",
     "prettier": "^1.15.2",
     "prettier-check": "2.0.0",
+    "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6"

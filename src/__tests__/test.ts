@@ -1,9 +1,9 @@
 import { deepEqual, ok, strictEqual } from 'assert';
 import { inspect } from 'util';
-import lex, { consumeStream, stream, SourceType } from '../src/index';
-import SourceLocation from '../src/SourceLocation';
-import SourceToken from '../src/SourceToken';
-import SourceTokenList from '../src/SourceTokenList';
+import lex, { consumeStream, stream, SourceType } from '../index';
+import SourceLocation from '../SourceLocation';
+import SourceToken from '../SourceToken';
+import SourceTokenList from '../SourceTokenList';
 
 function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
   let actualLocations = consumeStream(stream);

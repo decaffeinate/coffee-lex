@@ -1,8 +1,8 @@
 import { deepEqual } from 'assert';
-import { stream, SourceType } from '../../src/index';
-import SourceLocation from '../../src/SourceLocation';
-import BufferedStream from '../../src/utils/BufferedStream';
-import calculateTripleQuotedStringPadding from '../../src/utils/calculateTripleQuotedStringPadding';
+import { stream, SourceType } from '../../index';
+import SourceLocation from '../../SourceLocation';
+import BufferedStream from '../../utils/BufferedStream';
+import calculateTripleQuotedStringPadding from '../../utils/calculateTripleQuotedStringPadding';
 import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript';
 
 function bufferedStream(source: string): BufferedStream {

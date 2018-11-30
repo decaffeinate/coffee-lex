@@ -5,7 +5,7 @@ node_modules
 
 # Ignore generated JavaScript files.
 *.js
-!rollup.config.js
+!jest.config.js
 
 # Ignore generated TypeScript definition files.
 *.d.ts
