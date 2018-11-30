@@ -1,8 +1,8 @@
 import { deepEqual } from 'assert';
 import * as CoffeeScript from 'decaffeinate-coffeescript';
 
-import lex from '../../src/index';
-import SourceType from '../../src/SourceType';
+import lex from '../../index';
+import SourceType from '../../SourceType';
 
 /**
  * Given code containing a string, herestring, or heregex, verify that the

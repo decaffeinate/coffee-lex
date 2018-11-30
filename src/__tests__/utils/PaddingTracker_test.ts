@@ -1,10 +1,10 @@
 import { deepEqual, strictEqual, throws } from 'assert';
 
-import { stream } from '../../src/index';
-import SourceLocation from '../../src/SourceLocation';
-import SourceType from '../../src/SourceType';
-import BufferedStream from '../../src/utils/BufferedStream';
-import PaddingTracker from '../../src/utils/PaddingTracker';
+import { stream } from '../../index';
+import SourceLocation from '../../SourceLocation';
+import SourceType from '../../SourceType';
+import BufferedStream from '../../utils/BufferedStream';
+import PaddingTracker from '../../utils/PaddingTracker';
 
 describe('PaddingTrackerTest', () => {
   it('exposes the fragments in a string and allows marking padding', () => {
