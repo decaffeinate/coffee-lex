@@ -13,7 +13,8 @@
     "prelint-fix": "yarn reformat",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --fix",
     "pretest": "yarn lint",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "script/build.ts"
   },
   "repository": {
     "type": "git",
@@ -35,9 +36,14 @@
   },
   "homepage": "https://github.com/decaffeinate/coffee-lex",
   "devDependencies": {
+    "@microsoft/node-core-library": "^3.7.1",
+    "@types/fs-extra": "^5.0.4",
+    "@types/globby": "^8.0.0",
     "@types/jest": "^23.3.10",
     "@types/node": "^10.12.10",
     "decaffeinate-coffeescript": "1.12.7-patch.2",
+    "fs-extra": "^7.0.1",
+    "globby": "^8.0.1",
     "jest": "^23.6.0",
     "prettier": "^1.15.2",
     "prettier-check": "2.0.0",
