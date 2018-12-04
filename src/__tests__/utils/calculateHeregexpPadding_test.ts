@@ -1,11 +1,11 @@
 import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript';
 
 describe('calculateHeregexpPaddingTest', () => {
-  it('removes whitespace from single-line heregexes', () => {
+  test('removes whitespace from single-line heregexes', () => {
     verifyStringMatchesCoffeeScript(`///a b///`, ['ab']);
   });
 
-  it('handles heregexp comments', () => {
+  test('handles heregexp comments', () => {
     verifyStringMatchesCoffeeScript(
       `///
     b  # foo
@@ -15,17 +15,17 @@ describe('calculateHeregexpPaddingTest', () => {
     );
   });
 
-  it('does not treat # as a comment if it is preceded by non-whitespace', () => {
+  test('does not treat # as a comment if it is preceded by non-whitespace', () => {
     verifyStringMatchesCoffeeScript(
       `///
-    b# foo
-    c
-    ///`,
+      b# foo
+      c
+      ///`,
       ['b#fooc']
     );
   });
 
-  it('handles interpolations within heregexes', () => {
+  test('handles interpolations within heregexes', () => {
     verifyStringMatchesCoffeeScript(
       `///
     a  #{b}
@@ -35,17 +35,17 @@ describe('calculateHeregexpPaddingTest', () => {
     );
   });
 
-  it('allows interpolations in comments and ends the comment at the interpolation', () => {
+  test('allows interpolations in comments and ends the comment at the interpolation', () => {
     verifyStringMatchesCoffeeScript(
       `///
-    a #b #{c}d
-    e
-    ///`,
+      a #b #{c}d
+      e
+      ///`,
       ['a', 'de']
     );
   });
 
-  it('allows escaped spaces in heregexes', () => {
+  test('allows escaped spaces in heregexes', () => {
     verifyStringMatchesCoffeeScript(
       `///
     a \\ b #{c}d
@@ -55,7 +55,7 @@ describe('calculateHeregexpPaddingTest', () => {
     );
   });
 
-  it('does not escape a space on a double backslash', () => {
+  test('does not escape a space on a double backslash', () => {
     verifyStringMatchesCoffeeScript(
       `///
     a \\\\ b #{c}d
@@ -65,7 +65,7 @@ describe('calculateHeregexpPaddingTest', () => {
     );
   });
 
-  it('escapes a space on a triple backslash', () => {
+  test('escapes a space on a triple backslash', () => {
     verifyStringMatchesCoffeeScript(
       `///
     a \\\\\\ b #{c}d
@@ -75,7 +75,7 @@ describe('calculateHeregexpPaddingTest', () => {
     );
   });
 
-  it('handles a hergexp consisting of only a backslash', () => {
+  test('handles a hergexp consisting of only a backslash', () => {
     verifyStringMatchesCoffeeScript(
       `///
     \\a

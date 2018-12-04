@@ -1,4 +1,3 @@
-import { deepEqual } from 'assert';
 import { stream, SourceType } from '../../index';
 import SourceLocation from '../../SourceLocation';
 import BufferedStream from '../../utils/BufferedStream';
@@ -10,27 +9,27 @@ function bufferedStream(source: string): BufferedStream {
 }
 
 describe('tripleQuotedStringSourceLocationsTest', () => {
-  it('returns an empty string for an empty triple-quoted string', () => {
+  test('returns an empty string for an empty triple-quoted string', () => {
     verifyStringMatchesCoffeeScript(`''''''`, []);
   });
 
-  it('marks a leading and trailing newline as padding', () => {
+  test('marks a leading and trailing newline as padding', () => {
     verifyStringMatchesCoffeeScript(`'''\na\n'''`, ['a']);
   });
 
-  it('marks shared indents as padding in triple-single-quoted strings', () => {
+  test('marks shared indents as padding in triple-single-quoted strings', () => {
     verifyStringMatchesCoffeeScript(`'''\n      abc\n\n      def\n      '''`, ['abc\n\ndef']);
   });
 
-  it('marks shared indents as padding in triple-double-quoted strings', () => {
+  test('marks shared indents as padding in triple-double-quoted strings', () => {
     verifyStringMatchesCoffeeScript(`"""\n      abc\n\n      def\n      """`, ['abc\n\ndef']);
   });
 
-  it('marks shared indents as padding in interpolated strings', () => {
+  test('marks shared indents as padding in interpolated strings', () => {
     verifyStringMatchesCoffeeScript(`"""\n      a#{b}c\n\n      d#{e}f\n      """`, ['a', 'c\n\nd', 'f']);
   });
 
-  it('ignores the indentation level of the first line in herestrings', () => {
+  test('ignores the indentation level of the first line in herestrings', () => {
     verifyStringMatchesCoffeeScript(
       `'''a
       b'''`,
@@ -38,7 +37,7 @@ describe('tripleQuotedStringSourceLocationsTest', () => {
     );
   });
 
-  it('removes leading nonempty indentation in herestrings', () => {
+  test('removes leading nonempty indentation in herestrings', () => {
     verifyStringMatchesCoffeeScript(
       `'''
  a
@@ -49,17 +48,17 @@ d'''`,
     );
   });
 
-  it('preserves leading indentation on the first line in herestrings if necessary', () => {
+  test('preserves leading indentation on the first line in herestrings if necessary', () => {
     verifyStringMatchesCoffeeScript(
       `''' a
-          b
-            c
-          d'''`,
+            b
+              c
+            d'''`,
       [' a\nb\n  c\nd']
     );
   });
 
-  it('removes indentation normally if the first full line is empty', () => {
+  test('removes indentation normally if the first full line is empty', () => {
     verifyStringMatchesCoffeeScript(
       `'''
 
@@ -70,18 +69,18 @@ d'''`,
     );
   });
 
-  it('uses indentation 0 for herestrings if the first full line is nonempty and has indentation 0', () => {
+  test('uses indentation 0 for herestrings if the first full line is nonempty and has indentation 0', () => {
     verifyStringMatchesCoffeeScript(
       `'''
-a
-  b
- c
-d'''`,
+  a
+    b
+   c
+  d'''`,
       ['a\n  b\n c\nd']
     );
   });
 
-  it('does not remove indentation from the first line', () => {
+  test('does not remove indentation from the first line', () => {
     verifyStringMatchesCoffeeScript(
       `'''     a
       b
@@ -91,7 +90,7 @@ d'''`,
     );
   });
 
-  it('keeps spacing in the second line if there are two lines and both are only whitespace', () => {
+  test('keeps spacing in the second line if there are two lines and both are only whitespace', () => {
     verifyStringMatchesCoffeeScript(
       `'''    
    '''`,
@@ -99,7 +98,7 @@ d'''`,
     );
   });
 
-  it('removes leading whitespace from herestrings with tabs', () => {
+  test('removes leading whitespace from herestrings with tabs', () => {
     verifyStringMatchesCoffeeScript(
       `'''
 \t\t\t\ta
@@ -108,7 +107,7 @@ d'''`,
     );
   });
 
-  it('handles a string with a leading and trailing blank line', () => {
+  test('handles a string with a leading and trailing blank line', () => {
     verifyStringMatchesCoffeeScript(
       `'''
 a
@@ -117,7 +116,7 @@ a
     );
   });
 
-  it('handles a string with a blank line with spaces in it', () => {
+  test('handles a string with a blank line with spaces in it', () => {
     verifyStringMatchesCoffeeScript(
       `'''
   a
@@ -127,17 +126,17 @@ a
     );
   });
 
-  it('handles a string where the last line is a blank line with spaces', () => {
+  test('handles a string where the last line is a blank line with spaces', () => {
     verifyStringMatchesCoffeeScript(
       `'''
-  a
-  b
- '''`,
+    a
+    b
+   '''`,
       ['a\nb']
     );
   });
 
-  it('keeps leading spaces in a herestring with interpolations', () => {
+  test('keeps leading spaces in a herestring with interpolations', () => {
     verifyStringMatchesCoffeeScript(
       `"""    a
 b#{c}
@@ -146,7 +145,7 @@ b#{c}
     );
   });
 
-  it('keeps leading spaces in a herestring with interpolations', () => {
+  test('keeps leading spaces in a herestring with interpolations', () => {
     verifyStringMatchesCoffeeScript(
       `"""
   #{a}
@@ -155,15 +154,15 @@ b#{c}
     );
   });
 
-  it('allows escaping newlines, even with spaces between the backslash and newline', () => {
+  test('allows escaping newlines, even with spaces between the backslash and newline', () => {
     verifyStringMatchesCoffeeScript(
       `"""a\\  
-b"""`,
+  b"""`,
       ['ab']
     );
   });
 
-  it('does not escape newlines on an even number of backslashes', () => {
+  test('does not escape newlines on an even number of backslashes', () => {
     verifyStringMatchesCoffeeScript(
       `"""a\\\\  
 b"""`,
@@ -171,7 +170,7 @@ b"""`,
     );
   });
 
-  it('removes all whitespace following an escaped newline', () => {
+  test('removes all whitespace following an escaped newline', () => {
     verifyStringMatchesCoffeeScript(
       `"""a\\  
      b
@@ -181,18 +180,18 @@ b"""`,
     );
   });
 
-  it('ignores the newline at the end of the last content line when followed by an escaped newline', () => {
+  test('ignores the newline at the end of the last content line when followed by an escaped newline', () => {
     verifyStringMatchesCoffeeScript(
       `"""  
-      first line
-      second line
-      \\
-      """`,
+        first line
+        second line
+        \\
+        """`,
       ['first line\nsecond line']
     );
   });
 
-  it('properly trims the first line when there is an escaped newline', () => {
+  test('properly trims the first line when there is an escaped newline', () => {
     verifyStringMatchesCoffeeScript(
       `"""  
       \\  
@@ -202,22 +201,22 @@ b"""`,
     );
   });
 
-  it('handles escaped and unescaped newlines after the last content line', () => {
+  test('handles escaped and unescaped newlines after the last content line', () => {
     verifyStringMatchesCoffeeScript(
       `'''
-  first line
-  second line
+    first line
+    second line
 
-    \\
+      \\
 
-'''`,
+  '''`,
       ['first line\nsecond line\n']
     );
   });
 
-  it('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
+  test('returns an array with empty leading and trailing string content tokens for a string containing only an interpolation', () => {
     let source = `"""\n#{a}\n"""`;
-    deepEqual(calculateTripleQuotedStringPadding(source, bufferedStream(source)), [
+    expect(calculateTripleQuotedStringPadding(source, bufferedStream(source))).toEqual([
       new SourceLocation(SourceType.TDSTRING_START, 0),
       new SourceLocation(SourceType.STRING_PADDING, 3),
       new SourceLocation(SourceType.INTERPOLATION_START, 4),
@@ -228,9 +227,9 @@ b"""`,
     ]);
   });
 
-  it('returns an array with empty string content token between adjacent interpolations', () => {
+  test('returns an array with empty string content token between adjacent interpolations', () => {
     let source = `"""#{a}#{b}"""`;
-    deepEqual(calculateTripleQuotedStringPadding(source, bufferedStream(source)), [
+    expect(calculateTripleQuotedStringPadding(source, bufferedStream(source))).toEqual([
       new SourceLocation(SourceType.TDSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 3),
       new SourceLocation(SourceType.INTERPOLATION_START, 3),
@@ -245,14 +244,14 @@ b"""`,
     ]);
   });
 
-  it('consumes only as many locations as it needs', () => {
+  test('consumes only as many locations as it needs', () => {
     let source = `"""abc""" + 99`;
     let stream = bufferedStream(source);
-    deepEqual(calculateTripleQuotedStringPadding(source, stream), [
+    expect(calculateTripleQuotedStringPadding(source, stream)).toEqual([
       new SourceLocation(SourceType.TDSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 3),
       new SourceLocation(SourceType.TDSTRING_END, 6)
     ]);
-    deepEqual(stream.peek(), new SourceLocation(SourceType.SPACE, 9));
+    expect(stream.peek()).toEqual(new SourceLocation(SourceType.SPACE, 9));
   });
 });
