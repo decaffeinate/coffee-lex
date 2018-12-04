@@ -1,11 +1,11 @@
 import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript';
 
 describe('calculateNormalStringPaddingTest', () => {
-  it('does not strip whitespace in a string with no newlines', () => {
+  test('does not strip whitespace in a string with no newlines', () => {
     verifyStringMatchesCoffeeScript(`"  a b  "`, ['  a b  ']);
   });
 
-  it('inserts spaces for newlines', () => {
+  test('inserts spaces for newlines', () => {
     verifyStringMatchesCoffeeScript(
       `"
       a
@@ -15,7 +15,7 @@ describe('calculateNormalStringPaddingTest', () => {
     );
   });
 
-  it('removes spaces when there is an interpolation', () => {
+  test('removes spaces when there is an interpolation', () => {
     verifyStringMatchesCoffeeScript(
       `"
       a  #{b}
@@ -25,15 +25,15 @@ describe('calculateNormalStringPaddingTest', () => {
     );
   });
 
-  it('does not remove spaces when the only newline is across an interpolation', () => {
+  test('does not remove spaces when the only newline is across an interpolation', () => {
     verifyStringMatchesCoffeeScript(
       `" a #{
-  b} c "`,
+    b} c "`,
       [' a ', ' c ']
     );
   });
 
-  it('removes leading and trailing tab characters', () => {
+  test('removes leading and trailing tab characters', () => {
     verifyStringMatchesCoffeeScript(
       `"
 \ta
@@ -43,7 +43,7 @@ describe('calculateNormalStringPaddingTest', () => {
     );
   });
 
-  it('does not add an intermediate space when a newline is escaped', () => {
+  test('does not add an intermediate space when a newline is escaped', () => {
     verifyStringMatchesCoffeeScript(
       `"a\\
 b"`,
@@ -51,7 +51,7 @@ b"`,
     );
   });
 
-  it('adds an intermediate space on a double backslash', () => {
+  test('adds an intermediate space on a double backslash', () => {
     verifyStringMatchesCoffeeScript(
       `"a\\\\
 b"`,
@@ -59,7 +59,7 @@ b"`,
     );
   });
 
-  it('does not add an intermediate space on a triple backslash', () => {
+  test('does not add an intermediate space on a triple backslash', () => {
     verifyStringMatchesCoffeeScript(
       `"a\\\\\\
 b"`,
@@ -67,7 +67,7 @@ b"`,
     );
   });
 
-  it('does not remove spaces to the left of an escaped newline', () => {
+  test('does not remove spaces to the left of an escaped newline', () => {
     verifyStringMatchesCoffeeScript(
       `"a   \\
 b"`,
@@ -75,16 +75,16 @@ b"`,
     );
   });
 
-  it('treats a backslash, then spaces, then a newline as an escaped newline', () => {
+  test('treats a backslash, then spaces, then a newline as an escaped newline', () => {
     verifyStringMatchesCoffeeScript(
       `"
-a\\  
-b"`,
+  a\\  
+  b"`,
       ['ab']
     );
   });
 
-  it('does not add trailing spacing for an escaped newline at the end', () => {
+  test('does not add trailing spacing for an escaped newline at the end', () => {
     verifyStringMatchesCoffeeScript(
       `"
 a
@@ -94,7 +94,7 @@ a
     );
   });
 
-  it('does not remove spacing to the right of an escaped space', () => {
+  test('does not remove spacing to the right of an escaped space', () => {
     verifyStringMatchesCoffeeScript(
       `"
 a

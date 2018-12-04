@@ -1,44 +1,33 @@
-import { deepEqual, ok, strictEqual } from 'assert';
-import { inspect } from 'util';
 import lex, { consumeStream, stream, SourceType } from '../index';
 import SourceLocation from '../SourceLocation';
 import SourceToken from '../SourceToken';
 import SourceTokenList from '../SourceTokenList';
+import expect from './utils/customExpect';
 
 function checkLocations(stream: () => SourceLocation, expectedLocations: Array<SourceLocation>) {
   let actualLocations = consumeStream(stream);
-  deepEqual(
-    actualLocations,
-    expectedLocations,
-    `Mismatched tokens.\nExpected:\n${formatLocationsCode(expectedLocations)}\nFound:\n${formatLocationsCode(
-      actualLocations
-    )}\n`
-  );
-}
-
-function formatLocationsCode(locations: Array<SourceLocation>): string {
-  return locations.map(loc => `new SourceLocation(SourceType.${loc.type}, ${loc.index}),`).join('\n');
+  expect(actualLocations).toEqualSourceLocations(expectedLocations);
 }
 
 describe('lexTest', () => {
-  it('returns an empty list for an empty program', () => {
-    deepEqual(lex('').toArray(), []);
+  test('returns an empty list for an empty program', () => {
+    expect(lex('').toArray()).toEqual([]);
   });
 
-  it('builds a list of tokens omitting SPACE and EOF', () => {
-    deepEqual(lex(`a + b`).toArray(), [
+  test('builds a list of tokens omitting SPACE and EOF', () => {
+    expect(lex(`a + b`).toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.OPERATOR, 2, 3),
       new SourceToken(SourceType.IDENTIFIER, 4, 5)
     ]);
   });
 
-  it('returns a `SourceTokenList`', () => {
-    ok(lex('') instanceof SourceTokenList);
+  test('returns a `SourceTokenList`', () => {
+    expect(lex('') instanceof SourceTokenList).toBeTruthy();
   });
 
-  it('turns string interpolations into cohesive string tokens', () => {
-    deepEqual(lex(`"b#{c}d#{e}f"`).toArray(), [
+  test('turns string interpolations into cohesive string tokens', () => {
+    expect(lex(`"b#{c}d#{e}f"`).toArray()).toEqual([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 2),
       new SourceToken(SourceType.INTERPOLATION_START, 2, 4),
@@ -53,8 +42,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('inserts padding in the correct places for a multiline string', () => {
-    deepEqual(lex(`"  b#{c}  \n  d#{e}  \n  f  "`).toArray(), [
+  test('inserts padding in the correct places for a multiline string', () => {
+    expect(lex(`"  b#{c}  \n  d#{e}  \n  f  "`).toArray()).toEqual([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 4),
       new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
@@ -75,8 +64,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('adds empty template content tokens between adjacent interpolations', () => {
-    deepEqual(lex(`"#{a}#{b}"`).toArray(), [
+  test('adds empty template content tokens between adjacent interpolations', () => {
+    expect(lex(`"#{a}#{b}"`).toArray()).toEqual([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 1),
       new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
@@ -91,8 +80,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('turns triple-quoted string interpolations into string tokens', () => {
-    deepEqual(lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray(), [
+  test('turns triple-quoted string interpolations into string tokens', () => {
+    expect(lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray()).toEqual([
       new SourceToken(SourceType.TDSTRING_START, 0, 3),
       new SourceToken(SourceType.STRING_PADDING, 3, 6),
       new SourceToken(SourceType.STRING_CONTENT, 6, 7),
@@ -111,8 +100,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('turns triple-quoted strings with leading interpolation into string tokens', () => {
-    deepEqual(lex(`"""\n#{a}\n"""`).toArray(), [
+  test('turns triple-quoted strings with leading interpolation into string tokens', () => {
+    expect(lex(`"""\n#{a}\n"""`).toArray()).toEqual([
       new SourceToken(SourceType.TDSTRING_START, 0, 3),
       new SourceToken(SourceType.STRING_PADDING, 3, 4),
       new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
@@ -123,8 +112,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('handles nested interpolations', () => {
-    deepEqual(lex(`"#{"#{a}"}"`).toArray(), [
+  test('handles nested interpolations', () => {
+    expect(lex(`"#{"#{a}"}"`).toArray()).toEqual([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 1),
       new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
@@ -141,8 +130,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('handles spaces in string interpolations appropriately', () => {
-    deepEqual(lex(`"#{ a }"`).toArray(), [
+  test('handles spaces in string interpolations appropriately', () => {
+    expect(lex(`"#{ a }"`).toArray()).toEqual([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 1),
       new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
@@ -153,56 +142,56 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('identifies `not instanceof` as a single operator', () => {
-    deepEqual(lex('a not instanceof b').toArray(), [
+  test('identifies `not instanceof` as a single operator', () => {
+    expect(lex('a not instanceof b').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.OPERATOR, 2, 16),
       new SourceToken(SourceType.IDENTIFIER, 17, 18)
     ]);
   });
 
-  it('identifies `!instanceof` as a single operator', () => {
-    deepEqual(lex('a !instanceof b').toArray(), [
+  test('identifies `!instanceof` as a single operator', () => {
+    expect(lex('a !instanceof b').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.OPERATOR, 2, 13),
       new SourceToken(SourceType.IDENTIFIER, 14, 15)
     ]);
   });
 
-  it('identifies `not in` as a single operator', () => {
-    deepEqual(lex('a not in b').toArray(), [
+  test('identifies `not in` as a single operator', () => {
+    expect(lex('a not in b').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 8),
       new SourceToken(SourceType.IDENTIFIER, 9, 10)
     ]);
   });
 
-  it('identifies `!in` as a single operator', () => {
-    deepEqual(lex('a !in b').toArray(), [
+  test('identifies `!in` as a single operator', () => {
+    expect(lex('a !in b').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 5),
       new SourceToken(SourceType.IDENTIFIER, 6, 7)
     ]);
   });
 
-  it('identifies `not of` as a single operator', () => {
-    deepEqual(lex('a not of b').toArray(), [
+  test('identifies `not of` as a single operator', () => {
+    expect(lex('a not of b').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 8),
       new SourceToken(SourceType.IDENTIFIER, 9, 10)
     ]);
   });
 
-  it('identifies `!of` as a single operator', () => {
-    deepEqual(lex('a !of b').toArray(), [
+  test('identifies `!of` as a single operator', () => {
+    expect(lex('a !of b').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 5),
       new SourceToken(SourceType.IDENTIFIER, 6, 7)
     ]);
   });
 
-  it('identifies parentheses immediately after callable tokens as CALL_START', () => {
-    deepEqual(lex('a(super(@(b[0](), true&(false), b?())))').toArray(), [
+  test('identifies parentheses immediately after callable tokens as CALL_START', () => {
+    expect(lex('a(super(@(b[0](), true&(false), b?())))').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.CALL_START, 1, 2),
       new SourceToken(SourceType.SUPER, 2, 7),
@@ -232,8 +221,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('identifies parentheses immediately after a CALL_END as CALL_START', () => {
-    deepEqual(lex('a()()').toArray(), [
+  test('identifies parentheses immediately after a CALL_END as CALL_START', () => {
+    expect(lex('a()()').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.CALL_START, 1, 2),
       new SourceToken(SourceType.CALL_END, 2, 3),
@@ -242,15 +231,15 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('identifies `new` as a NEW token', () => {
-    deepEqual(lex('new A').toArray(), [
+  test('identifies `new` as a NEW token', () => {
+    expect(lex('new A').toArray()).toEqual([
       new SourceToken(SourceType.NEW, 0, 3),
       new SourceToken(SourceType.IDENTIFIER, 4, 5)
     ]);
   });
 
-  it('identifies `new` as an IDENTIFIER in a property name', () => {
-    deepEqual(lex('a\n  new: 5').toArray(), [
+  test('identifies `new` as an IDENTIFIER in a property name', () => {
+    expect(lex('a\n  new: 5').toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.NEWLINE, 1, 2),
       new SourceToken(SourceType.IDENTIFIER, 4, 7),
@@ -259,8 +248,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('identifies closing interpolations inside objects', () => {
-    deepEqual(lex(`{ id: "#{a}" }`).toArray(), [
+  test('identifies closing interpolations inside objects', () => {
+    expect(lex(`{ id: "#{a}" }`).toArray()).toEqual([
       new SourceToken(SourceType.LBRACE, 0, 1),
       new SourceToken(SourceType.IDENTIFIER, 2, 4),
       new SourceToken(SourceType.COLON, 4, 5),
@@ -275,8 +264,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () => {
-    deepEqual(lex(`foo = '''\n      abc\n\n      def\n      '''`).toArray(), [
+  test('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () => {
+    expect(lex(`foo = '''\n      abc\n\n      def\n      '''`).toArray()).toEqual([
       new SourceToken(SourceType.IDENTIFIER, 0, 3),
       new SourceToken(SourceType.OPERATOR, 4, 5),
       new SourceToken(SourceType.TSSTRING_START, 6, 9),
@@ -289,8 +278,8 @@ describe('lexTest', () => {
     ]);
   });
 
-  it('@on() is a function call not and not a bool followed by parens', () => {
-    deepEqual(lex(`@on()`).toArray(), [
+  test('@on() is a function call not and not a bool followed by parens', () => {
+    expect(lex(`@on()`).toArray()).toEqual([
       new SourceToken(SourceType.AT, 0, 1),
       new SourceToken(SourceType.IDENTIFIER, 1, 3),
       new SourceToken(SourceType.CALL_START, 3, 4),
@@ -300,121 +289,118 @@ describe('lexTest', () => {
 });
 
 describe('SourceTokenListTest', () => {
-  it('has a `startIndex` that represents the first token', () => {
+  test('has a `startIndex` that represents the first token', () => {
     let list = lex('0');
     let token = list.tokenAtIndex(list.startIndex);
-    deepEqual(token, new SourceToken(SourceType.NUMBER, 0, 1));
+    expect(token).toEqual(new SourceToken(SourceType.NUMBER, 0, 1));
   });
 
-  it('has an `endIndex` that represents the virtual token after the last one', () => {
+  test('has an `endIndex` that represents the virtual token after the last one', () => {
     let { startIndex, endIndex } = lex(''); // no tokens
-    strictEqual(endIndex, startIndex);
+    expect(endIndex).toBe(startIndex);
   });
 
-  it('always returns the same index when advancing to the same offset', () => {
+  test('always returns the same index when advancing to the same offset', () => {
     let { startIndex, endIndex } = lex('a'); // one token
-    strictEqual(startIndex.next(), endIndex);
-    strictEqual(endIndex.previous(), startIndex);
+    expect(startIndex.next()).toBe(endIndex);
+    expect(endIndex.previous()).toBe(startIndex);
   });
 
-  it('allows getting a containing token index by source index', () => {
+  test('allows getting a containing token index by source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
-    strictEqual(list.indexOfTokenContainingSourceIndex(0), oneIndex); // o
-    strictEqual(list.indexOfTokenContainingSourceIndex(1), oneIndex); // n
-    strictEqual(list.indexOfTokenContainingSourceIndex(2), oneIndex); // e
-    strictEqual(list.indexOfTokenContainingSourceIndex(3), null); //
-    strictEqual(list.indexOfTokenContainingSourceIndex(4), plusIndex); // +
-    strictEqual(list.indexOfTokenContainingSourceIndex(5), null); //
-    strictEqual(list.indexOfTokenContainingSourceIndex(6), twoIndex); // t
-    strictEqual(list.indexOfTokenContainingSourceIndex(7), twoIndex); // w
-    strictEqual(list.indexOfTokenContainingSourceIndex(8), twoIndex); // o
-    strictEqual(list.indexOfTokenContainingSourceIndex(9), null); // <EOF>
+    expect(list.indexOfTokenContainingSourceIndex(0)).toBe(oneIndex); // o
+    expect(list.indexOfTokenContainingSourceIndex(1)).toBe(oneIndex); // n
+    expect(list.indexOfTokenContainingSourceIndex(2)).toBe(oneIndex); // e
+    expect(list.indexOfTokenContainingSourceIndex(3)).toBe(null); //
+    expect(list.indexOfTokenContainingSourceIndex(4)).toBe(plusIndex); // +
+    expect(list.indexOfTokenContainingSourceIndex(5)).toBe(null); //
+    expect(list.indexOfTokenContainingSourceIndex(6)).toBe(twoIndex); // t
+    expect(list.indexOfTokenContainingSourceIndex(7)).toBe(twoIndex); // w
+    expect(list.indexOfTokenContainingSourceIndex(8)).toBe(twoIndex); // o
+    expect(list.indexOfTokenContainingSourceIndex(9)).toBe(null); // <EOF>
   });
 
-  it('allows getting a nearby token index by source index', () => {
+  test('allows getting a nearby token index by source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
-    strictEqual(list.indexOfTokenNearSourceIndex(0), oneIndex); // o
-    strictEqual(list.indexOfTokenNearSourceIndex(1), oneIndex); // n
-    strictEqual(list.indexOfTokenNearSourceIndex(2), oneIndex); // e
-    strictEqual(list.indexOfTokenNearSourceIndex(3), oneIndex); //
-    strictEqual(list.indexOfTokenNearSourceIndex(4), plusIndex); // +
-    strictEqual(list.indexOfTokenNearSourceIndex(5), plusIndex); //
-    strictEqual(list.indexOfTokenNearSourceIndex(6), twoIndex); // t
-    strictEqual(list.indexOfTokenNearSourceIndex(7), twoIndex); // w
-    strictEqual(list.indexOfTokenNearSourceIndex(8), twoIndex); // o
-    strictEqual(list.indexOfTokenNearSourceIndex(9), twoIndex); // <EOF>
+    expect(list.indexOfTokenNearSourceIndex(0)).toBe(oneIndex); // o
+    expect(list.indexOfTokenNearSourceIndex(1)).toBe(oneIndex); // n
+    expect(list.indexOfTokenNearSourceIndex(2)).toBe(oneIndex); // e
+    expect(list.indexOfTokenNearSourceIndex(3)).toBe(oneIndex); //
+    expect(list.indexOfTokenNearSourceIndex(4)).toBe(plusIndex); // +
+    expect(list.indexOfTokenNearSourceIndex(5)).toBe(plusIndex); //
+    expect(list.indexOfTokenNearSourceIndex(6)).toBe(twoIndex); // t
+    expect(list.indexOfTokenNearSourceIndex(7)).toBe(twoIndex); // w
+    expect(list.indexOfTokenNearSourceIndex(8)).toBe(twoIndex); // o
+    expect(list.indexOfTokenNearSourceIndex(9)).toBe(twoIndex); // <EOF>
   });
 
-  it('allows getting a token index by its starting source index', () => {
+  test('allows getting a token index by its starting source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(0), oneIndex); // o
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(1), null); // n
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(2), null); // e
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(3), null); //
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(4), plusIndex); // +
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(5), null); //
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(6), twoIndex); // t
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(7), null); // w
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(8), null); // o
-    strictEqual(list.indexOfTokenStartingAtSourceIndex(9), null); // <EOF>
+    expect(list.indexOfTokenStartingAtSourceIndex(0)).toBe(oneIndex); // o
+    expect(list.indexOfTokenStartingAtSourceIndex(1)).toBe(null); // n
+    expect(list.indexOfTokenStartingAtSourceIndex(2)).toBe(null); // e
+    expect(list.indexOfTokenStartingAtSourceIndex(3)).toBe(null); //
+    expect(list.indexOfTokenStartingAtSourceIndex(4)).toBe(plusIndex); // +
+    expect(list.indexOfTokenStartingAtSourceIndex(5)).toBe(null); //
+    expect(list.indexOfTokenStartingAtSourceIndex(6)).toBe(twoIndex); // t
+    expect(list.indexOfTokenStartingAtSourceIndex(7)).toBe(null); // w
+    expect(list.indexOfTokenStartingAtSourceIndex(8)).toBe(null); // o
+    expect(list.indexOfTokenStartingAtSourceIndex(9)).toBe(null); // <EOF>
   });
 
-  it('allows getting a token index by its ending source index', () => {
+  test('allows getting a token index by its ending source index', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(0), null); // o
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(1), null); // n
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(2), null); // e
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(3), oneIndex); //
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(4), null); // +
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(5), plusIndex); //
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(6), null); // t
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(7), null); // w
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(8), null); // o
-    strictEqual(list.indexOfTokenEndingAtSourceIndex(9), twoIndex); // <EOF>
+    expect(list.indexOfTokenEndingAtSourceIndex(0)).toBe(null); // o
+    expect(list.indexOfTokenEndingAtSourceIndex(1)).toBe(null); // n
+    expect(list.indexOfTokenEndingAtSourceIndex(2)).toBe(null); // e
+    expect(list.indexOfTokenEndingAtSourceIndex(3)).toBe(oneIndex); //
+    expect(list.indexOfTokenEndingAtSourceIndex(4)).toBe(null); // +
+    expect(list.indexOfTokenEndingAtSourceIndex(5)).toBe(plusIndex); //
+    expect(list.indexOfTokenEndingAtSourceIndex(6)).toBe(null); // t
+    expect(list.indexOfTokenEndingAtSourceIndex(7)).toBe(null); // w
+    expect(list.indexOfTokenEndingAtSourceIndex(8)).toBe(null); // o
+    expect(list.indexOfTokenEndingAtSourceIndex(9)).toBe(twoIndex); // <EOF>
   });
 
-  it('allows searching through a token index range by a predicate', () => {
+  test('allows searching through a token index range by a predicate', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
-    strictEqual(list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER), oneIndex);
-    strictEqual(list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex), twoIndex);
-    strictEqual(
-      list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex, twoIndex),
+    expect(list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER)).toBe(oneIndex);
+    expect(list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex)).toBe(twoIndex);
+    expect(list.indexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex, twoIndex)).toBe(
       null
     );
   });
 
-  it('allows searching backwards through a token index range by a predicate', () => {
+  test('allows searching backwards through a token index range by a predicate', () => {
     let list = lex('one + two');
     let oneIndex = list.startIndex;
     let plusIndex = oneIndex.next();
     let twoIndex = plusIndex && plusIndex.next();
-    strictEqual(list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER), twoIndex);
-    strictEqual(
-      list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex),
+    expect(list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER)).toBe(twoIndex);
+    expect(list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex)).toBe(
       oneIndex
     );
-    strictEqual(
-      list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex, oneIndex),
-      null
-    );
+    expect(
+      list.lastIndexOfTokenMatchingPredicate(token => token.type === SourceType.IDENTIFIER, plusIndex, oneIndex)
+    ).toBe(null);
   });
 
-  it('allows getting the range of an interpolated string by source index', () => {
+  test('allows getting the range of an interpolated string by source index', () => {
     let list = lex('a = "b#{c}d".length');
     let expectedStartIndex = list.startIndex.advance(2);
     let expectedStart = expectedStartIndex && list.tokenAtIndex(expectedStartIndex);
@@ -427,11 +413,9 @@ describe('SourceTokenListTest', () => {
         // No token contains this index, so of course it'll be null.
         return;
       }
-      strictEqual(
-        list.rangeOfInterpolatedStringTokensContainingTokenIndex(index),
-        null,
-        `expected no range for source index ${sourceIndex}`
-      );
+      if (list.rangeOfInterpolatedStringTokensContainingTokenIndex(index) !== null) {
+        throw new Error(`expected no range for source index ${sourceIndex}`);
+      }
     }
 
     function assertMatchesAtSourceIndex(sourceIndex: number) {
@@ -443,8 +427,14 @@ describe('SourceTokenListTest', () => {
       }
 
       let [start, end] = range;
-      strictEqual(list.tokenAtIndex(start), expectedStart, `wrong start token for source index ${sourceIndex}`);
-      strictEqual(list.tokenAtIndex(end), expectedEnd, `wrong end token for source index ${sourceIndex}`);
+
+      if (list.tokenAtIndex(start) !== expectedStart) {
+        throw new Error(`wrong start token for source index ${sourceIndex}`);
+      }
+
+      if (list.tokenAtIndex(end) !== expectedEnd) {
+        throw new Error(`wrong end token for source index ${sourceIndex}`);
+      }
     }
 
     assertNullAtSourceIndex(0); // a
@@ -456,7 +446,7 @@ describe('SourceTokenListTest', () => {
     assertMatchesAtSourceIndex(6); // #
     assertMatchesAtSourceIndex(7); // {
     assertMatchesAtSourceIndex(8); // c
-    assertMatchesAtSourceIndex(9); // });
+    assertMatchesAtSourceIndex(9); // }
     assertMatchesAtSourceIndex(10); // d
     assertMatchesAtSourceIndex(11); // "
     assertNullAtSourceIndex(12); // .
@@ -469,7 +459,7 @@ describe('SourceTokenListTest', () => {
     assertNullAtSourceIndex(19); // <EOF>
   });
 
-  it('can find the containing interpolated string starting at an interpolation boundary', () => {
+  test('can find the containing interpolated string starting at an interpolation boundary', () => {
     let list = lex('"#{a}b"');
     let expectedStart = list.startIndex;
     let expectedEnd = list.endIndex;
@@ -482,21 +472,17 @@ describe('SourceTokenListTest', () => {
       throw new Error(`unable to find interpolation start token`);
     }
 
-    strictEqual(
-      interpolationStartToken.type,
-      SourceType.INTERPOLATION_START,
-      `expected ${inspect(interpolationStartToken)} to have type ` + SourceType[SourceType.INTERPOLATION_START]
-    );
+    expect(interpolationStartToken).toHaveSourceType(SourceType.INTERPOLATION_START);
 
     let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(interpolationStart);
-    strictEqual(range && range[0], expectedStart);
-    strictEqual(range && range[1], expectedEnd);
+    expect(range && range[0]).toBe(expectedStart);
+    expect(range && range[1]).toBe(expectedEnd);
   });
 
-  it('can determine the interpolated string range with an interior string', () => {
+  test('can determine the interpolated string range with an interior string', () => {
     let list = lex('"#{"a"}"');
 
-    deepEqual(list.map(t => t.type), [
+    expect(list.map(t => t.type)).toEqual([
       SourceType.DSTRING_START,
       SourceType.STRING_CONTENT,
       SourceType.INTERPOLATION_START,
@@ -516,14 +502,14 @@ describe('SourceTokenListTest', () => {
       throw new Error(`unable to determine range of interpolation start`);
     }
 
-    strictEqual(range[0], list.startIndex);
-    strictEqual(range[1], list.endIndex);
+    expect(range[0]).toBe(list.startIndex);
+    expect(range[1]).toBe(list.endIndex);
   });
 
-  it('can determine the interpolated string range for a heregex', () => {
+  test('can determine the interpolated string range for a heregex', () => {
     let list = lex('///a#{b}c///');
 
-    deepEqual(list.map(t => t.type), [
+    expect(list.map(t => t.type)).toEqual([
       SourceType.HEREGEXP_START,
       SourceType.STRING_CONTENT,
       SourceType.INTERPOLATION_START,
@@ -541,33 +527,27 @@ describe('SourceTokenListTest', () => {
       throw new Error(`unable to determine range of interpolation start`);
     }
 
-    strictEqual(range[0], list.startIndex);
-    strictEqual(range[1], list.endIndex);
+    expect(range[0]).toBe(list.startIndex);
+    expect(range[1]).toBe(list.endIndex);
   });
 
-  it('allows comparing indexes', () => {
+  test('allows comparing indexes', () => {
     let list = lex('a b');
     let { startIndex, endIndex } = list;
 
-    ok(startIndex.compare(startIndex) === 0, `indexes should compare to themselves at 0`);
-
-    ok(startIndex.compare(endIndex) > 0, `indexes should compare to those after them at > 0`);
-
-    ok(endIndex.compare(startIndex) < 0, `indexes should compare to those after them at < 0`);
-
-    ok(startIndex.isBefore(endIndex), `#isBefore should be true for indexes in order`);
-
-    ok(!endIndex.isBefore(startIndex), `#isBefore should be false for indexes out of order`);
-
-    ok(endIndex.isAfter(startIndex), `#isAfter should be true for indexes in order`);
-
-    ok(!startIndex.isAfter(endIndex), `#isAfter should be false for indexes out of order`);
+    expect(startIndex.compare(startIndex)).toEqual(0);
+    expect(startIndex.compare(endIndex)).toBeGreaterThan(0);
+    expect(endIndex.compare(startIndex)).toBeLessThan(0);
+    expect(startIndex.isBefore(endIndex)).toBe(true);
+    expect(endIndex.isBefore(startIndex)).toBe(false);
+    expect(endIndex.isAfter(startIndex)).toBe(true);
+    expect(startIndex.isAfter(endIndex)).toBe(false);
   });
 
-  it('handles heregex padding with comments when in CS2 mode', () => {
+  test('handles heregex padding with comments when in CS2 mode', () => {
     let list = lex('r = ///\na # #{b}c\n d///', { useCS2: true });
 
-    deepEqual(list.map(t => t.type), [
+    expect(list.map(t => t.type)).toEqual([
       SourceType.IDENTIFIER,
       SourceType.OPERATOR,
       SourceType.HEREGEXP_START,
@@ -583,11 +563,11 @@ describe('SourceTokenListTest', () => {
 });
 
 describe('streamTest', () => {
-  it('yields EOF when given an empty program', () => {
+  test('yields EOF when given an empty program', () => {
     checkLocations(stream(''), [new SourceLocation(SourceType.EOF, 0)]);
   });
 
-  it('identifies single-quoted strings', () => {
+  test('identifies single-quoted strings', () => {
     checkLocations(stream(`'abc'`), [
       new SourceLocation(SourceType.SSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 1),
@@ -596,7 +576,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies double-quoted strings', () => {
+  test('identifies double-quoted strings', () => {
     checkLocations(stream(`"abc"`), [
       new SourceLocation(SourceType.DSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 1),
@@ -605,7 +585,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies triple-single-quoted strings', () => {
+  test('identifies triple-single-quoted strings', () => {
     checkLocations(stream(`'''abc'''`), [
       new SourceLocation(SourceType.TSSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 3),
@@ -614,7 +594,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies triple-double-quoted strings', () => {
+  test('identifies triple-double-quoted strings', () => {
     checkLocations(stream(`"""abc"""`), [
       new SourceLocation(SourceType.TDSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 3),
@@ -623,11 +603,11 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies identifiers', () => {
+  test('identifies identifiers', () => {
     checkLocations(stream(`a`), [new SourceLocation(SourceType.IDENTIFIER, 0), new SourceLocation(SourceType.EOF, 1)]);
   });
 
-  it('identifies whitespace', () => {
+  test('identifies whitespace', () => {
     checkLocations(stream(`a b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -636,7 +616,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('transitions to INTERPOLATION_START at a string interpolation', () => {
+  test('transitions to INTERPOLATION_START at a string interpolation', () => {
     checkLocations(stream(`"a#{b}c"`), [
       new SourceLocation(SourceType.DSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 1),
@@ -649,7 +629,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('handles nested string interpolation', () => {
+  test('handles nested string interpolation', () => {
     checkLocations(stream(`"#{"#{}"}"`), [
       new SourceLocation(SourceType.DSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 1),
@@ -667,19 +647,19 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies integers as numbers', () => {
+  test('identifies integers as numbers', () => {
     checkLocations(stream(`10`), [new SourceLocation(SourceType.NUMBER, 0), new SourceLocation(SourceType.EOF, 2)]);
   });
 
-  it('identifies floats as numbers', () => {
+  test('identifies floats as numbers', () => {
     checkLocations(stream(`1.23`), [new SourceLocation(SourceType.NUMBER, 0), new SourceLocation(SourceType.EOF, 4)]);
   });
 
-  it('identifies floats with leading dots as numbers', () => {
+  test('identifies floats with leading dots as numbers', () => {
     checkLocations(stream(`.23`), [new SourceLocation(SourceType.NUMBER, 0), new SourceLocation(SourceType.EOF, 3)]);
   });
 
-  it('identifies + as an operator', () => {
+  test('identifies + as an operator', () => {
     checkLocations(stream(`a + b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -690,7 +670,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies opening and closing parentheses', () => {
+  test('identifies opening and closing parentheses', () => {
     checkLocations(stream(`(b)*2`), [
       new SourceLocation(SourceType.LPAREN, 0),
       new SourceLocation(SourceType.IDENTIFIER, 1),
@@ -701,7 +681,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies opening and closing braces', () => {
+  test('identifies opening and closing braces', () => {
     checkLocations(stream(`{ a: '{}' }`), [
       new SourceLocation(SourceType.LBRACE, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -717,7 +697,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies opening and closing brackets', () => {
+  test('identifies opening and closing brackets', () => {
     checkLocations(stream(`[ a[1], b['f]['] ]`), [
       new SourceLocation(SourceType.LBRACKET, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -739,7 +719,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies embedded JavaScript', () => {
+  test('identifies embedded JavaScript', () => {
     checkLocations(stream('`1` + 2'), [
       new SourceLocation(SourceType.JS, 0),
       new SourceLocation(SourceType.SPACE, 3),
@@ -750,7 +730,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies LF as a newline', () => {
+  test('identifies LF as a newline', () => {
     checkLocations(stream(`a\nb`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.NEWLINE, 1),
@@ -759,7 +739,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies @', () => {
+  test('identifies @', () => {
     checkLocations(stream(`@a`), [
       new SourceLocation(SourceType.AT, 0),
       new SourceLocation(SourceType.IDENTIFIER, 1),
@@ -767,7 +747,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies semicolons', () => {
+  test('identifies semicolons', () => {
     checkLocations(stream(`a; b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SEMICOLON, 1),
@@ -777,7 +757,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies adjacent operators as distinct', () => {
+  test('identifies adjacent operators as distinct', () => {
     checkLocations(stream(`a=++b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.OPERATOR, 1),
@@ -787,7 +767,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies comparison operators', () => {
+  test('identifies comparison operators', () => {
     checkLocations(stream(`a < b <= c; a > b >= c`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -813,7 +793,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies dots', () => {
+  test('identifies dots', () => {
     checkLocations(stream(`a.b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.DOT, 1),
@@ -822,21 +802,21 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies block comments', () => {
+  test('identifies block comments', () => {
     checkLocations(stream(`### a ###`), [
       new SourceLocation(SourceType.HERECOMMENT, 0),
       new SourceLocation(SourceType.EOF, 9)
     ]);
   });
 
-  it('does not treat markdown-style headings as block comments', () => {
+  test('does not treat markdown-style headings as block comments', () => {
     checkLocations(stream(`#### FOO`), [
       new SourceLocation(SourceType.COMMENT, 0),
       new SourceLocation(SourceType.EOF, 8)
     ]);
   });
 
-  it('treats `->` as a function', () => {
+  test('treats `->` as a function', () => {
     checkLocations(stream(`-> a`), [
       new SourceLocation(SourceType.FUNCTION, 0),
       new SourceLocation(SourceType.SPACE, 2),
@@ -845,7 +825,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('treats `=>` as a function', () => {
+  test('treats `=>` as a function', () => {
     checkLocations(stream(`=> a`), [
       new SourceLocation(SourceType.FUNCTION, 0),
       new SourceLocation(SourceType.SPACE, 2),
@@ -854,7 +834,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies division as distinct from regular expressions', () => {
+  test('identifies division as distinct from regular expressions', () => {
     checkLocations(stream(`1/0 + 2/4`), [
       new SourceLocation(SourceType.NUMBER, 0),
       new SourceLocation(SourceType.OPERATOR, 1),
@@ -869,7 +849,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies regular expressions as RHS in assignment', () => {
+  test('identifies regular expressions as RHS in assignment', () => {
     checkLocations(stream(`a = /foo/`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -880,7 +860,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies regular expressions at the start of the source', () => {
+  test('identifies regular expressions at the start of the source', () => {
     checkLocations(stream(`/foo/.test 'abc'`), [
       new SourceLocation(SourceType.REGEXP, 0),
       new SourceLocation(SourceType.DOT, 5),
@@ -893,7 +873,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies regular expressions with flags', () => {
+  test('identifies regular expressions with flags', () => {
     checkLocations(stream(`/foo/g.test 'abc'`), [
       new SourceLocation(SourceType.REGEXP, 0),
       new SourceLocation(SourceType.DOT, 6),
@@ -906,14 +886,14 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies all regex flags', () => {
+  test('identifies all regex flags', () => {
     checkLocations(stream(`/a/gimuy`), [
       new SourceLocation(SourceType.REGEXP, 0),
       new SourceLocation(SourceType.EOF, 8)
     ]);
   });
 
-  it('identifies regex-like division operations after an increment', () => {
+  test('identifies regex-like division operations after an increment', () => {
     checkLocations(stream(`a++ /b/g`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.INCREMENT, 1),
@@ -926,7 +906,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies regex-like division operations after a decrement', () => {
+  test('identifies regex-like division operations after a decrement', () => {
     checkLocations(stream(`a-- /b/g`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.DECREMENT, 1),
@@ -939,7 +919,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies simple heregexes', () => {
+  test('identifies simple heregexes', () => {
     checkLocations(stream(`///abc///g.test 'foo'`), [
       new SourceLocation(SourceType.HEREGEXP_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 3),
@@ -954,7 +934,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies heregexes with interpolations', () => {
+  test('identifies heregexes with interpolations', () => {
     checkLocations(stream(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`), [
       new SourceLocation(SourceType.HEREGEXP_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 3),
@@ -973,8 +953,8 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('computes the right padding for heregexes with interpolations', () => {
-    deepEqual(lex(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toArray(), [
+  test('computes the right padding for heregexes with interpolations', () => {
+    expect(lex(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toArray()).toEqual([
       new SourceToken(SourceType.HEREGEXP_START, 0, 3),
       new SourceToken(SourceType.STRING_CONTENT, 3, 6),
       new SourceToken(SourceType.STRING_PADDING, 6, 7),
@@ -993,7 +973,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies keywords for conditionals', () => {
+  test('identifies keywords for conditionals', () => {
     checkLocations(stream(`if a then b else c`), [
       new SourceLocation(SourceType.IF, 0),
       new SourceLocation(SourceType.SPACE, 2),
@@ -1010,7 +990,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies keywords for conditionals when followed by semicolons (decaffeinate/decaffeinate#718)', () => {
+  test('identifies keywords for conditionals when followed by semicolons (decaffeinate/decaffeinate#718)', () => {
     checkLocations(stream(`if a then { b: c }`), [
       new SourceLocation(SourceType.IF, 0),
       new SourceLocation(SourceType.SPACE, 2),
@@ -1030,7 +1010,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies keywords for `unless` conditionals', () => {
+  test('identifies keywords for `unless` conditionals', () => {
     checkLocations(stream(`b unless a`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1041,7 +1021,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies keywords for switch', () => {
+  test('identifies keywords for switch', () => {
     checkLocations(stream(`switch a\n  when b\n    c\n  else d`), [
       new SourceLocation(SourceType.SWITCH, 0),
       new SourceLocation(SourceType.SPACE, 6),
@@ -1063,7 +1043,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies keywords for `for` loops', () => {
+  test('identifies keywords for `for` loops', () => {
     checkLocations(stream(`for own a in b then a`), [
       new SourceLocation(SourceType.FOR, 0),
       new SourceLocation(SourceType.SPACE, 3),
@@ -1082,7 +1062,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies keywords for `while` loops', () => {
+  test('identifies keywords for `while` loops', () => {
     checkLocations(stream(`loop then until a then while b then c`), [
       new SourceLocation(SourceType.LOOP, 0),
       new SourceLocation(SourceType.SPACE, 4),
@@ -1105,7 +1085,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies `class` as a keyword', () => {
+  test('identifies `class` as a keyword', () => {
     checkLocations(stream(`class A`), [
       new SourceLocation(SourceType.CLASS, 0),
       new SourceLocation(SourceType.SPACE, 5),
@@ -1114,7 +1094,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies `return` as a keyword', () => {
+  test('identifies `return` as a keyword', () => {
     checkLocations(stream(`return 0`), [
       new SourceLocation(SourceType.RETURN, 0),
       new SourceLocation(SourceType.SPACE, 6),
@@ -1123,7 +1103,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies `break` and `continue` as keywords', () => {
+  test('identifies `break` and `continue` as keywords', () => {
     checkLocations(stream(`break;continue;`), [
       new SourceLocation(SourceType.BREAK, 0),
       new SourceLocation(SourceType.SEMICOLON, 5),
@@ -1133,7 +1113,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies object keys with keyword names as identifiers', () => {
+  test('identifies object keys with keyword names as identifiers', () => {
     checkLocations(stream(`{break:1,continue:2,this :3}`), [
       new SourceLocation(SourceType.LBRACE, 0),
       new SourceLocation(SourceType.IDENTIFIER, 1),
@@ -1153,7 +1133,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies identifiers with keyword names after dot access', () => {
+  test('identifies identifiers with keyword names after dot access', () => {
     checkLocations(stream(`s.else(0)`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.DOT, 1),
@@ -1165,7 +1145,7 @@ describe('streamTest', () => {
     ]);
   });
 
-  it('identifies identifiers with keyword names after dot access after a newline', () => {
+  test('identifies identifiers with keyword names after dot access after a newline', () => {
     checkLocations(
       stream(`s.
 else(0)`),
@@ -1182,7 +1162,7 @@ else(0)`),
     );
   });
 
-  it('identifies identifiers with keyword names after proto access', () => {
+  test('identifies identifiers with keyword names after proto access', () => {
     checkLocations(stream(`s::delete`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.PROTO, 1),
@@ -1191,26 +1171,26 @@ else(0)`),
     ]);
   });
 
-  it('identifies `null`', () => {
+  test('identifies `null`', () => {
     checkLocations(stream(`null`), [new SourceLocation(SourceType.NULL, 0), new SourceLocation(SourceType.EOF, 4)]);
   });
 
-  it('identifies `undefined`', () => {
+  test('identifies `undefined`', () => {
     checkLocations(stream(`undefined`), [
       new SourceLocation(SourceType.UNDEFINED, 0),
       new SourceLocation(SourceType.EOF, 9)
     ]);
   });
 
-  it('identifies `this`', () => {
+  test('identifies `this`', () => {
     checkLocations(stream(`this`), [new SourceLocation(SourceType.THIS, 0), new SourceLocation(SourceType.EOF, 4)]);
   });
 
-  it('identifies `super`', () => {
+  test('identifies `super`', () => {
     checkLocations(stream(`super`), [new SourceLocation(SourceType.SUPER, 0), new SourceLocation(SourceType.EOF, 5)]);
   });
 
-  it('identifies `delete`', () => {
+  test('identifies `delete`', () => {
     checkLocations(stream(`delete a.b`), [
       new SourceLocation(SourceType.DELETE, 0),
       new SourceLocation(SourceType.SPACE, 6),
@@ -1221,7 +1201,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies booleans', () => {
+  test('identifies booleans', () => {
     checkLocations(stream(`true;false;yes;no;on;off`), [
       new SourceLocation(SourceType.BOOL, 0),
       new SourceLocation(SourceType.SEMICOLON, 4),
@@ -1238,7 +1218,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies existence operators', () => {
+  test('identifies existence operators', () => {
     checkLocations(stream(`a?.b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.EXISTENCE, 1),
@@ -1248,7 +1228,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies proto operators', () => {
+  test('identifies proto operators', () => {
     checkLocations(stream(`a::b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.PROTO, 1),
@@ -1257,7 +1237,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies inclusive ranges', () => {
+  test('identifies inclusive ranges', () => {
     checkLocations(stream(`a..b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.RANGE, 1),
@@ -1266,7 +1246,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies line continuations', () => {
+  test('identifies line continuations', () => {
     checkLocations(stream(`a = \\\n  b`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1280,7 +1260,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies floor division', () => {
+  test('identifies floor division', () => {
     checkLocations(stream(`7 // 3`), [
       new SourceLocation(SourceType.NUMBER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1291,7 +1271,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies compound assignment', () => {
+  test('identifies compound assignment', () => {
     checkLocations(stream(`a ?= 3`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1302,7 +1282,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies compound assignment with word operators', () => {
+  test('identifies compound assignment with word operators', () => {
     checkLocations(stream(`a or= 3`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1313,7 +1293,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies keyword operators', () => {
+  test('identifies keyword operators', () => {
     checkLocations(stream(`a and b is c or d`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1332,7 +1312,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies `in` and `of` as relations', () => {
+  test('identifies `in` and `of` as relations', () => {
     checkLocations(stream(`a in b or c of d`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1351,7 +1331,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies keywords for `try/catch/finally`', () => {
+  test('identifies keywords for `try/catch/finally`', () => {
     checkLocations(stream('try a catch e then b finally c'), [
       new SourceLocation(SourceType.TRY, 0),
       new SourceLocation(SourceType.SPACE, 3),
@@ -1372,7 +1352,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies `do` as a keyword', () => {
+  test('identifies `do` as a keyword', () => {
     checkLocations(stream('do foo'), [
       new SourceLocation(SourceType.DO, 0),
       new SourceLocation(SourceType.SPACE, 2),
@@ -1381,7 +1361,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies `yield` as a keyword', () => {
+  test('identifies `yield` as a keyword', () => {
     checkLocations(stream('yield foo'), [
       new SourceLocation(SourceType.YIELD, 0),
       new SourceLocation(SourceType.SPACE, 5),
@@ -1390,7 +1370,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies `yield from` as keyword', () => {
+  test('identifies `yield from` as keyword', () => {
     checkLocations(stream('yield  from foo'), [
       new SourceLocation(SourceType.YIELDFROM, 0),
       new SourceLocation(SourceType.SPACE, 11),
@@ -1399,14 +1379,14 @@ else(0)`),
     ]);
   });
 
-  it('identifies `from` as an identifier without yield', () => {
+  test('identifies `from` as an identifier without yield', () => {
     checkLocations(stream('from'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.EOF, 4)
     ]);
   });
 
-  it('identifies `extends` as a keyword', () => {
+  test('identifies `extends` as a keyword', () => {
     checkLocations(stream('a extends b'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1417,7 +1397,7 @@ else(0)`),
     ]);
   });
 
-  it('identifies `throw` as a keyword', () => {
+  test('identifies `throw` as a keyword', () => {
     checkLocations(stream('throw a'), [
       new SourceLocation(SourceType.THROW, 0),
       new SourceLocation(SourceType.SPACE, 5),
@@ -1426,7 +1406,7 @@ else(0)`),
     ]);
   });
 
-  it('handles normal import statements', () => {
+  test('handles normal import statements', () => {
     checkLocations(stream('import a from "b"'), [
       new SourceLocation(SourceType.IMPORT, 0),
       new SourceLocation(SourceType.SPACE, 6),
@@ -1441,7 +1421,7 @@ else(0)`),
     ]);
   });
 
-  it('handles normal export statements', () => {
+  test('handles normal export statements', () => {
     checkLocations(stream('export default a'), [
       new SourceLocation(SourceType.EXPORT, 0),
       new SourceLocation(SourceType.SPACE, 6),
@@ -1452,21 +1432,21 @@ else(0)`),
     ]);
   });
 
-  it('handles herejs blocks', () => {
+  test('handles herejs blocks', () => {
     checkLocations(stream('```\na + `b`\n```'), [
       new SourceLocation(SourceType.HEREJS, 0),
       new SourceLocation(SourceType.EOF, 15)
     ]);
   });
 
-  it('handles inline js with escaped backticks', () => {
+  test('handles inline js with escaped backticks', () => {
     checkLocations(stream('`a + \\`b\\``'), [
       new SourceLocation(SourceType.JS, 0),
       new SourceLocation(SourceType.EOF, 11)
     ]);
   });
 
-  it('handles CSX with a simple interpolation', () => {
+  test('handles CSX with a simple interpolation', () => {
     checkLocations(stream('x = <div>Hello {name}</div>'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1487,7 +1467,7 @@ else(0)`),
     ]);
   });
 
-  it('handles nested CSX', () => {
+  test('handles nested CSX', () => {
     checkLocations(stream('x = <div>a<span>b</span>c</div>'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1512,7 +1492,7 @@ else(0)`),
     ]);
   });
 
-  it('handles CSX properties with a greater-than sign', () => {
+  test('handles CSX properties with a greater-than sign', () => {
     checkLocations(stream('x = <Foo a={b>c}>test</Foo>'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1537,7 +1517,7 @@ else(0)`),
     ]);
   });
 
-  it('handles standalone self-closing CSX', () => {
+  test('handles standalone self-closing CSX', () => {
     checkLocations(stream('render(<Foo a={b} />)'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.CALL_START, 6),
@@ -1556,7 +1536,7 @@ else(0)`),
     ]);
   });
 
-  it('handles nested self-closing CSX', () => {
+  test('handles nested self-closing CSX', () => {
     checkLocations(stream('x = <div><span /></div>'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1578,7 +1558,7 @@ else(0)`),
     ]);
   });
 
-  it('handles CSX fragments', () => {
+  test('handles CSX fragments', () => {
     checkLocations(stream('x = <><span /></>'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1598,7 +1578,7 @@ else(0)`),
     ]);
   });
 
-  it('handles non-CSX after a close-bracket', () => {
+  test('handles non-CSX after a close-bracket', () => {
     checkLocations(stream('a[b]<c'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.LBRACKET, 1),
@@ -1610,7 +1590,7 @@ else(0)`),
     ]);
   });
 
-  it('does not ignore heregex comments when in CS1 mode', () => {
+  test('does not ignore heregex comments when in CS1 mode', () => {
     checkLocations(stream('r = ///\na # #{b}c\n///'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1627,7 +1607,7 @@ else(0)`),
     ]);
   });
 
-  it('ignores heregex comments when in CS2 mode', () => {
+  test('ignores heregex comments when in CS2 mode', () => {
     checkLocations(stream('r = ///\na # #{b}c\n///', 0, { useCS2: true }), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1642,7 +1622,7 @@ else(0)`),
     ]);
   });
 
-  it('does not consider a hash in a heregex to start a comment unless it its preceded by whitespace', () => {
+  test('does not consider a hash in a heregex to start a comment unless it its preceded by whitespace', () => {
     checkLocations(stream('r = ///\n[a#]\n///', 0, { useCS2: true }), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
       new SourceLocation(SourceType.SPACE, 1),
@@ -1655,21 +1635,21 @@ else(0)`),
     ]);
   });
 
-  it('does not infinite loop on incomplete string interpolations', () => {
+  test('does not infinite loop on incomplete string interpolations', () => {
     try {
       lex('a = "#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
-      ok(e.message.indexOf('unexpected EOF while in context INTERPOLATION') > -1);
+      expect(e.message.indexOf('unexpected EOF while in context INTERPOLATION') > -1).toBeTruthy();
     }
   });
 
-  it('does not infinite loop on incomplete triple-quoted string interpolations', () => {
+  test('does not infinite loop on incomplete triple-quoted string interpolations', () => {
     try {
       lex('a = """#{');
       throw new Error('Expected an exception to be thrown.');
     } catch (e) {
-      ok(e.message.indexOf('unexpected EOF while in context INTERPOLATION') > -1);
+      expect(e.message.indexOf('unexpected EOF while in context INTERPOLATION') > -1).toBeTruthy();
     }
   });
 });
