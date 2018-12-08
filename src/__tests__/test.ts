@@ -286,6 +286,17 @@ describe('lexTest', () => {
       new SourceToken(SourceType.CALL_END, 4, 5)
     ]);
   });
+
+  test('@ followed by a newline + `if` lexes as AT and IF (#175)', () => {
+    expect(lex('@\nif a then b').toArray()).toEqual([
+      new SourceToken(SourceType.AT, 0, 1),
+      new SourceToken(SourceType.NEWLINE, 1, 2),
+      new SourceToken(SourceType.IF, 2, 4),
+      new SourceToken(SourceType.IDENTIFIER, 5, 6),
+      new SourceToken(SourceType.THEN, 7, 11),
+      new SourceToken(SourceType.IDENTIFIER, 12, 13)
+    ]);
+  });
 });
 
 describe('SourceTokenListTest', () => {

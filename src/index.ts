@@ -465,7 +465,13 @@ export function stream(source: string, index: number = 0, options: Options = DEF
             let nextIsColon = match(/^\s*:/);
             if (
               nextIsColon ||
-              (prev && (prev.type === SourceType.DOT || prev.type === SourceType.PROTO || prev.type === SourceType.AT))
+              (prev &&
+                // i.e. `a.b` or `a.\nb`
+                (prev.type === SourceType.DOT ||
+                  // i.e. `a::b` or `a::\nb`
+                  prev.type === SourceType.PROTO ||
+                  // i.e. `@a` (but not `@\na`, since that's `this\na`–see #175)
+                  (prev.type === SourceType.AT && prevLocationIndex === locations.length - 1)))
             ) {
               setType(SourceType.IDENTIFIER);
             } else {
