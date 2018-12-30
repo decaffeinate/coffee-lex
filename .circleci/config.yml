@@ -57,8 +57,8 @@ jobs:
       - *install_dependencies_step
       - *save_cache_step
       - run:
-        name: Publish package
-        command: npx semantic-release
+          name: Publish package
+          command: npx semantic-release
 
 workflows:
   version: 2
