@@ -53,6 +53,7 @@ jobs:
     docker:
       - image: circleci/node:latest
     steps:
+      - checkout
       - *restore_cache_step
       - *install_dependencies_step
       - *save_cache_step
