@@ -22,7 +22,7 @@ aliases:
           name: tests
           command: 'yarn jest --ci'
           environment:
-            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
       - run:
           name: tslint
           command: 'yarn tslint --project . --format junit -o reports/junit/tslint-results.xml'
@@ -33,10 +33,6 @@ aliases:
 
 version: 2
 jobs:
-  node-v6-latest:
-    docker:
-      - image: circleci/node:6
-    <<: *unit_test
   node-v8-latest:
     docker:
       - image: circleci/node:8
@@ -48,6 +44,10 @@ jobs:
   node-v11-latest:
     docker:
       - image: circleci/node:11
+    <<: *unit_test
+  node-v12-latest:
+    docker:
+      - image: circleci/node:12
     <<: *unit_test
   deploy:
     docker:
@@ -65,16 +65,16 @@ workflows:
   version: 2
   test-deploy:
     jobs:
-      - node-v6-latest
       - node-v8-latest
       - node-v10-latest
       - node-v11-latest
+      - node-v12-latest
       - deploy:
           requires:
-            - node-v6-latest
             - node-v8-latest
             - node-v10-latest
             - node-v11-latest
+            - node-v12-latest
           filters:
             branches:
               only: master

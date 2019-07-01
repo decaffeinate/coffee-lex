@@ -6,12 +6,9 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "check-format": "prettier-check '{src,test}/**/*.ts' *.md",
-    "reformat": "prettier --write '{src,test}/**/*.ts' *.md",
-    "prelint": "yarn check-format",
-    "lint": "tslint --config tslint.json --project tsconfig.json",
-    "prelint-fix": "yarn reformat",
-    "lint-fix": "tslint --config tslint.json --project tsconfig.json --fix",
+    "reformat": "yarn lint --fix",
+    "lint": "eslint src/**/*.ts",
+    "lint-fix": "yarn lint --fix",
     "pretest": "yarn lint",
     "test": "jest",
     "prepare": "script/build.ts"
@@ -41,7 +38,13 @@
     "@types/globby": "^9.1.0",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.8",
+    "@typescript-eslint/eslint-plugin": "^1.11.0",
+    "@typescript-eslint/parser": "^1.11.0",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-jest": "^22.7.1",
+    "eslint-plugin-prettier": "^3.1.0",
     "fs-extra": "^8.0.1",
     "globby": "^9.1.0",
     "jest": "^24.8.0",
@@ -51,7 +54,7 @@
     "ts-jest": "^24.0.0",
     "ts-node": "^8.0.2",
     "tslint": "^5.11.0",
-    "typescript": "^3.1.6"
+    "typescript": "^3.5.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
