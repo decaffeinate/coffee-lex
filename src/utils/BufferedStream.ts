@@ -30,7 +30,7 @@ export default class BufferedStream {
     return result;
   }
 
-  unshift(...tokens: Array<SourceLocation>) {
+  unshift(...tokens: Array<SourceLocation>): void {
     this.pending.unshift(...tokens);
   }
 }

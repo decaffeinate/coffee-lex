@@ -36,7 +36,10 @@ export default class PaddingTracker {
     do {
       location = stream.shift();
       this._originalLocations.push(location);
-      if (interpolationLevel === 0 && location.type === SourceType.STRING_CONTENT) {
+      if (
+        interpolationLevel === 0 &&
+        location.type === SourceType.STRING_CONTENT
+      ) {
         let start = location.index;
         let end = stream.peek().index;
         let content = source.slice(start, end);
@@ -55,7 +58,11 @@ export default class PaddingTracker {
     let rangeIndex = 0;
     for (let location of this._originalLocations) {
       let currentRange = this.fragments[rangeIndex];
-      if (location.type === SourceType.STRING_CONTENT && currentRange && location.index === currentRange.start) {
+      if (
+        location.type === SourceType.STRING_CONTENT &&
+        currentRange &&
+        location.index === currentRange.start
+      ) {
         resultLocations.push(...currentRange.computeSourceLocations());
         rangeIndex++;
       } else {
@@ -69,8 +76,15 @@ export default class PaddingTracker {
   }
 }
 
-export type PaddingRange = { start: number; end: number };
-type LocationEvent = 'START_PADDING' | 'END_PADDING' | 'START_LINE_SEPARATOR' | 'END_LINE_SEPARATOR';
+export interface PaddingRange {
+  start: number;
+  end: number;
+}
+type LocationEvent =
+  | 'START_PADDING'
+  | 'END_PADDING'
+  | 'START_LINE_SEPARATOR'
+  | 'END_LINE_SEPARATOR';
 
 export class TrackedFragment {
   content: string;
@@ -89,11 +103,11 @@ export class TrackedFragment {
     this._lineSeparators = [];
   }
 
-  markPadding(startIndex: number, endIndex: number) {
+  markPadding(startIndex: number, endIndex: number): void {
     this._paddingRanges.push({ start: startIndex, end: endIndex });
   }
 
-  markLineSeparator(index: number) {
+  markLineSeparator(index: number): void {
     this._lineSeparators.push(index);
   }
 
@@ -134,7 +148,11 @@ export class TrackedFragment {
           lineSeparatorDepth -= 1;
         }
       }
-      if (paddingDepth < 0 || lineSeparatorDepth < 0 || (paddingDepth > 0 && lineSeparatorDepth > 0)) {
+      if (
+        paddingDepth < 0 ||
+        lineSeparatorDepth < 0 ||
+        (paddingDepth > 0 && lineSeparatorDepth > 0)
+      ) {
         throw new Error(
           `Illegal padding state: paddingDepth: ${paddingDepth}, lineSeparatorDepth: ${lineSeparatorDepth}`
         );
