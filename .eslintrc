@@ -28,7 +28,8 @@
       "files": "**/__tests__/**/*.{js,ts}",
       "rules": {
         "jest/prefer-expect-assertions": "off",
-        "jest/expect-expect": "off"
+        "jest/expect-expect": "off",
+        "jest/no-if": "off"
       },
       "env": {
         "jest/globals": true

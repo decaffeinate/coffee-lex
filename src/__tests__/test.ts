@@ -1724,24 +1724,10 @@ else(0)`),
   });
 
   it('does not infinite loop on incomplete string interpolations', () => {
-    try {
-      lex('a = "#{');
-      throw new Error('Expected an exception to be thrown.');
-    } catch (e) {
-      expect(e.message).toContain(
-        'unexpected EOF while in context INTERPOLATION'
-      );
-    }
+    expect(() => lex('a = "#{')).toThrow('unexpected EOF while in context INTERPOLATION');
   });
 
   it('does not infinite loop on incomplete triple-quoted string interpolations', () => {
-    try {
-      lex('a = """#{');
-      throw new Error('Expected an exception to be thrown.');
-    } catch (e) {
-      expect(e.message).toContain(
-        'unexpected EOF while in context INTERPOLATION'
-      );
-    }
+    expect(() => lex('a = """#{')).toThrow('unexpected EOF while in context INTERPOLATION');
   });
 });
