@@ -24,8 +24,8 @@ aliases:
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
       - run:
-          name: tslint
-          command: 'yarn tslint --project . --format junit -o reports/junit/tslint-results.xml'
+          name: lint
+          command: 'yarn eslint src/**/*.ts'
       - store_test_results:
           path: reports/junit
       - store_artifacts:
