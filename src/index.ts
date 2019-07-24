@@ -458,7 +458,13 @@ export function stream(source: string, index: number = 0, options: Options = DEF
             setType(SourceType.IDENTIFIER);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prevLocationIndex = locations.length - 1;
-            while (prevLocationIndex > 0 && locations[prevLocationIndex].type === SourceType.NEWLINE) {
+            while (
+              prevLocationIndex > 0 &&
+              (
+                locations[prevLocationIndex].type === SourceType.NEWLINE ||
+                locations[prevLocationIndex].type === SourceType.SPACE
+              )
+            ) {
               prevLocationIndex--;
             }
             let prev = locations[prevLocationIndex];

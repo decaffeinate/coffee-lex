@@ -1241,6 +1241,24 @@ else(0)`),
     );
   });
 
+  it('identifies identifiers with keyword names after dot access after a newline and indent', () => {
+    checkLocations(
+      stream(`s.
+  else(0)`),
+      [
+        new SourceLocation(SourceType.IDENTIFIER, 0),
+        new SourceLocation(SourceType.DOT, 1),
+        new SourceLocation(SourceType.NEWLINE, 2),
+        new SourceLocation(SourceType.SPACE, 3),
+        new SourceLocation(SourceType.IDENTIFIER, 5),
+        new SourceLocation(SourceType.CALL_START, 9),
+        new SourceLocation(SourceType.NUMBER, 10),
+        new SourceLocation(SourceType.CALL_END, 11),
+        new SourceLocation(SourceType.EOF, 12)
+      ]
+    );
+  });
+
   it('identifies identifiers with keyword names after proto access', () => {
     checkLocations(stream(`s::delete`), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
@@ -1724,10 +1742,14 @@ else(0)`),
   });
 
   it('does not infinite loop on incomplete string interpolations', () => {
-    expect(() => lex('a = "#{')).toThrow('unexpected EOF while in context INTERPOLATION');
+    expect(() => lex('a = "#{')).toThrow(
+      'unexpected EOF while in context INTERPOLATION'
+    );
   });
 
   it('does not infinite loop on incomplete triple-quoted string interpolations', () => {
-    expect(() => lex('a = """#{')).toThrow('unexpected EOF while in context INTERPOLATION');
+    expect(() => lex('a = """#{')).toThrow(
+      'unexpected EOF while in context INTERPOLATION'
+    );
   });
 });
