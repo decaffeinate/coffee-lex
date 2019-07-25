@@ -14,11 +14,11 @@ function checkLocations(
 
 describe('lexTest', () => {
   it('returns an empty list for an empty program', () => {
-    expect(lex('').toArray()).toStrictEqual([]);
+    expect('').toLexAs([]);
   });
 
   it('builds a list of tokens omitting SPACE and EOF', () => {
-    expect(lex(`a + b`).toArray()).toStrictEqual([
+    expect(`a + b`).toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.OPERATOR, 2, 3),
       new SourceToken(SourceType.IDENTIFIER, 4, 5)
@@ -26,11 +26,11 @@ describe('lexTest', () => {
   });
 
   it('returns a `SourceTokenList`', () => {
-    expect(lex('') instanceof SourceTokenList).toBe(true);
+    expect(lex('')).toBeInstanceOf(SourceTokenList);
   });
 
   it('turns string interpolations into cohesive string tokens', () => {
-    expect(lex(`"b#{c}d#{e}f"`).toArray()).toStrictEqual([
+    expect(`"b#{c}d#{e}f"`).toLexAs([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 2),
       new SourceToken(SourceType.INTERPOLATION_START, 2, 4),
@@ -46,7 +46,7 @@ describe('lexTest', () => {
   });
 
   it('inserts padding in the correct places for a multiline string', () => {
-    expect(lex(`"  b#{c}  \n  d#{e}  \n  f  "`).toArray()).toStrictEqual([
+    expect(`"  b#{c}  \n  d#{e}  \n  f  "`).toLexAs([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 4),
       new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
@@ -68,7 +68,7 @@ describe('lexTest', () => {
   });
 
   it('adds empty template content tokens between adjacent interpolations', () => {
-    expect(lex(`"#{a}#{b}"`).toArray()).toStrictEqual([
+    expect(`"#{a}#{b}"`).toLexAs([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 1),
       new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
@@ -84,7 +84,7 @@ describe('lexTest', () => {
   });
 
   it('turns triple-quoted string interpolations into string tokens', () => {
-    expect(lex(`"""\n  b#{c}\n  d#{e}f\n"""`).toArray()).toStrictEqual([
+    expect(`"""\n  b#{c}\n  d#{e}f\n"""`).toLexAs([
       new SourceToken(SourceType.TDSTRING_START, 0, 3),
       new SourceToken(SourceType.STRING_PADDING, 3, 6),
       new SourceToken(SourceType.STRING_CONTENT, 6, 7),
@@ -104,7 +104,7 @@ describe('lexTest', () => {
   });
 
   it('turns triple-quoted strings with leading interpolation into string tokens', () => {
-    expect(lex(`"""\n#{a}\n"""`).toArray()).toStrictEqual([
+    expect(`"""\n#{a}\n"""`).toLexAs([
       new SourceToken(SourceType.TDSTRING_START, 0, 3),
       new SourceToken(SourceType.STRING_PADDING, 3, 4),
       new SourceToken(SourceType.INTERPOLATION_START, 4, 6),
@@ -116,7 +116,7 @@ describe('lexTest', () => {
   });
 
   it('handles nested interpolations', () => {
-    expect(lex(`"#{"#{a}"}"`).toArray()).toStrictEqual([
+    expect(`"#{"#{a}"}"`).toLexAs([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 1),
       new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
@@ -134,7 +134,7 @@ describe('lexTest', () => {
   });
 
   it('handles spaces in string interpolations appropriately', () => {
-    expect(lex(`"#{ a }"`).toArray()).toStrictEqual([
+    expect(`"#{ a }"`).toLexAs([
       new SourceToken(SourceType.DSTRING_START, 0, 1),
       new SourceToken(SourceType.STRING_CONTENT, 1, 1),
       new SourceToken(SourceType.INTERPOLATION_START, 1, 3),
@@ -146,7 +146,7 @@ describe('lexTest', () => {
   });
 
   it('identifies `not instanceof` as a single operator', () => {
-    expect(lex('a not instanceof b').toArray()).toStrictEqual([
+    expect('a not instanceof b').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.OPERATOR, 2, 16),
       new SourceToken(SourceType.IDENTIFIER, 17, 18)
@@ -154,7 +154,7 @@ describe('lexTest', () => {
   });
 
   it('identifies `!instanceof` as a single operator', () => {
-    expect(lex('a !instanceof b').toArray()).toStrictEqual([
+    expect('a !instanceof b').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.OPERATOR, 2, 13),
       new SourceToken(SourceType.IDENTIFIER, 14, 15)
@@ -162,7 +162,7 @@ describe('lexTest', () => {
   });
 
   it('identifies `not in` as a single operator', () => {
-    expect(lex('a not in b').toArray()).toStrictEqual([
+    expect('a not in b').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 8),
       new SourceToken(SourceType.IDENTIFIER, 9, 10)
@@ -170,7 +170,7 @@ describe('lexTest', () => {
   });
 
   it('identifies `!in` as a single operator', () => {
-    expect(lex('a !in b').toArray()).toStrictEqual([
+    expect('a !in b').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 5),
       new SourceToken(SourceType.IDENTIFIER, 6, 7)
@@ -178,7 +178,7 @@ describe('lexTest', () => {
   });
 
   it('identifies `not of` as a single operator', () => {
-    expect(lex('a not of b').toArray()).toStrictEqual([
+    expect('a not of b').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 8),
       new SourceToken(SourceType.IDENTIFIER, 9, 10)
@@ -186,7 +186,7 @@ describe('lexTest', () => {
   });
 
   it('identifies `!of` as a single operator', () => {
-    expect(lex('a !of b').toArray()).toStrictEqual([
+    expect('a !of b').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.RELATION, 2, 5),
       new SourceToken(SourceType.IDENTIFIER, 6, 7)
@@ -195,8 +195,8 @@ describe('lexTest', () => {
 
   it('identifies parentheses immediately after callable tokens as CALL_START', () => {
     expect(
-      lex('a(super(@(b[0](), true&(false), b?())))').toArray()
-    ).toStrictEqual([
+      'a(super(@(b[0](), true&(false), b?())))'
+    ).toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.CALL_START, 1, 2),
       new SourceToken(SourceType.SUPER, 2, 7),
@@ -227,7 +227,7 @@ describe('lexTest', () => {
   });
 
   it('identifies parentheses immediately after a CALL_END as CALL_START', () => {
-    expect(lex('a()()').toArray()).toStrictEqual([
+    expect('a()()').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.CALL_START, 1, 2),
       new SourceToken(SourceType.CALL_END, 2, 3),
@@ -237,14 +237,14 @@ describe('lexTest', () => {
   });
 
   it('identifies `new` as a NEW token', () => {
-    expect(lex('new A').toArray()).toStrictEqual([
+    expect('new A').toLexAs([
       new SourceToken(SourceType.NEW, 0, 3),
       new SourceToken(SourceType.IDENTIFIER, 4, 5)
     ]);
   });
 
   it('identifies `new` as an IDENTIFIER in a property name', () => {
-    expect(lex('a\n  new: 5').toArray()).toStrictEqual([
+    expect('a\n  new: 5').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.NEWLINE, 1, 2),
       new SourceToken(SourceType.IDENTIFIER, 4, 7),
@@ -254,7 +254,7 @@ describe('lexTest', () => {
   });
 
   it('identifies closing interpolations inside objects', () => {
-    expect(lex(`{ id: "#{a}" }`).toArray()).toStrictEqual([
+    expect(`{ id: "#{a}" }`).toLexAs([
       new SourceToken(SourceType.LBRACE, 0, 1),
       new SourceToken(SourceType.IDENTIFIER, 2, 4),
       new SourceToken(SourceType.COLON, 4, 5),
@@ -271,8 +271,8 @@ describe('lexTest', () => {
 
   it('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () => {
     expect(
-      lex(`foo = '''\n      abc\n\n      def\n      '''`).toArray()
-    ).toStrictEqual([
+      `foo = '''\n      abc\n\n      def\n      '''`
+    ).toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 3),
       new SourceToken(SourceType.OPERATOR, 4, 5),
       new SourceToken(SourceType.TSSTRING_START, 6, 9),
@@ -286,7 +286,7 @@ describe('lexTest', () => {
   });
 
   it('@on() is a function call not and not a bool followed by parens', () => {
-    expect(lex(`@on()`).toArray()).toStrictEqual([
+    expect(`@on()`).toLexAs([
       new SourceToken(SourceType.AT, 0, 1),
       new SourceToken(SourceType.IDENTIFIER, 1, 3),
       new SourceToken(SourceType.CALL_START, 3, 4),
@@ -295,7 +295,7 @@ describe('lexTest', () => {
   });
 
   it('@ followed by a newline + `if` lexes as AT and IF (#175)', () => {
-    expect(lex('@\nif a then b').toArray()).toStrictEqual([
+    expect('@\nif a then b').toLexAs([
       new SourceToken(SourceType.AT, 0, 1),
       new SourceToken(SourceType.NEWLINE, 1, 2),
       new SourceToken(SourceType.IF, 2, 4),
@@ -1032,8 +1032,8 @@ describe('streamTest', () => {
 
   it('computes the right padding for heregexes with interpolations', () => {
     expect(
-      lex(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toArray()
-    ).toStrictEqual([
+      `///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`
+    ).toLexAs([
       new SourceToken(SourceType.HEREGEXP_START, 0, 3),
       new SourceToken(SourceType.STRING_CONTENT, 3, 6),
       new SourceToken(SourceType.STRING_PADDING, 6, 7),
