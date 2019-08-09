@@ -286,9 +286,9 @@
     "@types/yargs" "^12.0.9"
 
 "@microsoft/node-core-library@^3.7.1":
-  version "3.13.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.13.0.tgz#ba24e16182149dc817bf52a886d22aced5cd8070"
-  integrity sha512-mnsL/1ikVWHl8sPNssavaAgtUaIM3hkQ8zeySuApU5dNmsMPzovJPfx9m5JGiMvs1v5QNAIVeiS9jnWwe/7anw==
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.14.0.tgz#c7014328c67c4a4110e2ed2a9bd11cfd0ad3318d"
+  integrity sha512-+gbTXTRfvR40hTH+C3Vno/RJ51sU/RZAyHb2bo9af8GCdOgxCxCs+qp2KCXklbpuolmIPFfbCmdTwv90yH5tJw==
   dependencies:
     "@types/fs-extra" "5.0.4"
     "@types/jju" "~1.4.0"
