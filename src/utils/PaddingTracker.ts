@@ -40,10 +40,10 @@ export default class PaddingTracker {
         interpolationLevel === 0 &&
         location.type === SourceType.STRING_CONTENT
       ) {
-        let start = location.index;
-        let end = stream.peek().index;
-        let content = source.slice(start, end);
-        let index = this.fragments.length;
+        const start = location.index;
+        const end = stream.peek().index;
+        const content = source.slice(start, end);
+        const index = this.fragments.length;
         this.fragments.push(new TrackedFragment(content, start, end, index));
       } else if (location.type === SourceType.INTERPOLATION_START) {
         interpolationLevel += 1;
@@ -54,10 +54,10 @@ export default class PaddingTracker {
   }
 
   computeSourceLocations(): Array<SourceLocation> {
-    let resultLocations: Array<SourceLocation> = [];
+    const resultLocations: Array<SourceLocation> = [];
     let rangeIndex = 0;
-    for (let location of this._originalLocations) {
-      let currentRange = this.fragments[rangeIndex];
+    for (const location of this._originalLocations) {
+      const currentRange = this.fragments[rangeIndex];
       if (
         location.type === SourceType.STRING_CONTENT &&
         currentRange &&
@@ -119,25 +119,25 @@ export class TrackedFragment {
     // Break the marked ranges down into events, similar to how you might count
     // paren nesting. At each index, we can then know if we're inside padding,
     // a line separator, or neither.
-    let eventsByIndex: Array<Array<LocationEvent>> = [];
+    const eventsByIndex: Array<Array<LocationEvent>> = [];
     for (let i = 0; i < this.end - this.start + 1; i++) {
       eventsByIndex.push([]);
     }
-    for (let range of this._paddingRanges) {
+    for (const range of this._paddingRanges) {
       eventsByIndex[range.start].push('START_PADDING');
       eventsByIndex[range.end].push('END_PADDING');
     }
-    for (let separatorIndex of this._lineSeparators) {
+    for (const separatorIndex of this._lineSeparators) {
       eventsByIndex[separatorIndex].push('START_LINE_SEPARATOR');
       eventsByIndex[separatorIndex + 1].push('END_LINE_SEPARATOR');
     }
 
-    let resultLocations: Array<SourceLocation> = [];
+    const resultLocations: Array<SourceLocation> = [];
     let lastSourceType = null;
     let paddingDepth = 0;
     let lineSeparatorDepth = 0;
     for (let sourceIndex = this.start; sourceIndex < this.end; sourceIndex++) {
-      for (let event of eventsByIndex[sourceIndex - this.start]) {
+      for (const event of eventsByIndex[sourceIndex - this.start]) {
         if (event === 'START_PADDING') {
           paddingDepth += 1;
         } else if (event === 'END_PADDING') {

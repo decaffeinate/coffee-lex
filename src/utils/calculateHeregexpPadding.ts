@@ -12,10 +12,10 @@ export default function calculateHeregexpPadding(source: string, stream: Buffere
   if (!stream.hasNext(SourceType.HEREGEXP_START)) {
     return [];
   }
-  let paddingTracker = new PaddingTracker(source, stream, SourceType.HEREGEXP_END);
+  const paddingTracker = new PaddingTracker(source, stream, SourceType.HEREGEXP_END);
 
-  for (let fragment of paddingTracker.fragments) {
-    let content = fragment.content;
+  for (const fragment of paddingTracker.fragments) {
+    const content = fragment.content;
     let pos = 0;
     while (pos < content.length) {
       if (/\s/.test(content[pos])) {
@@ -27,7 +27,7 @@ export default function calculateHeregexpPadding(source: string, stream: Buffere
         }
         pos++;
       } else if (content[pos] === '#' && (pos === 0 || /\s/.test(content[pos - 1]))) {
-        let commentStart = pos;
+        const commentStart = pos;
         while (pos < content.length && content[pos] !== '\n') {
           pos++;
         }

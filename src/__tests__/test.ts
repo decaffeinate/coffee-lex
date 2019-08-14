@@ -8,7 +8,7 @@ function checkLocations(
   stream: () => SourceLocation,
   expectedLocations: Array<SourceLocation>
 ): void {
-  let actualLocations = consumeStream(stream);
+  const actualLocations = consumeStream(stream);
   expect(actualLocations).toEqualSourceLocations(expectedLocations);
 }
 
@@ -308,27 +308,27 @@ describe('lexTest', () => {
 
 describe('sourceTokenListTest', () => {
   it('has a `startIndex` that represents the first token', () => {
-    let list = lex('0');
-    let token = list.tokenAtIndex(list.startIndex);
+    const list = lex('0');
+    const token = list.tokenAtIndex(list.startIndex);
     expect(token).toStrictEqual(new SourceToken(SourceType.NUMBER, 0, 1));
   });
 
   it('has an `endIndex` that represents the virtual token after the last one', () => {
-    let { startIndex, endIndex } = lex(''); // no tokens
+    const { startIndex, endIndex } = lex(''); // no tokens
     expect(endIndex).toBe(startIndex);
   });
 
   it('always returns the same index when advancing to the same offset', () => {
-    let { startIndex, endIndex } = lex('a'); // one token
+    const { startIndex, endIndex } = lex('a'); // one token
     expect(startIndex.next()).toBe(endIndex);
     expect(endIndex.previous()).toBe(startIndex);
   });
 
   it('allows getting a containing token index by source index', () => {
-    let list = lex('one + two');
-    let oneIndex = list.startIndex;
-    let plusIndex = oneIndex.next();
-    let twoIndex = plusIndex && plusIndex.next();
+    const list = lex('one + two');
+    const oneIndex = list.startIndex;
+    const plusIndex = oneIndex.next();
+    const twoIndex = plusIndex && plusIndex.next();
     expect(list.indexOfTokenContainingSourceIndex(0)).toBe(oneIndex); // o
     expect(list.indexOfTokenContainingSourceIndex(1)).toBe(oneIndex); // n
     expect(list.indexOfTokenContainingSourceIndex(2)).toBe(oneIndex); // e
@@ -342,10 +342,10 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows getting a nearby token index by source index', () => {
-    let list = lex('one + two');
-    let oneIndex = list.startIndex;
-    let plusIndex = oneIndex.next();
-    let twoIndex = plusIndex && plusIndex.next();
+    const list = lex('one + two');
+    const oneIndex = list.startIndex;
+    const plusIndex = oneIndex.next();
+    const twoIndex = plusIndex && plusIndex.next();
     expect(list.indexOfTokenNearSourceIndex(0)).toBe(oneIndex); // o
     expect(list.indexOfTokenNearSourceIndex(1)).toBe(oneIndex); // n
     expect(list.indexOfTokenNearSourceIndex(2)).toBe(oneIndex); // e
@@ -359,10 +359,10 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows getting a token index by its starting source index', () => {
-    let list = lex('one + two');
-    let oneIndex = list.startIndex;
-    let plusIndex = oneIndex.next();
-    let twoIndex = plusIndex && plusIndex.next();
+    const list = lex('one + two');
+    const oneIndex = list.startIndex;
+    const plusIndex = oneIndex.next();
+    const twoIndex = plusIndex && plusIndex.next();
     expect(list.indexOfTokenStartingAtSourceIndex(0)).toBe(oneIndex); // o
     expect(list.indexOfTokenStartingAtSourceIndex(1)).toBeNull(); // n
     expect(list.indexOfTokenStartingAtSourceIndex(2)).toBeNull(); // e
@@ -376,10 +376,10 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows getting a token index by its ending source index', () => {
-    let list = lex('one + two');
-    let oneIndex = list.startIndex;
-    let plusIndex = oneIndex.next();
-    let twoIndex = plusIndex && plusIndex.next();
+    const list = lex('one + two');
+    const oneIndex = list.startIndex;
+    const plusIndex = oneIndex.next();
+    const twoIndex = plusIndex && plusIndex.next();
     expect(list.indexOfTokenEndingAtSourceIndex(0)).toBeNull(); // o
     expect(list.indexOfTokenEndingAtSourceIndex(1)).toBeNull(); // n
     expect(list.indexOfTokenEndingAtSourceIndex(2)).toBeNull(); // e
@@ -393,10 +393,10 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows searching through a token index range by a predicate', () => {
-    let list = lex('one + two');
-    let oneIndex = list.startIndex;
-    let plusIndex = oneIndex.next();
-    let twoIndex = plusIndex && plusIndex.next();
+    const list = lex('one + two');
+    const oneIndex = list.startIndex;
+    const plusIndex = oneIndex.next();
+    const twoIndex = plusIndex && plusIndex.next();
     expect(
       list.indexOfTokenMatchingPredicate(
         token => token.type === SourceType.IDENTIFIER
@@ -418,10 +418,10 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows searching backwards through a token index range by a predicate', () => {
-    let list = lex('one + two');
-    let oneIndex = list.startIndex;
-    let plusIndex = oneIndex.next();
-    let twoIndex = plusIndex && plusIndex.next();
+    const list = lex('one + two');
+    const oneIndex = list.startIndex;
+    const plusIndex = oneIndex.next();
+    const twoIndex = plusIndex && plusIndex.next();
     expect(
       list.lastIndexOfTokenMatchingPredicate(
         token => token.type === SourceType.IDENTIFIER
@@ -443,15 +443,15 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows getting the range of an interpolated string by source index', () => {
-    let list = lex('a = "b#{c}d".length');
-    let expectedStartIndex = list.startIndex.advance(2);
-    let expectedStart =
+    const list = lex('a = "b#{c}d".length');
+    const expectedStartIndex = list.startIndex.advance(2);
+    const expectedStart =
       expectedStartIndex && list.tokenAtIndex(expectedStartIndex);
-    let expectedEndIndex = list.startIndex.advance(9);
-    let expectedEnd = expectedEndIndex && list.tokenAtIndex(expectedEndIndex);
+    const expectedEndIndex = list.startIndex.advance(9);
+    const expectedEnd = expectedEndIndex && list.tokenAtIndex(expectedEndIndex);
 
     function assertNullAtSourceIndex(sourceIndex: number): void {
-      let index = list.indexOfTokenContainingSourceIndex(sourceIndex);
+      const index = list.indexOfTokenContainingSourceIndex(sourceIndex);
       if (!index) {
         // No token contains this index, so of course it'll be null.
         return;
@@ -464,8 +464,8 @@ describe('sourceTokenListTest', () => {
     }
 
     function assertMatchesAtSourceIndex(sourceIndex: number): void {
-      let index = list.indexOfTokenContainingSourceIndex(sourceIndex);
-      let range =
+      const index = list.indexOfTokenContainingSourceIndex(sourceIndex);
+      const range =
         index &&
         list.rangeOfInterpolatedStringTokensContainingTokenIndex(index);
 
@@ -475,7 +475,7 @@ describe('sourceTokenListTest', () => {
         );
       }
 
-      let [start, end] = range;
+      const [start, end] = range;
 
       if (list.tokenAtIndex(start) !== expectedStart) {
         throw new Error(`wrong start token for source index ${sourceIndex}`);
@@ -509,13 +509,13 @@ describe('sourceTokenListTest', () => {
   });
 
   it('can find the containing interpolated string starting at an interpolation boundary', () => {
-    let list = lex('"#{a}b"');
-    let expectedStart = list.startIndex;
-    let expectedEnd = list.endIndex;
+    const list = lex('"#{a}b"');
+    const expectedStart = list.startIndex;
+    const expectedEnd = list.endIndex;
 
     // Go past DSTRING_START & STRING_CONTENT.
-    let interpolationStart = list.startIndex.advance(2);
-    let interpolationStartToken =
+    const interpolationStart = list.startIndex.advance(2);
+    const interpolationStartToken =
       interpolationStart && list.tokenAtIndex(interpolationStart);
 
     if (!interpolationStart || !interpolationStartToken) {
@@ -526,7 +526,7 @@ describe('sourceTokenListTest', () => {
       SourceType.INTERPOLATION_START
     );
 
-    let range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+    const range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
       interpolationStart
     );
     expect(range && range[0]).toBe(expectedStart);
@@ -534,7 +534,7 @@ describe('sourceTokenListTest', () => {
   });
 
   it('can determine the interpolated string range with an interior string', () => {
-    let list = lex('"#{"a"}"');
+    const list = lex('"#{"a"}"');
 
     expect(list.map(t => t.type)).toStrictEqual([
       SourceType.DSTRING_START,
@@ -549,8 +549,8 @@ describe('sourceTokenListTest', () => {
     ]);
 
     // Go past DSTRING_START & STRING_CONTENT.
-    let interpolationStart = list.startIndex.advance(2);
-    let range =
+    const interpolationStart = list.startIndex.advance(2);
+    const range =
       interpolationStart &&
       list.rangeOfInterpolatedStringTokensContainingTokenIndex(
         interpolationStart
@@ -565,7 +565,7 @@ describe('sourceTokenListTest', () => {
   });
 
   it('can determine the interpolated string range for a heregex', () => {
-    let list = lex('///a#{b}c///');
+    const list = lex('///a#{b}c///');
 
     expect(list.map(t => t.type)).toStrictEqual([
       SourceType.HEREGEXP_START,
@@ -578,8 +578,8 @@ describe('sourceTokenListTest', () => {
     ]);
 
     // Go past HEREGEXP_START & STRING_CONTENT.
-    let interpolationStart = list.startIndex.advance(2);
-    let range =
+    const interpolationStart = list.startIndex.advance(2);
+    const range =
       interpolationStart &&
       list.rangeOfInterpolatedStringTokensContainingTokenIndex(
         interpolationStart
@@ -594,8 +594,8 @@ describe('sourceTokenListTest', () => {
   });
 
   it('allows comparing indexes', () => {
-    let list = lex('a b');
-    let { startIndex, endIndex } = list;
+    const list = lex('a b');
+    const { startIndex, endIndex } = list;
 
     expect(startIndex.compare(startIndex)).toStrictEqual(0);
     expect(startIndex.compare(endIndex)).toBeGreaterThan(0);
@@ -607,7 +607,7 @@ describe('sourceTokenListTest', () => {
   });
 
   it('handles heregex padding with comments when in CS2 mode', () => {
-    let list = lex('r = ///\na # #{b}c\n d///', { useCS2: true });
+    const list = lex('r = ///\na # #{b}c\n d///', { useCS2: true });
 
     expect(list.map(t => t.type)).toStrictEqual([
       SourceType.IDENTIFIER,

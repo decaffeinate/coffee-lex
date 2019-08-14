@@ -26,16 +26,16 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
   // The general strategy is to find each newline character and mark it as a
   // line separator and mark all surrounding whitespace as padding.
   for (let fragmentIndex = 0; fragmentIndex < paddingTracker.fragments.length; fragmentIndex++) {
-    let fragment = paddingTracker.fragments[fragmentIndex];
-    let content = fragment.content;
+    const fragment = paddingTracker.fragments[fragmentIndex];
+    const content = fragment.content;
     let lastNonWhitespace = -1;
     let pos = 0;
 
     while (pos < content.length) {
       if (content[pos] === '\n') {
-        let startIndex = lastNonWhitespace + 1;
+        const startIndex = lastNonWhitespace + 1;
         fragment.markPadding(lastNonWhitespace + 1, pos);
-        let newlinePos = pos;
+        const newlinePos = pos;
         pos++;
         // Search forward until the next non-whitespace character. Even skip
         // newlines, so that two or more newlines with only spaces between them
@@ -44,12 +44,12 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
         while ((pos < content.length && ' \t\n'.includes(content[pos])) || content.slice(pos, pos + 2) === '\\\n') {
           pos++;
         }
-        let endIndex = pos;
+        const endIndex = pos;
         if (isNewlineEscaped(content, newlinePos)) {
           // Escaped newlines behave a bit strangely: whitespace is removed from
           // the right side but not the left side, and the newline and its
           // escape character are removed.
-          let backslashPos = content.lastIndexOf('\\', newlinePos);
+          const backslashPos = content.lastIndexOf('\\', newlinePos);
           fragment.markPadding(backslashPos, endIndex);
         } else if (
           (fragmentIndex === 0 && startIndex === 0) ||
