@@ -7,7 +7,7 @@ export default function isNewlineEscaped(content: string, newlinePos: number): b
   let numSeenBackslashes = 0;
   let prevPos = newlinePos - 1;
   while (prevPos >= 0) {
-    let char = content[prevPos];
+    const char = content[prevPos];
     if (numSeenBackslashes === 0 && (char === ' ' || char === '\t')) {
       prevPos--;
     } else if (char === '\\') {

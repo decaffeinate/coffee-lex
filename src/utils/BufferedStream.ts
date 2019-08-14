@@ -14,9 +14,9 @@ export default class BufferedStream {
   }
 
   hasNext(...types: Array<SourceType>): boolean {
-    let locationsToPutBack: Array<SourceLocation> = [];
-    let result = types.every(type => {
-      let next = this.shift();
+    const locationsToPutBack: Array<SourceLocation> = [];
+    const result = types.every(type => {
+      const next = this.shift();
       locationsToPutBack.push(next);
       return next.type === type;
     });
@@ -25,7 +25,7 @@ export default class BufferedStream {
   }
 
   peek(): SourceLocation {
-    let result = this.shift();
+    const result = this.shift();
     this.unshift(result);
     return result;
   }

@@ -42,31 +42,31 @@ export default function calculateTripleQuotedStringPadding(
     return [];
   }
 
-  let firstFragment = paddingTracker.fragments[0];
-  let firstContent = firstFragment.content;
-  let lastFragment = paddingTracker.fragments[paddingTracker.fragments.length - 1];
-  let lastContent = lastFragment.content;
+  const firstFragment = paddingTracker.fragments[0];
+  const firstContent = firstFragment.content;
+  const lastFragment = paddingTracker.fragments[paddingTracker.fragments.length - 1];
+  const lastContent = lastFragment.content;
 
-  let sharedIndent = getIndentForFragments(paddingTracker.fragments);
+  const sharedIndent = getIndentForFragments(paddingTracker.fragments);
 
-  let firstContentLines = splitUnescapedNewlines(firstContent);
+  const firstContentLines = splitUnescapedNewlines(firstContent);
   if (firstContentLines.length > 1 && isWhitespace(firstContentLines[0])) {
     firstFragment.markPadding(0, firstContentLines[0].length + 1);
   }
   if (!shouldSkipRemovingLastLine(paddingTracker)) {
-    let lastLines = splitUnescapedNewlines(lastContent);
+    const lastLines = splitUnescapedNewlines(lastContent);
     if (lastLines.length > 1) {
-      let lastLine = lastLines[lastLines.length - 1];
+      const lastLine = lastLines[lastLines.length - 1];
       if (isWhitespace(lastLine)) {
         lastFragment.markPadding(lastFragment.content.length - lastLine.length - 1, lastFragment.content.length);
       }
     }
   }
 
-  for (let fragment of paddingTracker.fragments) {
+  for (const fragment of paddingTracker.fragments) {
     for (let i = 0; i < fragment.content.length; i++) {
       if (fragment.content[i] === '\n' && isNewlineEscaped(fragment.content, i)) {
-        let backslashPos = fragment.content.lastIndexOf('\\', i);
+        const backslashPos = fragment.content.lastIndexOf('\\', i);
         let paddingEnd = i;
         while (paddingEnd < fragment.content.length && ' \t\n'.includes(fragment.content[paddingEnd])) {
           paddingEnd++;
@@ -74,10 +74,10 @@ export default function calculateTripleQuotedStringPadding(
         fragment.markPadding(backslashPos, paddingEnd);
       }
 
-      let isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
+      const isStartOfLine = i > 0 && fragment.content[i - 1] === '\n';
       if (isStartOfLine) {
-        let paddingStart = i;
-        let paddingEnd = i + sharedIndent.length;
+        const paddingStart = i;
+        const paddingEnd = i + sharedIndent.length;
         if (fragment.content.slice(paddingStart, paddingEnd) === sharedIndent) {
           fragment.markPadding(paddingStart, paddingEnd);
         }
@@ -91,11 +91,11 @@ export default function calculateTripleQuotedStringPadding(
 function getIndentForFragments(fragments: Array<TrackedFragment>): string {
   let hasSeenLine = false;
   let smallestIndent: string | null = null;
-  for (let fragment of fragments) {
-    let lines = fragment.content.split('\n');
+  for (const fragment of fragments) {
+    const lines = fragment.content.split('\n');
     for (let i = 1; i < lines.length; i++) {
-      let line = lines[i];
-      let indent = getLineIndent(line);
+      const line = lines[i];
+      const indent = getLineIndent(line);
 
       // Replicate a bug in CoffeeScript: if the first line considered has
       // indentation zero and is nonempty, the empty indentation isn't ignored
@@ -105,7 +105,7 @@ function getIndentForFragments(fragments: Array<TrackedFragment>): string {
       }
       hasSeenLine = true;
 
-      let isFullLine = i < lines.length - 1 || fragment.index === fragments.length - 1;
+      const isFullLine = i < lines.length - 1 || fragment.index === fragments.length - 1;
       // Ignore zero-indentation lines and whitespace-only lines.
       if (indent.length === 0 || (isFullLine && indent === line)) {
         continue;
@@ -130,12 +130,12 @@ function shouldSkipRemovingLastLine(paddingTracker: PaddingTracker): boolean {
   if (paddingTracker.fragments.length !== 1) {
     return false;
   }
-  let lines = paddingTracker.fragments[0].content.split('\n');
+  const lines = paddingTracker.fragments[0].content.split('\n');
   return lines.length === 2 && isWhitespace(lines[0]) && isWhitespace(lines[1]);
 }
 
 function getLineIndent(line: string): string {
-  let match = /[^\n\S]*/.exec(line);
+  const match = /[^\n\S]*/.exec(line);
   if (match) {
     return match[0];
   } else {
@@ -151,10 +151,10 @@ function getLineIndent(line: string): string {
  * non-whitespace character (so it may skip later newlines).
  */
 function splitUnescapedNewlines(str: string): Array<string> {
-  let lines = [''];
+  const lines = [''];
   let numBackslashes = 0;
   let isEatingWhitespace = false;
-  for (let chr of str) {
+  for (const chr of str) {
     if (chr === '\n' && numBackslashes % 2 === 0 && !isEatingWhitespace) {
       lines.push('');
     } else {
