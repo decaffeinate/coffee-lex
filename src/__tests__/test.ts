@@ -2,7 +2,6 @@ import lex, { consumeStream, stream, SourceType } from '../index';
 import SourceLocation from '../SourceLocation';
 import SourceToken from '../SourceToken';
 import SourceTokenList from '../SourceTokenList';
-import expect from './utils/customExpect';
 
 function checkLocations(
   stream: () => SourceLocation,
