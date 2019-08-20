@@ -3,7 +3,6 @@ import SourceLocation from '../../SourceLocation';
 import SourceType from '../../SourceType';
 import BufferedStream from '../../utils/BufferedStream';
 import PaddingTracker from '../../utils/PaddingTracker';
-import expect from './customExpect';
 
 describe('PaddingTrackerTest', () => {
   test('exposes the fragments in a string and allows marking padding', () => {

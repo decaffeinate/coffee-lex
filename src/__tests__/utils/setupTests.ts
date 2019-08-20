@@ -4,10 +4,14 @@ import SourceToken from '../../SourceToken';
 import SourceType from '../../SourceType';
 import lex from '../..';
 
-interface Matchers<T> extends jest.Matchers<T> {
-  toEqualSourceLocations(expected: Array<SourceLocation>): T;
-  toHaveSourceType(expected: SourceType): T;
-  toLexAs(expected: Array<SourceToken>): T;
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toEqualSourceLocations(expected: Array<SourceLocation>): R;
+      toHaveSourceType(expected: SourceType): R;
+      toLexAs(expected: Array<SourceToken>): R;
+    }
+  }
 }
 
 expect.extend({
@@ -34,7 +38,3 @@ expect.extend({
     };
   }
 });
-
-export default function customExpect<T>(value: T): Matchers<T> {
-  return expect(value) as Matchers<T>;
-}
