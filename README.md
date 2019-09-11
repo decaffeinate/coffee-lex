@@ -18,8 +18,8 @@ The main `lex` function simply returns a list of tokens:
 ```js
 import lex, { SourceType } from 'coffee-lex';
 
-let source = 'a?(b: c)';
-let tokens = lex(source);
+const source = 'a?(b: c)';
+const tokens = lex(source);
 
 // Print tokens along with their source.
 tokens.forEach(token =>
@@ -44,9 +44,9 @@ You can also get more fine control of what you'd like to lex by using the
 ```js
 import { stream, SourceType } from 'coffee-lex';
 
-let source = 'a?(b: c)';
-let step = stream(source);
-let location;
+const source = 'a?(b: c)';
+const step = stream(source);
+const location;
 
 do {
   location = step();
@@ -89,10 +89,19 @@ the official lexer generates for `"a#{b}c"`:
     { first_line: 0, first_column: 0, last_line: 0, last_column: 0 },
     (origin: ['STRING', null, [Object]])
   ],
-  ['STRING', '"a"', { first_line: 0, first_column: 0, last_line: 0, last_column: 1 }],
+  [
+    'STRING',
+    '"a"',
+    { first_line: 0, first_column: 0, last_line: 0, last_column: 1 }
+  ],
   ['+', '+', { first_line: 0, first_column: 3, last_line: 0, last_column: 3 }],
   ['(', '(', { first_line: 0, first_column: 3, last_line: 0, last_column: 3 }],
-  ['IDENTIFIER', 'b', { first_line: 0, first_column: 4, last_line: 0, last_column: 4 }, (variable: true)],
+  [
+    'IDENTIFIER',
+    'b',
+    { first_line: 0, first_column: 4, last_line: 0, last_column: 4 },
+    (variable: true)
+  ],
   [
     ')',
     ')',
@@ -100,9 +109,21 @@ the official lexer generates for `"a#{b}c"`:
     (origin: ['', 'end of interpolation', [Object]])
   ],
   ['+', '+', { first_line: 0, first_column: 6, last_line: 0, last_column: 6 }],
-  ['STRING', '"c"', { first_line: 0, first_column: 6, last_line: 0, last_column: 7 }],
-  ['STRING_END', ')', { first_line: 0, first_column: 7, last_line: 0, last_column: 7 }],
-  ['TERMINATOR', '\n', { first_line: 0, first_column: 8, last_line: 0, last_column: 8 }]
+  [
+    'STRING',
+    '"c"',
+    { first_line: 0, first_column: 6, last_line: 0, last_column: 7 }
+  ],
+  [
+    'STRING_END',
+    ')',
+    { first_line: 0, first_column: 7, last_line: 0, last_column: 7 }
+  ],
+  [
+    'TERMINATOR',
+    '\n',
+    { first_line: 0, first_column: 8, last_line: 0, last_column: 8 }
+  ]
 ];
 ```
 
