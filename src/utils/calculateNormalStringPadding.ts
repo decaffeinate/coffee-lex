@@ -13,7 +13,10 @@ import isNewlineEscaped from './isNewlineEscaped';
  * spaces, and extra whitespace at the start and end of each line (except the
  * start of the first line and the end of the last line) is ignored.
  */
-export default function calculateNormalStringPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
+export default function calculateNormalStringPadding(
+  source: string,
+  stream: BufferedStream
+): Array<SourceLocation> {
   let paddingTracker;
   if (stream.hasNext(SourceType.SSTRING_START)) {
     paddingTracker = new PaddingTracker(source, stream, SourceType.SSTRING_END);
@@ -25,7 +28,11 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
 
   // The general strategy is to find each newline character and mark it as a
   // line separator and mark all surrounding whitespace as padding.
-  for (let fragmentIndex = 0; fragmentIndex < paddingTracker.fragments.length; fragmentIndex++) {
+  for (
+    let fragmentIndex = 0;
+    fragmentIndex < paddingTracker.fragments.length;
+    fragmentIndex++
+  ) {
     const fragment = paddingTracker.fragments[fragmentIndex];
     const content = fragment.content;
     let lastNonWhitespace = -1;
@@ -41,7 +48,10 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
         // newlines, so that two or more newlines with only spaces between them
         // will result in a single line separator. Escaped newline characters
         // are also allowed and should be skipped.
-        while ((pos < content.length && ' \t\n'.includes(content[pos])) || content.slice(pos, pos + 2) === '\\\n') {
+        while (
+          (pos < content.length && ' \t\n'.includes(content[pos])) ||
+          content.slice(pos, pos + 2) === '\\\n'
+        ) {
           pos++;
         }
         const endIndex = pos;
@@ -53,7 +63,8 @@ export default function calculateNormalStringPadding(source: string, stream: Buf
           fragment.markPadding(backslashPos, endIndex);
         } else if (
           (fragmentIndex === 0 && startIndex === 0) ||
-          (fragmentIndex === paddingTracker.fragments.length - 1 && endIndex === content.length)
+          (fragmentIndex === paddingTracker.fragments.length - 1 &&
+            endIndex === content.length)
         ) {
           // We only want spaces between, not around, lines, so if we're up
           // against the left side or right side of the string, mark the newline

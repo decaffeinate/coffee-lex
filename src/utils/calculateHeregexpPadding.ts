@@ -8,11 +8,18 @@ import BufferedStream from './BufferedStream';
  * Compute the whitespace to remove in a heregexp. All unescaped whitespace
  * characters are removed, and comments are respected.
  */
-export default function calculateHeregexpPadding(source: string, stream: BufferedStream): Array<SourceLocation> {
+export default function calculateHeregexpPadding(
+  source: string,
+  stream: BufferedStream
+): Array<SourceLocation> {
   if (!stream.hasNext(SourceType.HEREGEXP_START)) {
     return [];
   }
-  const paddingTracker = new PaddingTracker(source, stream, SourceType.HEREGEXP_END);
+  const paddingTracker = new PaddingTracker(
+    source,
+    stream,
+    SourceType.HEREGEXP_END
+  );
 
   for (const fragment of paddingTracker.fragments) {
     const content = fragment.content;
@@ -26,7 +33,10 @@ export default function calculateHeregexpPadding(source: string, stream: Buffere
           fragment.markPadding(pos, pos + 1);
         }
         pos++;
-      } else if (content[pos] === '#' && (pos === 0 || /\s/.test(content[pos - 1]))) {
+      } else if (
+        content[pos] === '#' &&
+        (pos === 0 || /\s/.test(content[pos - 1]))
+      ) {
         const commentStart = pos;
         while (pos < content.length && content[pos] !== '\n') {
           pos++;

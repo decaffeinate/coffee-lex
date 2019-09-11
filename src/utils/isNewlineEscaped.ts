@@ -3,7 +3,10 @@
  * character is escaped if it's preceded by an odd number of backslashes.
  * Spaces are allowed between the backslashes and the newline.
  */
-export default function isNewlineEscaped(content: string, newlinePos: number): boolean {
+export default function isNewlineEscaped(
+  content: string,
+  newlinePos: number
+): boolean {
   let numSeenBackslashes = 0;
   let prevPos = newlinePos - 1;
   while (prevPos >= 0) {

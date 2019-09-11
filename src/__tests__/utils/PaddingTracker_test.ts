@@ -4,17 +4,17 @@ import SourceType from '../../SourceType';
 import BufferedStream from '../../utils/BufferedStream';
 import PaddingTracker from '../../utils/PaddingTracker';
 
-describe('PaddingTrackerTest', () => {
-  test('exposes the fragments in a string and allows marking padding', () => {
-    let source = '"a\nb#{cd}e f"';
-    let bufferedStream = new BufferedStream(stream(source));
-    let tracker = new PaddingTracker(source, bufferedStream, SourceType.DSTRING_END);
-    expect(tracker.fragments.length).toBe(2);
+describe('paddingTrackerTest', () => {
+  it('exposes the fragments in a string and allows marking padding', () => {
+    const source = '"a\nb#{cd}e f"';
+    const bufferedStream = new BufferedStream(stream(source));
+    const tracker = new PaddingTracker(source, bufferedStream, SourceType.DSTRING_END);
+    expect(tracker.fragments).toHaveLength(2);
     expect(tracker.fragments[0].content).toBe('a\nb');
     expect(tracker.fragments[1].content).toBe('e f');
     tracker.fragments[0].markLineSeparator(1);
     tracker.fragments[1].markPadding(1, 2);
-    expect(tracker.computeSourceLocations()).toEqual([
+    expect(tracker.computeSourceLocations()).toStrictEqual([
       new SourceLocation(SourceType.DSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 1),
       new SourceLocation(SourceType.STRING_LINE_SEPARATOR, 2),
@@ -29,14 +29,14 @@ describe('PaddingTrackerTest', () => {
     ]);
   });
 
-  test('allows overlapping padding and merges padding regions', () => {
-    let source = '"abcdefg"';
-    let bufferedStream = new BufferedStream(stream(source));
-    let tracker = new PaddingTracker(source, bufferedStream, SourceType.DSTRING_END);
+  it('allows overlapping padding and merges padding regions', () => {
+    const source = '"abcdefg"';
+    const bufferedStream = new BufferedStream(stream(source));
+    const tracker = new PaddingTracker(source, bufferedStream, SourceType.DSTRING_END);
     tracker.fragments[0].markPadding(1, 3);
     tracker.fragments[0].markPadding(2, 4);
     tracker.fragments[0].markPadding(4, 5);
-    expect(tracker.computeSourceLocations()).toEqual([
+    expect(tracker.computeSourceLocations()).toStrictEqual([
       new SourceLocation(SourceType.DSTRING_START, 0),
       new SourceLocation(SourceType.STRING_CONTENT, 1),
       new SourceLocation(SourceType.STRING_PADDING, 2),
@@ -45,10 +45,10 @@ describe('PaddingTrackerTest', () => {
     ]);
   });
 
-  test('does not allow padding and a line separator in the same position', () => {
-    let source = '"abcdefg"';
-    let bufferedStream = new BufferedStream(stream(source));
-    let tracker = new PaddingTracker(source, bufferedStream, SourceType.DSTRING_END);
+  it('does not allow padding and a line separator in the same position', () => {
+    const source = '"abcdefg"';
+    const bufferedStream = new BufferedStream(stream(source));
+    const tracker = new PaddingTracker(source, bufferedStream, SourceType.DSTRING_END);
     tracker.fragments[0].markPadding(1, 3);
     tracker.fragments[0].markLineSeparator(2);
     expect(() => tracker.computeSourceLocations()).toThrow(/Illegal padding state/);

@@ -16,15 +16,26 @@ import SourceType from '../../SourceType';
  * coffee-lex and the CoffeeScript lexer. It can always be made more advanced if
  * more complicated cases are useful to test.
  */
-export default function verifyStringMatchesCoffeeScript(code: string, expectedQuasis: Array<string>) {
-  let coffeeLexResult = getCoffeeLexQuasis(code);
-  let coffeeScriptResult = getCoffeeScriptQuasis(code);
-  deepEqual(coffeeLexResult, coffeeScriptResult, 'coffee-lex output and CoffeeScript output disagreed.');
-  deepEqual(coffeeLexResult, expectedQuasis, 'coffee-lex output and expected output disagreed.');
+export default function verifyStringMatchesCoffeeScript(
+  code: string,
+  expectedQuasis: Array<string>
+): void {
+  const coffeeLexResult = getCoffeeLexQuasis(code);
+  const coffeeScriptResult = getCoffeeScriptQuasis(code);
+  deepEqual(
+    coffeeLexResult,
+    coffeeScriptResult,
+    'coffee-lex output and CoffeeScript output disagreed.'
+  );
+  deepEqual(
+    coffeeLexResult,
+    expectedQuasis,
+    'coffee-lex output and expected output disagreed.'
+  );
 }
 
 function getCoffeeLexQuasis(code: string): Array<string> {
-  let tokens = lex(code);
+  const tokens = lex(code);
   let quasis = [''];
   tokens.forEach(token => {
     if (token.type === SourceType.STRING_CONTENT) {
@@ -47,9 +58,9 @@ function getCoffeeLexQuasis(code: string): Array<string> {
 }
 
 function getCoffeeScriptQuasis(code: string): Array<string> {
-  let tokens = CoffeeScript.tokens(code);
-  let resultQuasis: Array<string> = [];
-  for (let token of tokens) {
+  const tokens = CoffeeScript.tokens(code);
+  const resultQuasis: Array<string> = [];
+  for (const token of tokens) {
     if (token[0] === 'STRING') {
       let stringForm = normalizeSpaces(token[1].replace(/\t/g, '\\t'));
       if (stringForm[0] === "'") {
@@ -57,7 +68,9 @@ function getCoffeeScriptQuasis(code: string): Array<string> {
       }
       resultQuasis.push(JSON.parse(stringForm).replace(/\\/g, '\\\\'));
     } else if (token[0] === 'REGEX') {
-      let stringForm = `"${token[1].slice(1, -1)}"`.replace(/\\/g, '\\\\').replace(/\t/g, '\\t');
+      const stringForm = `"${token[1].slice(1, -1)}"`
+        .replace(/\\/g, '\\\\')
+        .replace(/\t/g, '\\t');
       resultQuasis.push(JSON.parse(stringForm).replace(/\\/g, '\\\\'));
     }
   }
@@ -67,7 +80,7 @@ function getCoffeeScriptQuasis(code: string): Array<string> {
 function normalizeSpaces(str: string): string {
   let fixedStr = '';
   let numBackslashes = 0;
-  for (let chr of str) {
+  for (const chr of str) {
     if (chr === ' ' && numBackslashes % 2 === 1) {
       fixedStr = fixedStr.slice(0, fixedStr.length - 1);
     }

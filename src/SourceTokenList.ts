@@ -2,7 +2,10 @@ import SourceToken from './SourceToken';
 import SourceTokenListIndex from './SourceTokenListIndex';
 import SourceType from './SourceType';
 
-export type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
+export type SourceTokenListIndexRange = [
+  SourceTokenListIndex,
+  SourceTokenListIndex
+];
 
 /**
  * Represents a list of tokens and provides various utility functions for
@@ -32,8 +35,12 @@ export default class SourceTokenList {
     this._indexByStartSourceIndex = [];
     this._indexByEndSourceIndex = [];
     for (let tokenIndex = tokens.length - 1; tokenIndex >= 0; tokenIndex--) {
-      let token = tokens[tokenIndex];
-      for (let sourceIndex = token.start; sourceIndex < token.end; sourceIndex++) {
+      const token = tokens[tokenIndex];
+      for (
+        let sourceIndex = token.start;
+        sourceIndex < token.end;
+        sourceIndex++
+      ) {
         this._indexBySourceIndex[sourceIndex] = this._getIndex(tokenIndex);
       }
       this._indexByStartSourceIndex[token.start] = this._getIndex(tokenIndex);
@@ -44,15 +51,29 @@ export default class SourceTokenList {
   /**
    * Iterate over each token.
    */
-  forEach(iterator: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => void) {
-    this._tokens.forEach((token, i) => iterator(token, this._getIndex(i), this));
+  forEach(
+    iterator: (
+      token: SourceToken,
+      index: SourceTokenListIndex,
+      list: SourceTokenList
+    ) => void
+  ): void {
+    this._tokens.forEach((token, i) =>
+      iterator(token, this._getIndex(i), this)
+    );
   }
 
   /**
    * Map each token to an element of an array.
    */
-  map<T>(mapper: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => T): Array<T> {
-    let result: Array<T> = [];
+  map<T>(
+    mapper: (
+      token: SourceToken,
+      index: SourceTokenListIndex,
+      list: SourceTokenList
+    ) => T
+  ): Array<T> {
+    const result: Array<T> = [];
     this.forEach((token, index, list) => {
       result.push(mapper(token, index, list));
     });
@@ -63,9 +84,13 @@ export default class SourceTokenList {
    * Filter tokens by a predicate.
    */
   filter(
-    predicate: (token: SourceToken, index: SourceTokenListIndex, list: SourceTokenList) => boolean
+    predicate: (
+      token: SourceToken,
+      index: SourceTokenListIndex,
+      list: SourceTokenList
+    ) => boolean
   ): SourceTokenList {
-    let result: Array<SourceToken> = [];
+    const result: Array<SourceToken> = [];
     this.forEach((token, index, list) => {
       if (predicate(token, index, list)) {
         result.push(token);
@@ -77,11 +102,19 @@ export default class SourceTokenList {
   /**
    * Get a slice of this token list using the given indexes.
    */
-  slice(start: SourceTokenListIndex, end: SourceTokenListIndex): SourceTokenList {
-    if (start['_sourceTokenList'] !== this || end['_sourceTokenList'] !== this) {
+  slice(
+    start: SourceTokenListIndex,
+    end: SourceTokenListIndex
+  ): SourceTokenList {
+    if (
+      start['_sourceTokenList'] !== this ||
+      end['_sourceTokenList'] !== this
+    ) {
       throw new Error('cannot slice a list using indexes from another list');
     }
-    return new SourceTokenList(this._tokens.slice(start['_index'], end['_index']));
+    return new SourceTokenList(
+      this._tokens.slice(start['_index'], end['_index'])
+    );
   }
 
   /**
@@ -100,18 +133,26 @@ export default class SourceTokenList {
    * the token at `index`. This will return the innermost interpolated string in
    * the case of nesting.
    */
-  rangeOfInterpolatedStringTokensContainingTokenIndex(index: SourceTokenListIndex): SourceTokenListIndexRange | null {
+  rangeOfInterpolatedStringTokensContainingTokenIndex(
+    index: SourceTokenListIndex
+  ): SourceTokenListIndexRange | null {
     let bestRange: SourceTokenListIndexRange | null = null;
-    for (let [startType, endType] of [
+    for (const [startType, endType] of [
       [SourceType.DSTRING_START, SourceType.DSTRING_END],
       [SourceType.TDSTRING_START, SourceType.TDSTRING_END],
       [SourceType.HEREGEXP_START, SourceType.HEREGEXP_END]
     ]) {
-      let range = this.rangeOfMatchingTokensContainingTokenIndex(startType, endType, index);
+      const range = this.rangeOfMatchingTokensContainingTokenIndex(
+        startType,
+        endType,
+        index
+      );
       if (
         bestRange === null ||
         bestRange === undefined ||
-        (range !== null && range !== undefined && range[0].distance(range[1]) < bestRange[0].distance(bestRange[1]))
+        (range !== null &&
+          range !== undefined &&
+          range[0].distance(range[1]) < bestRange[0].distance(bestRange[1]))
       ) {
         bestRange = range;
       }
@@ -133,7 +174,7 @@ export default class SourceTokenList {
   ): SourceTokenListIndexRange | null {
     this._validateIndex(index);
 
-    let token = this.tokenAtIndex(index);
+    const token = this.tokenAtIndex(index);
     if (!token) {
       return null;
     }
@@ -141,9 +182,9 @@ export default class SourceTokenList {
     switch (token.type) {
       case startType: {
         let level = 0;
-        let start = index;
+        const start = index;
 
-        let endIndex = this.indexOfTokenMatchingPredicate(token => {
+        const endIndex = this.indexOfTokenMatchingPredicate(token => {
           if (token.type === startType) {
             level += 1;
           } else if (token.type === endType) {
@@ -158,7 +199,7 @@ export default class SourceTokenList {
         if (!endIndex) {
           return null;
         } else {
-          let rangeEnd = endIndex.next();
+          const rangeEnd = endIndex.next();
           if (!rangeEnd) {
             return null;
           }
@@ -168,9 +209,9 @@ export default class SourceTokenList {
 
       case endType: {
         let level = 0;
-        let endIndex = index;
+        const endIndex = index;
 
-        let startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
+        const startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
           if (token.type === startType) {
             level -= 1;
             if (level === 0) {
@@ -185,7 +226,7 @@ export default class SourceTokenList {
         if (!startIndex) {
           return null;
         } else {
-          let rangeEnd = endIndex.next();
+          const rangeEnd = endIndex.next();
           if (!rangeEnd) {
             return null;
           } else {
@@ -196,7 +237,7 @@ export default class SourceTokenList {
 
       default: {
         let level = 0;
-        let startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
+        const startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
           if (token.type === startType) {
             if (level === 0) {
               return true;
@@ -211,7 +252,11 @@ export default class SourceTokenList {
         if (!startIndex) {
           return null;
         } else {
-          return this.rangeOfMatchingTokensContainingTokenIndex(startType, endType, startIndex);
+          return this.rangeOfMatchingTokensContainingTokenIndex(
+            startType,
+            endType,
+            startIndex
+          );
         }
       }
     }
@@ -222,7 +267,9 @@ export default class SourceTokenList {
    * If the given index does not correspond to the range of a token, returns
    * null.
    */
-  indexOfTokenContainingSourceIndex(index: number): SourceTokenListIndex | null {
+  indexOfTokenContainingSourceIndex(
+    index: number
+  ): SourceTokenListIndex | null {
     this._validateSourceIndex(index);
     return this._indexBySourceIndex[index] || null;
   }
@@ -235,7 +282,7 @@ export default class SourceTokenList {
   indexOfTokenNearSourceIndex(index: number): SourceTokenListIndex {
     this._validateSourceIndex(index);
     for (let searchIndex = index; searchIndex >= 0; searchIndex--) {
-      let tokenIndex = this._indexBySourceIndex[searchIndex];
+      const tokenIndex = this._indexBySourceIndex[searchIndex];
       if (tokenIndex) {
         return tokenIndex;
       }
@@ -246,7 +293,9 @@ export default class SourceTokenList {
   /**
    * Finds the index of the token whose source range starts at the given index.
    */
-  indexOfTokenStartingAtSourceIndex(index: number): SourceTokenListIndex | null {
+  indexOfTokenStartingAtSourceIndex(
+    index: number
+  ): SourceTokenListIndex | null {
     this._validateSourceIndex(index);
     return this._indexByStartSourceIndex[index] || null;
   }
@@ -276,8 +325,12 @@ export default class SourceTokenList {
     this._validateIndex(start);
     this._validateIndex(end);
 
-    for (let i: SourceTokenListIndex | null = start; i && i !== end; i = i.next()) {
-      let token = this.tokenAtIndex(i);
+    for (
+      let i: SourceTokenListIndex | null = start;
+      i && i !== end;
+      i = i.next()
+    ) {
+      const token = this.tokenAtIndex(i);
       if (!token) {
         break;
       } else if (predicate(token)) {
@@ -310,7 +363,7 @@ export default class SourceTokenList {
 
     let i: SourceTokenListIndex | null = start;
     do {
-      let token = this.tokenAtIndex(i);
+      const token = this.tokenAtIndex(i);
       if (!token) {
         break;
       } else if (predicate(token)) {
@@ -326,22 +379,24 @@ export default class SourceTokenList {
   /**
    * Allow iterating over the tokens in this list using e.g. `for (… of …)`.
    */
-  [Symbol.iterator]() {
+  [Symbol.iterator](): Iterator<SourceToken> {
     let index = this.startIndex;
-    let { endIndex } = this;
-    return (): { done: boolean; value: SourceToken | null | undefined } => {
-      if (index === endIndex) {
-        return { done: true, value: undefined };
-      } else {
-        let result = { done: false, value: this.tokenAtIndex(index) };
-        let nextIndex = index.next();
+    const { endIndex } = this;
+    return {
+      next(): IteratorResult<SourceToken> {
+        if (index === endIndex) {
+          return { done: true, value: undefined };
+        } else {
+          const result = { done: false, value: this.tokenAtIndex(index) };
+          const nextIndex = index.next();
 
-        if (!nextIndex) {
-          throw new Error(`unexpected null index before the end index`);
+          if (!nextIndex) {
+            throw new Error(`unexpected null index before the end index`);
+          }
+
+          index = nextIndex;
+          return result;
         }
-
-        index = nextIndex;
-        return result;
       }
     };
   }
@@ -349,11 +404,12 @@ export default class SourceTokenList {
   /**
    * @internal
    */
-  private _validateTokens(tokens: Array<SourceToken>) {
+  private _validateTokens(tokens: Array<SourceToken>): void {
     for (let i = 0; i < tokens.length - 1; i++) {
       if (tokens[i].end > tokens[i + 1].start) {
         throw new Error(
-          `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` + `${JSON.stringify(tokens[i + 1])}`
+          `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` +
+            `${JSON.stringify(tokens[i + 1])}`
         );
       }
     }
@@ -362,26 +418,30 @@ export default class SourceTokenList {
   /**
    * @internal
    */
-  private _validateIndex(index: SourceTokenListIndex | null) {
+  private _validateIndex(index: SourceTokenListIndex | null): void {
     if (!index) {
       throw new Error(
-        `unexpected 'null' index, perhaps you forgot to check the result of ` + `'indexOfTokenContainingSourceIndex'?`
+        `unexpected 'null' index, perhaps you forgot to check the result of ` +
+          `'indexOfTokenContainingSourceIndex'?`
       );
     }
     if (typeof index === 'number') {
       throw new Error(
-        `to get a token at index ${index}, ` + `use list.tokenAtIndex(list.startIndex.advance(${index}))`
+        `to get a token at index ${index}, ` +
+          `use list.tokenAtIndex(list.startIndex.advance(${index}))`
       );
     }
     if (index['_sourceTokenList'] !== this) {
-      throw new Error('cannot get token in one list using an index from another');
+      throw new Error(
+        'cannot get token in one list using an index from another'
+      );
     }
   }
 
   /**
    * @internal
    */
-  private _validateSourceIndex(index: number) {
+  private _validateSourceIndex(index: number): void {
     if (typeof index !== 'number') {
       throw new Error(`expected source index to be a number, got: ${index}`);
     }
