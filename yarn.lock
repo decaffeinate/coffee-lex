@@ -306,9 +306,9 @@
     "@types/yargs" "^13.0.0"
 
 "@microsoft/node-core-library@^3.7.1":
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.14.1.tgz#3eaeede8f7dffc030c53895218a3ee925491dbcc"
-  integrity sha512-KVYef9kjK6lmGOOjYRctYFX3ymZ71xobweBftwP8hQS5JTBX+QqpAOvfiFQmlMgfJ7/TS7u3u3QjVzeztuz5cg==
+  version "3.14.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.14.2.tgz#255d421963f2d447a19f935e3c8eb3053e8e381b"
+  integrity sha512-bd8XhqhIvXsWg/SSNsZJdJxkN8Ucj7XKQkRe4cdYiKqpVdAREvW/shw8AoZIdgvjLI53029I/MO2Wn/AjGD3Jw==
   dependencies:
     "@types/fs-extra" "5.0.4"
     "@types/jju" "~1.4.0"
@@ -503,15 +503,6 @@
     regexpp "^2.0.1"
     tsutils "^3.17.1"
 
-"@typescript-eslint/experimental-utils@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-2.1.0.tgz#0837229f0e75a32db0db9bf662ad0eface914453"
-  integrity sha512-ZJGLYXa4nxjNzomaEk1qts38B/vludg2LOM7dRc7SppEKsMPTS1swaTKS/pom+x4d/luJGoG00BDIss7PR1NQA==
-  dependencies:
-    "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/typescript-estree" "2.1.0"
-    eslint-scope "^4.0.0"
-
 "@typescript-eslint/experimental-utils@2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-2.2.0.tgz#31d855fbc425168ecf56960c777aacfcca391cff"
@@ -547,16 +538,6 @@
   dependencies:
     lodash.unescape "4.0.1"
     semver "5.5.0"
-
-"@typescript-eslint/typescript-estree@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-2.1.0.tgz#88e676cc9760516711f6fe43958adc31b93de8e5"
-  integrity sha512-482ErJJ7QYghBh+KA9G+Fwcuk/PLTy+9NBMz8S+6UFrUUnVvHRNAL7I70kdws2te0FBYEZW7pkDaXoT+y8UARw==
-  dependencies:
-    glob "^7.1.4"
-    is-glob "^4.0.1"
-    lodash.unescape "4.0.1"
-    semver "^6.2.0"
 
 "@typescript-eslint/typescript-estree@2.2.0":
   version "2.2.0"
