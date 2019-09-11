@@ -20,12 +20,12 @@ aliases:
       - *save_cache_step
       - run:
           name: tests
-          command: 'yarn jest --ci'
+          command: 'yarn test:ci'
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
       - run:
           name: lint
-          command: 'yarn eslint src/**/*.ts'
+          command: 'yarn lint'
       - store_test_results:
           path: reports/junit
       - store_artifacts:

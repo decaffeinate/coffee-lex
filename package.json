@@ -11,6 +11,7 @@
     "lint:fix": "yarn lint --fix",
     "pretest": "yarn lint",
     "test": "jest",
+    "test:ci": "jest --ci",
     "prepare": "script/build.ts"
   },
   "repository": {
