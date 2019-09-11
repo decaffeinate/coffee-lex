@@ -17,7 +17,7 @@ export default class SourceTokenListIndex {
    * the list range.
    */
   advance(offset: number): SourceTokenListIndex | null {
-    let newIndex = this._index + offset;
+    const newIndex = this._index + offset;
     if (newIndex < 0 || this._sourceTokenList.length < newIndex) {
       return null;
     }

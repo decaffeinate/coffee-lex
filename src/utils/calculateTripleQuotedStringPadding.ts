@@ -35,16 +35,25 @@ export default function calculateTripleQuotedStringPadding(
 ): Array<SourceLocation> {
   let paddingTracker;
   if (stream.hasNext(SourceType.TSSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, SourceType.TSSTRING_END);
+    paddingTracker = new PaddingTracker(
+      source,
+      stream,
+      SourceType.TSSTRING_END
+    );
   } else if (stream.hasNext(SourceType.TDSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, SourceType.TDSTRING_END);
+    paddingTracker = new PaddingTracker(
+      source,
+      stream,
+      SourceType.TDSTRING_END
+    );
   } else {
     return [];
   }
 
   const firstFragment = paddingTracker.fragments[0];
   const firstContent = firstFragment.content;
-  const lastFragment = paddingTracker.fragments[paddingTracker.fragments.length - 1];
+  const lastFragment =
+    paddingTracker.fragments[paddingTracker.fragments.length - 1];
   const lastContent = lastFragment.content;
 
   const sharedIndent = getIndentForFragments(paddingTracker.fragments);
@@ -58,17 +67,26 @@ export default function calculateTripleQuotedStringPadding(
     if (lastLines.length > 1) {
       const lastLine = lastLines[lastLines.length - 1];
       if (isWhitespace(lastLine)) {
-        lastFragment.markPadding(lastFragment.content.length - lastLine.length - 1, lastFragment.content.length);
+        lastFragment.markPadding(
+          lastFragment.content.length - lastLine.length - 1,
+          lastFragment.content.length
+        );
       }
     }
   }
 
   for (const fragment of paddingTracker.fragments) {
     for (let i = 0; i < fragment.content.length; i++) {
-      if (fragment.content[i] === '\n' && isNewlineEscaped(fragment.content, i)) {
+      if (
+        fragment.content[i] === '\n' &&
+        isNewlineEscaped(fragment.content, i)
+      ) {
         const backslashPos = fragment.content.lastIndexOf('\\', i);
         let paddingEnd = i;
-        while (paddingEnd < fragment.content.length && ' \t\n'.includes(fragment.content[paddingEnd])) {
+        while (
+          paddingEnd < fragment.content.length &&
+          ' \t\n'.includes(fragment.content[paddingEnd])
+        ) {
           paddingEnd++;
         }
         fragment.markPadding(backslashPos, paddingEnd);
@@ -105,7 +123,8 @@ function getIndentForFragments(fragments: Array<TrackedFragment>): string {
       }
       hasSeenLine = true;
 
-      const isFullLine = i < lines.length - 1 || fragment.index === fragments.length - 1;
+      const isFullLine =
+        i < lines.length - 1 || fragment.index === fragments.length - 1;
       // Ignore zero-indentation lines and whitespace-only lines.
       if (indent.length === 0 || (isFullLine && indent === line)) {
         continue;
@@ -177,7 +196,10 @@ function splitUnescapedNewlines(str: string): Array<string> {
 
 function isWhitespace(line: string): boolean {
   for (let i = 0; i < line.length; i++) {
-    if (!' \t\n'.includes(line[i]) && !(line[i] === '\\' && line[i + 1] === '\n')) {
+    if (
+      !' \t\n'.includes(line[i]) &&
+      !(line[i] === '\\' && line[i + 1] === '\n')
+    ) {
       return false;
     }
   }

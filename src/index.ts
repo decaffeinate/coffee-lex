@@ -42,11 +42,14 @@ export const DEFAULT_OPTIONS: Options = {
 /**
  * Generate a list of tokens from CoffeeScript source code.
  */
-export default function lex(source: string, options: Options = DEFAULT_OPTIONS): SourceTokenList {
+export default function lex(
+  source: string,
+  options: Options = DEFAULT_OPTIONS
+): SourceTokenList {
   let location;
   let previousLocation;
-  let tokens: Array<SourceToken> = [];
-  let pending = new BufferedStream(stream(source, 0, options));
+  const tokens: Array<SourceToken> = [];
+  const pending = new BufferedStream(stream(source, 0, options));
   do {
     pending.unshift(...calculateNormalStringPadding(source, pending));
     pending.unshift(...calculateTripleQuotedStringPadding(source, pending));
@@ -54,29 +57,38 @@ export default function lex(source: string, options: Options = DEFAULT_OPTIONS):
     pending.unshift(...combinedLocationsForNegatedOperators(pending, source));
     location = pending.shift();
     if (previousLocation && previousLocation.type !== SourceType.SPACE) {
-      tokens.push(new SourceToken(previousLocation.type, previousLocation.index, location.index));
+      tokens.push(
+        new SourceToken(
+          previousLocation.type,
+          previousLocation.index,
+          location.index
+        )
+      );
     }
     previousLocation = location;
   } while (location.type !== SourceType.EOF);
   return new SourceTokenList(tokens);
 }
 
-function combinedLocationsForNegatedOperators(stream: BufferedStream, source: string): Array<SourceLocation> {
+function combinedLocationsForNegatedOperators(
+  stream: BufferedStream,
+  source: string
+): Array<SourceLocation> {
   if (!stream.hasNext(SourceType.OPERATOR)) {
     return [];
   }
 
-  let locationsToRestore: Array<SourceLocation> = [];
+  const locationsToRestore: Array<SourceLocation> = [];
 
   function shift(): SourceLocation {
-    let location = stream.shift();
+    const location = stream.shift();
     locationsToRestore.push(location);
     return location;
   }
 
-  let not = shift();
-  let space = shift();
-  let text = source.slice(not.index, space.index);
+  const not = shift();
+  const space = shift();
+  const text = source.slice(not.index, space.index);
   let operator: SourceLocation;
 
   if (text === 'not') {
@@ -100,8 +112,8 @@ function combinedLocationsForNegatedOperators(stream: BufferedStream, source: st
     return locationsToRestore;
   }
 
-  let next = stream.peek();
-  let op = source.slice(operator.index, next.index);
+  const next = stream.peek();
+  const op = source.slice(operator.index, next.index);
 
   switch (op) {
     case 'in':
@@ -123,7 +135,12 @@ export { SourceType };
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
  */
-const STRING = [SourceType.SSTRING_END, SourceType.DSTRING_END, SourceType.TSSTRING_END, SourceType.TDSTRING_END];
+const STRING = [
+  SourceType.SSTRING_END,
+  SourceType.DSTRING_END,
+  SourceType.TSSTRING_END,
+  SourceType.TDSTRING_END
+];
 const CALLABLE = [
   SourceType.IDENTIFIER,
   SourceType.CALL_END,
@@ -145,14 +162,17 @@ const INDEXABLE = CALLABLE.concat([
   SourceType.RBRACE,
   SourceType.PROTO
 ]);
-const NOT_REGEXP = INDEXABLE.concat([SourceType.INCREMENT, SourceType.DECREMENT]);
+const NOT_REGEXP = INDEXABLE.concat([
+  SourceType.INCREMENT,
+  SourceType.DECREMENT
+]);
 
 const IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[$\w\x7f-\uffff])+)/;
 // Like identifier, but includes '-' and '.'.
-const CSX_IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[\.\-$\w\x7f-\uffff])+)/;
+const CSX_IDENTIFIER_PATTERN = /^(?!\d)((?:(?!\s)[.\-$\w\x7f-\uffff])+)/;
 const NUMBER_PATTERN = /^0b[01]+|^0o[0-7]+|^0x[\da-f]+|^\d*\.?\d+(?:e[+-]?\d+)?/i;
 const SPACE_PATTERN = /^[^\n\r\S]+/;
-const REGEXP_PATTERN = /^\/(?!\/)((?:[^[\/\n\\]|\\[^\n]|\[(?:\\[^\n]|[^\]\n\\])*\])*)(\/)?/;
+const REGEXP_PATTERN = /^\/(?!\/)((?:[^[/\n\\]|\\[^\n]|\[(?:\\[^\n]|[^\]\n\\])*\])*)(\/)?/;
 const YIELDFROM_PATTERN = /^yield[^\n\r\S]+from/;
 
 const OPERATORS = [
@@ -218,22 +238,26 @@ const OPERATORS = [
 /**
  * Provides a stream of source type change locations.
  */
-export function stream(source: string, index: number = 0, options: Options = DEFAULT_OPTIONS): () => SourceLocation {
+export function stream(
+  source: string,
+  index = 0,
+  options: Options = DEFAULT_OPTIONS
+): () => SourceLocation {
   let location = new SourceLocation(SourceType.NORMAL, index);
-  let contextStack: Array<Context> = [];
+  const contextStack: Array<Context> = [];
   let start = index;
-  let locations: Array<SourceLocation> = [];
+  const locations: Array<SourceLocation> = [];
 
   function currentContext(): Context | null {
     return contextStack[contextStack.length - 1] || null;
   }
   function currentContextType(): ContextType | null {
-    let context = currentContext();
+    const context = currentContext();
     return context ? context.type : null;
   }
 
   return function step(): SourceLocation {
-    let lastLocation = location;
+    const lastLocation = location;
     let shouldStepAgain = false;
 
     do {
@@ -370,18 +394,24 @@ export function stream(source: string, index: number = 0, options: Options = DEF
             setType(SourceType.HEREGEXP_START);
           } else if (consume('(')) {
             if (CALLABLE.indexOf(location.type) >= 0) {
-              contextStack.push({ type: ContextType.PAREN, sourceType: SourceType.CALL_START });
+              contextStack.push({
+                type: ContextType.PAREN,
+                sourceType: SourceType.CALL_START
+              });
               setType(SourceType.CALL_START);
             } else {
-              contextStack.push({ type: ContextType.PAREN, sourceType: SourceType.LPAREN });
+              contextStack.push({
+                type: ContextType.PAREN,
+                sourceType: SourceType.LPAREN
+              });
               setType(SourceType.LPAREN);
             }
           } else if (consume(')')) {
-            let context = contextStack.pop();
+            const context = contextStack.pop();
             if (!context || context.type !== ContextType.PAREN) {
               throw new Error(`unexpected ')' at ${start}`);
             }
-            let { sourceType } = context;
+            const { sourceType } = context;
             switch (sourceType) {
               case SourceType.LPAREN:
                 setType(SourceType.RPAREN);
@@ -393,7 +423,9 @@ export function stream(source: string, index: number = 0, options: Options = DEF
 
               default:
                 throw new Error(
-                  `unexpected token type for '(' matching ')' at ${start}: ${sourceType ? sourceType.toString() : '??'}`
+                  `unexpected token type for '(' matching ')' at ${start}: ${
+                    sourceType ? sourceType.toString() : '??'
+                  }`
                 );
             }
           } else if (consume('[')) {
@@ -410,18 +442,29 @@ export function stream(source: string, index: number = 0, options: Options = DEF
               contextStack.pop();
               setType(SourceType.RBRACE);
             } else {
-              throw new Error(`Unexpected context type: ${currentContextType()}`);
+              throw new Error(
+                `Unexpected context type: ${currentContextType()}`
+              );
             }
           } else if (consumeCSXOpenTagStart()) {
             contextStack.push({ type: ContextType.CSX_OPEN_TAG });
             setType(SourceType.CSX_OPEN_TAG_START);
-          } else if (currentContextType() === ContextType.CSX_OPEN_TAG && consume('>')) {
+          } else if (
+            currentContextType() === ContextType.CSX_OPEN_TAG &&
+            consume('>')
+          ) {
             contextStack.pop();
             setType(SourceType.CSX_OPEN_TAG_END);
-          } else if (currentContextType() === ContextType.CSX_OPEN_TAG && consume('/>')) {
+          } else if (
+            currentContextType() === ContextType.CSX_OPEN_TAG &&
+            consume('/>')
+          ) {
             contextStack.pop();
             setType(SourceType.CSX_SELF_CLOSING_TAG_END);
-          } else if (currentContextType() === ContextType.CSX_CLOSE_TAG && consume('>')) {
+          } else if (
+            currentContextType() === ContextType.CSX_CLOSE_TAG &&
+            consume('>')
+          ) {
             contextStack.pop();
             setType(SourceType.CSX_CLOSE_TAG_END);
           } else if (consumeAny(['->', '=>'])) {
@@ -454,21 +497,22 @@ export function stream(source: string, index: number = 0, options: Options = DEF
             }
           } else if (consume(YIELDFROM_PATTERN)) {
             setType(SourceType.YIELDFROM);
-          } else if (currentContextType() === ContextType.CSX_OPEN_TAG && consume(CSX_IDENTIFIER_PATTERN)) {
+          } else if (
+            currentContextType() === ContextType.CSX_OPEN_TAG &&
+            consume(CSX_IDENTIFIER_PATTERN)
+          ) {
             setType(SourceType.IDENTIFIER);
           } else if (consume(IDENTIFIER_PATTERN)) {
             let prevLocationIndex = locations.length - 1;
             while (
               prevLocationIndex > 0 &&
-              (
-                locations[prevLocationIndex].type === SourceType.NEWLINE ||
-                locations[prevLocationIndex].type === SourceType.SPACE
-              )
+              (locations[prevLocationIndex].type === SourceType.NEWLINE ||
+                locations[prevLocationIndex].type === SourceType.SPACE)
             ) {
               prevLocationIndex--;
             }
-            let prev = locations[prevLocationIndex];
-            let nextIsColon = match(/^\s*:/);
+            const prev = locations[prevLocationIndex];
+            const nextIsColon = match(/^\s*:/);
             if (
               nextIsColon ||
               (prev &&
@@ -477,7 +521,8 @@ export function stream(source: string, index: number = 0, options: Options = DEF
                   // i.e. `a::b` or `a::\nb`
                   prev.type === SourceType.PROTO ||
                   // i.e. `@a` (but not `@\na`, since that's `this\na`–see #175)
-                  (prev.type === SourceType.AT && prevLocationIndex === locations.length - 1)))
+                  (prev.type === SourceType.AT &&
+                    prevLocationIndex === locations.length - 1)))
             ) {
               setType(SourceType.IDENTIFIER);
             } else {
@@ -643,11 +688,18 @@ export function stream(source: string, index: number = 0, options: Options = DEF
           break;
 
         case SourceType.STRING_CONTENT: {
-          let context = currentContext();
+          const context = currentContext();
           if (!context || context.type !== ContextType.STRING) {
-            throw new Error('Unexpected STRING_CONTENT without anything on the string stack.');
+            throw new Error(
+              'Unexpected STRING_CONTENT without anything on the string stack.'
+            );
           }
-          let { allowComments, allowInterpolations, endingDelimiter, endSourceType } = context;
+          const {
+            allowComments,
+            allowInterpolations,
+            endingDelimiter,
+            endSourceType
+          } = context;
           if (consume('\\')) {
             index++;
           } else if (consume(endingDelimiter)) {
@@ -655,7 +707,13 @@ export function stream(source: string, index: number = 0, options: Options = DEF
             setType(endSourceType);
           } else if (allowInterpolations && consume('#{')) {
             pushInterpolation();
-          } else if (options.useCS2 && allowComments && source[index - 1].match(/\s/) && match('#') && !match('#{')) {
+          } else if (
+            options.useCS2 &&
+            allowComments &&
+            source[index - 1].match(/\s/) &&
+            match('#') &&
+            !match('#{')
+          ) {
             setType(SourceType.HEREGEXP_COMMENT);
           } else {
             index++;
@@ -688,9 +746,11 @@ export function stream(source: string, index: number = 0, options: Options = DEF
           break;
 
         case SourceType.INTERPOLATION_END: {
-          let context = contextStack.pop();
+          const context = contextStack.pop();
           if (!context || context.type !== ContextType.INTERPOLATION) {
-            throw new Error(`found interpolation end without any interpolation start`);
+            throw new Error(
+              `found interpolation end without any interpolation start`
+            );
           }
           setType(context.interpolationType);
           break;
@@ -753,12 +813,13 @@ export function stream(source: string, index: number = 0, options: Options = DEF
           }
           break;
 
-        case SourceType.EOF:
-          let context = currentContext();
+        case SourceType.EOF: {
+          const context = currentContext();
           if (context !== null) {
             throw new Error(`unexpected EOF while in context ${context.type}`);
           }
           break;
+        }
 
         case SourceType.UNKNOWN:
           // Jump to the end.
@@ -766,7 +827,11 @@ export function stream(source: string, index: number = 0, options: Options = DEF
           break;
 
         default:
-          throw new Error(`unknown source type at offset ${location.index}: ${SourceType[location.type]}`);
+          throw new Error(
+            `unknown source type at offset ${location.index}: ${
+              SourceType[location.type]
+            }`
+          );
       }
 
       shouldStepAgain =
@@ -785,7 +850,7 @@ export function stream(source: string, index: number = 0, options: Options = DEF
   }
 
   function consume(value: string | RegExp): boolean {
-    let matchData = match(value);
+    const matchData = match(value);
     if (matchData) {
       index += matchData[0].length;
       return true;
@@ -795,11 +860,11 @@ export function stream(source: string, index: number = 0, options: Options = DEF
   }
 
   function consumeRegexp(): boolean {
-    let matchData = match(REGEXP_PATTERN);
+    const matchData = match(REGEXP_PATTERN);
     if (!matchData) {
       return false;
     }
-    let [regex, , closed] = matchData;
+    const [regex, , closed] = matchData;
     let prev = locations[locations.length - 1];
     if (prev) {
       let spaced = false;
@@ -837,14 +902,22 @@ export function stream(source: string, index: number = 0, options: Options = DEF
     if (!match('<')) {
       return false;
     }
-    if (source[index + 1] !== '>' && !source.slice(index + 1).match(CSX_IDENTIFIER_PATTERN)) {
+    if (
+      source[index + 1] !== '>' &&
+      !source.slice(index + 1).match(CSX_IDENTIFIER_PATTERN)
+    ) {
       return false;
     }
-    let contextType = currentContextType();
+    const contextType = currentContextType();
     if (
       contextType !== ContextType.CSX_BODY &&
       contextType !== ContextType.CSX_OPEN_TAG &&
-      [SourceType.IDENTIFIER, SourceType.RPAREN, SourceType.RBRACKET, SourceType.NUMBER].includes(location.type)
+      [
+        SourceType.IDENTIFIER,
+        SourceType.RPAREN,
+        SourceType.RBRACKET,
+        SourceType.NUMBER
+      ].includes(location.type)
     ) {
       return false;
     }
@@ -852,38 +925,45 @@ export function stream(source: string, index: number = 0, options: Options = DEF
     return true;
   }
 
-  function consumed() {
+  function consumed(): string {
     return source.slice(start, index);
   }
 
-  function setType(newType: SourceType) {
+  function setType(newType: SourceType): void {
     location = new SourceLocation(newType, start);
   }
 
   function match(value: string | RegExp): Array<string> | null {
     if (typeof value === 'string') {
-      let matches = source.slice(index, index + value.length) === value;
+      const matches = source.slice(index, index + value.length) === value;
       return matches ? [value] : null;
     } else {
       return source.slice(index).match(value);
     }
   }
 
-  function pushInterpolation() {
-    contextStack.push({ type: ContextType.INTERPOLATION, interpolationType: location.type });
+  function pushInterpolation(): void {
+    contextStack.push({
+      type: ContextType.INTERPOLATION,
+      interpolationType: location.type
+    });
     setType(SourceType.INTERPOLATION_START);
   }
 
-  function popInterpolation() {
+  function popInterpolation(): void {
     if (currentContextType() !== ContextType.INTERPOLATION) {
-      throw new Error(`unexpected '}' found in string at ${index}: ${JSON.stringify(source)}`);
+      throw new Error(
+        `unexpected '}' found in string at ${index}: ${JSON.stringify(source)}`
+      );
     }
     setType(SourceType.INTERPOLATION_END);
   }
 }
 
-export function consumeStream(lexer: () => SourceLocation): Array<SourceLocation> {
-  let result: Array<SourceLocation> = [];
+export function consumeStream(
+  lexer: () => SourceLocation
+): Array<SourceLocation> {
+  const result: Array<SourceLocation> = [];
   let location: SourceLocation;
   do {
     location = lexer();

@@ -7,8 +7,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "reformat": "yarn lint --fix",
-    "lint": "eslint src/**/*.ts",
-    "lint-fix": "yarn lint --fix",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "yarn lint --fix",
     "pretest": "yarn lint",
     "test": "jest",
     "prepare": "script/build.ts"

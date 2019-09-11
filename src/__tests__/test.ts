@@ -193,9 +193,7 @@ describe('lexTest', () => {
   });
 
   it('identifies parentheses immediately after callable tokens as CALL_START', () => {
-    expect(
-      'a(super(@(b[0](), true&(false), b?())))'
-    ).toLexAs([
+    expect('a(super(@(b[0](), true&(false), b?())))').toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 1),
       new SourceToken(SourceType.CALL_START, 1, 2),
       new SourceToken(SourceType.SUPER, 2, 7),
@@ -269,9 +267,7 @@ describe('lexTest', () => {
   });
 
   it('represents triple-quoted strings as a series of tokens to ignore the non-semantic parts', () => {
-    expect(
-      `foo = '''\n      abc\n\n      def\n      '''`
-    ).toLexAs([
+    expect(`foo = '''\n      abc\n\n      def\n      '''`).toLexAs([
       new SourceToken(SourceType.IDENTIFIER, 0, 3),
       new SourceToken(SourceType.OPERATOR, 4, 5),
       new SourceToken(SourceType.TSSTRING_START, 6, 9),
@@ -1030,9 +1026,7 @@ describe('streamTest', () => {
   });
 
   it('computes the right padding for heregexes with interpolations', () => {
-    expect(
-      `///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`
-    ).toLexAs([
+    expect(`///abc\ndef#{g}  # this is a comment\nhij///g.test 'foo'`).toLexAs([
       new SourceToken(SourceType.HEREGEXP_START, 0, 3),
       new SourceToken(SourceType.STRING_CONTENT, 3, 6),
       new SourceToken(SourceType.STRING_PADDING, 6, 7),
