@@ -2,37 +2,52 @@
   "name": "coffee-lex",
   "version": "0.0.0-development",
   "description": "Stupid lexer for CoffeeScript.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "reformat": "yarn lint --fix",
-    "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "yarn lint --fix",
-    "pretest": "yarn lint",
-    "test": "jest",
-    "test:ci": "jest --ci",
-    "prepare": "script/build.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/decaffeinate/coffee-lex.git"
-  },
   "keywords": [
     "coffee",
     "coffeescript",
     "lex",
     "parse"
   ],
-  "files": [
-    "dist"
-  ],
-  "author": "Brian Donovan",
-  "license": "MIT",
+  "homepage": "https://github.com/decaffeinate/coffee-lex",
   "bugs": {
     "url": "https://github.com/decaffeinate/coffee-lex/issues"
   },
-  "homepage": "https://github.com/decaffeinate/coffee-lex",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decaffeinate/coffee-lex.git"
+  },
+  "license": "MIT",
+  "author": "Brian Donovan",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "yarn lint --fix",
+    "prepare": "script/build.ts",
+    "reformat": "yarn lint --fix",
+    "pretest": "yarn lint",
+    "test": "jest",
+    "test:ci": "jest --ci"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,md,json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "package.json": [
+      "sort-package-json",
+      "git add"
+    ]
+  },
   "devDependencies": {
     "@microsoft/node-core-library": "^3.7.1",
     "@types/fs-extra": "^8.0.0",
@@ -48,10 +63,13 @@
     "eslint-plugin-prettier": "^3.1.0",
     "fs-extra": "^8.0.1",
     "globby": "^10.0.0",
+    "husky": "^3.0.5",
     "jest": "^24.9.0",
     "jest-junit": "^8.0.0",
+    "lint-staged": "^9.2.5",
     "prettier": "^1.15.2",
     "prettier-check": "2.0.0",
+    "sort-package-json": "^1.22.1",
     "ts-jest": "^24.0.0",
     "ts-node": "^8.0.2",
     "typescript": "^3.5.2"
