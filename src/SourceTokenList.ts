@@ -368,7 +368,7 @@ export default class SourceTokenList {
         break;
       } else if (predicate(token)) {
         return i;
-      } else if (i) {
+      } else {
         i = i.previous();
       }
     } while (i && i !== end);
