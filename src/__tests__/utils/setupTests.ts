@@ -7,7 +7,7 @@ import lex from '../..';
 declare global {
   // eslint-disable-next-line no-redeclare, @typescript-eslint/no-namespace
   namespace jest {
-    interface Matchers<R> {
+    interface Matchers<R, T> {
       toEqualSourceLocations(expected: Array<SourceLocation>): R;
       toHaveSourceType(expected: SourceType): R;
       toLexAs(expected: Array<SourceToken>): R;
