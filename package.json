@@ -65,7 +65,7 @@
     "globby": "^10.0.0",
     "husky": "^3.0.5",
     "jest": "^24.9.0",
-    "jest-junit": "^9.0.0",
+    "jest-junit": "^10.0.0",
     "lint-staged": "^9.3.0",
     "prettier": "^1.15.2",
     "prettier-check": "2.0.0",
