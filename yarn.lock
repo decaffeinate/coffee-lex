@@ -300,9 +300,9 @@
     "@types/yargs" "^13.0.0"
 
 "@microsoft/node-core-library@^3.7.1":
-  version "3.18.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.18.2.tgz#a5facc296256553d497a51813c0e9fbc55bad6de"
-  integrity sha512-IRoRmLwNvrR0rTNavYlfNObz9pr4Epo8Hd//0SNptt7adOySd735ur7YBO7SzafeijHsD3/dC4PXLLwhIsMU7Q==
+  version "3.18.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.18.3.tgz#4fb74fefb31162f3c4edfb5c1a5150eb0aada636"
+  integrity sha512-IFfjP2rlurFaNAMmlzfh+VxmEy6JVdnOCyAHi3Mbdhcqv/u25AJ3EAzTWqMZCsfCENzCxY5Jcl7bk2SpqTWaaQ==
   dependencies:
     "@types/node" "8.10.54"
     colors "~1.2.1"
