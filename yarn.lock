@@ -300,11 +300,11 @@
     "@types/yargs" "^13.0.0"
 
 "@microsoft/node-core-library@^3.7.1":
-  version "3.18.3"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.18.3.tgz#4fb74fefb31162f3c4edfb5c1a5150eb0aada636"
-  integrity sha512-IFfjP2rlurFaNAMmlzfh+VxmEy6JVdnOCyAHi3Mbdhcqv/u25AJ3EAzTWqMZCsfCENzCxY5Jcl7bk2SpqTWaaQ==
+  version "3.19.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.19.0.tgz#b868a38cdb1113f83ee96ad0e9fc24cb3d4c7883"
+  integrity sha512-ZcqNHT4ztzT3tw9jCn76TUNCXwJpgOd1UK2RB8Gll0U+chTam3bcsXHkNnR6edDfySKx1rIHRgHAHzkqdJwmlg==
   dependencies:
-    "@types/node" "8.10.54"
+    "@types/node" "10.17.13"
     colors "~1.2.1"
     fs-extra "~7.0.1"
     jju "~1.4.0"
@@ -453,10 +453,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.8.tgz#1d590429fe8187a02707720ecf38a6fe46ce294b"
   integrity sha512-6XzyyNM9EKQW4HKuzbo/CkOIjn/evtCmsU+MUM1xDfJ+3/rNjBttM1NgN7AOQvN6tP1Sl1D1PIKMreTArnxM9A==
 
-"@types/node@8.10.54":
-  version "8.10.54"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.54.tgz#1c88eb253ac1210f1a5876953fb70f7cc4928402"
-  integrity sha512-kaYyLYf6ICn6/isAyD4K1MyWWd5Q3JgH6bnMN089LUx88+s4W8GvK9Q6JMBVu5vsFFp7pMdSxdKmlBXwH/VFRg==
+"@types/node@10.17.13":
+  version "10.17.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.13.tgz#ccebcdb990bd6139cd16e84c39dc2fb1023ca90c"
+  integrity sha512-pMCcqU2zT4TjqYFrWtYHKal7Sl30Ims6ulZ4UFXxI4xbtQqK/qqKwkDoBFCfooRqqmRu9vY3xaJRwxSh673aYg==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
