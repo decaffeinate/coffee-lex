@@ -469,9 +469,9 @@
     chalk "^3.0.0"
 
 "@microsoft/node-core-library@^3.7.1":
-  version "3.19.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.19.2.tgz#57a564969ce93c7b352d157f70057e605f04ba0e"
-  integrity sha512-jySSnueZqXNvIsnt/3hsi7tjwhKFVFFDg8Cbx8z50UI9oPWy5xYBE88SXmxfIXO6OOmxPMWzvGoo78WlMfNsyQ==
+  version "3.19.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.19.3.tgz#cf09ddb2905a29b32956d4a88f9d035a00637be9"
+  integrity sha512-rJ+hT6+XK5AESbhn31YBnHKpZSFKCmqHCRZyK9+jyWwav1HXv0qzuXnFvnyrO0MZyJ6rH0seWOZVWbU5KGv1tg==
   dependencies:
     "@types/node" "10.17.13"
     colors "~1.2.1"
