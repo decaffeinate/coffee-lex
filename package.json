@@ -18,12 +18,12 @@
   },
   "license": "MIT",
   "author": "Brian Donovan",
-  "files": [
-    "dist"
-  ],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "yarn lint --fix",
@@ -72,7 +72,7 @@
     "sort-package-json": "^1.22.1",
     "ts-jest": "^25.0.0",
     "ts-node": "^8.0.2",
-    "typescript": "^3.5.2"
+    "typescript": "^3.8.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
