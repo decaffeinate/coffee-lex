@@ -7,5 +7,11 @@ module.exports = {
   // The glob patterns Jest uses to detect test files
   testMatch: ['**/__tests__/**/(*_test|test).+(ts|tsx|js)'],
 
-  setupFilesAfterEnv: ['<rootDir>/src/__tests__/utils/setupTests.ts']
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/utils/setupTests.ts'],
+
+  globals: {
+    'ts-jest': {
+      packageJson: 'package.json'
+    }
+  }
 };
