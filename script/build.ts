@@ -1,24 +1,20 @@
 #!/usr/bin/env ts-node
 
-import { JsonFile } from '@microsoft/node-core-library';
+import { JsonFile } from '@rushstack/node-core-library';
 import { remove, rename } from 'fs-extra';
 import { sync as glob } from 'globby';
 import { basename, dirname, join } from 'path';
 import * as ts from 'typescript';
 
-buildAll()
-  .catch(error => {
-    console.error(`[CRASH] unhandled error: ${error.stack}`);
-    process.exit(-1);
-  });
+buildAll().catch((error) => {
+  console.error(`[CRASH] unhandled error: ${error.stack}`);
+  process.exit(-1);
+});
 
 async function buildAll(): Promise<void> {
   const tsconfig: { exclude: Array<string> } = JsonFile.load('tsconfig.json');
 
-  tsconfig.exclude.push(
-    'script',
-    'src/__tests__'
-  );
+  tsconfig.exclude.push('script', 'src/__tests__');
 
   const parsedCommandLine: ts.ParsedCommandLine = ts.parseJsonConfigFileContent(
     tsconfig,
@@ -30,8 +26,8 @@ async function buildAll(): Promise<void> {
     ...parsedCommandLine,
     options: {
       ...parsedCommandLine.options,
-      outDir: 'dist'
-    }
+      outDir: 'dist',
+    },
   };
 
   await clean(config);
@@ -51,12 +47,14 @@ async function buildEsModule(config: ts.ParsedCommandLine): Promise<void> {
     options: {
       ...config.options,
       module: ts.ModuleKind.ESNext,
-      
-    }
+    },
   });
 
   for (const module of glob(join(config.options.outDir!, '**/*.js'))) {
-    await rename(module, join(dirname(module), `${basename(module, '.js')}.mjs`));
+    await rename(
+      module,
+      join(dirname(module), `${basename(module, '.js')}.mjs`)
+    );
   }
 }
 
@@ -66,14 +64,11 @@ async function buildCommonJS(config: ts.ParsedCommandLine): Promise<void> {
     ...config,
     options: {
       ...config.options,
-      module: ts.ModuleKind.CommonJS
-    }
+      module: ts.ModuleKind.CommonJS,
+    },
   });
 }
 
 async function build(config: ts.ParsedCommandLine): Promise<void> {
-  ts.createProgram(
-    config.fileNames,
-    config.options
-  ).emit();
+  ts.createProgram(config.fileNames, config.options).emit();
 }
