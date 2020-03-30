@@ -1,8 +1,8 @@
-import SourceType from '../SourceType';
-import PaddingTracker from './PaddingTracker';
+import SourceType from '../SourceType'
+import PaddingTracker from './PaddingTracker'
 
-import SourceLocation from '../SourceLocation';
-import BufferedStream from './BufferedStream';
+import SourceLocation from '../SourceLocation'
+import BufferedStream from './BufferedStream'
 
 /**
  * Compute the whitespace to remove in a heregexp. All unescaped whitespace
@@ -13,41 +13,41 @@ export default function calculateHeregexpPadding(
   stream: BufferedStream
 ): Array<SourceLocation> {
   if (!stream.hasNext(SourceType.HEREGEXP_START)) {
-    return [];
+    return []
   }
   const paddingTracker = new PaddingTracker(
     source,
     stream,
     SourceType.HEREGEXP_END
-  );
+  )
 
   for (const fragment of paddingTracker.fragments) {
-    const content = fragment.content;
-    let pos = 0;
+    const content = fragment.content
+    let pos = 0
     while (pos < content.length) {
       if (/\s/.test(content[pos])) {
         if (isWhitespaceEscaped(content, pos)) {
           // The escape character should be removed instead of the space.
-          fragment.markPadding(pos - 1, pos);
+          fragment.markPadding(pos - 1, pos)
         } else {
-          fragment.markPadding(pos, pos + 1);
+          fragment.markPadding(pos, pos + 1)
         }
-        pos++;
+        pos++
       } else if (
         content[pos] === '#' &&
         (pos === 0 || /\s/.test(content[pos - 1]))
       ) {
-        const commentStart = pos;
+        const commentStart = pos
         while (pos < content.length && content[pos] !== '\n') {
-          pos++;
+          pos++
         }
-        fragment.markPadding(commentStart, pos);
+        fragment.markPadding(commentStart, pos)
       } else {
-        pos++;
+        pos++
       }
     }
   }
-  return paddingTracker.computeSourceLocations();
+  return paddingTracker.computeSourceLocations()
 }
 
 /**
@@ -55,9 +55,9 @@ export default function calculateHeregexpPadding(
  * backslashes.
  */
 function isWhitespaceEscaped(content: string, whitespacePos: number): boolean {
-  let prevPos = whitespacePos - 1;
+  let prevPos = whitespacePos - 1
   while (prevPos >= 0 && content[prevPos] === '\\') {
-    prevPos--;
+    prevPos--
   }
-  return (whitespacePos - prevPos) % 2 === 0;
+  return (whitespacePos - prevPos) % 2 === 0
 }

@@ -1,16 +1,16 @@
-import { inspect } from 'util';
-import SourceLocation from '../../SourceLocation';
-import SourceToken from '../../SourceToken';
-import SourceType from '../../SourceType';
-import lex from '../..';
+import { inspect } from 'util'
+import SourceLocation from '../../SourceLocation'
+import SourceToken from '../../SourceToken'
+import SourceType from '../../SourceType'
+import lex from '../..'
 
 declare global {
   // eslint-disable-next-line no-redeclare, @typescript-eslint/no-namespace
   namespace jest {
     interface Matchers<R, T> {
-      toEqualSourceLocations(expected: Array<SourceLocation>): R;
-      toHaveSourceType(expected: SourceType): R;
-      toLexAs(expected: Array<SourceToken>): R;
+      toEqualSourceLocations(expected: Array<SourceLocation>): R
+      toHaveSourceType(expected: SourceType): R
+      toLexAs(expected: Array<SourceToken>): R
     }
   }
 }
@@ -22,8 +22,8 @@ expect.extend({
   ): jest.CustomMatcherResult {
     return {
       pass: this.equals(actual, expected),
-      message: () => `mismatched tokens:\n${this.utils.diff(expected, actual)}`
-    };
+      message: () => `mismatched tokens:\n${this.utils.diff(expected, actual)}`,
+    }
   },
 
   toHaveSourceType(
@@ -33,15 +33,15 @@ expect.extend({
     return {
       pass: token.type === type,
       message: () =>
-        `expected ${inspect(token)} to have type ${SourceType[type]}`
-    };
+        `expected ${inspect(token)} to have type ${SourceType[type]}`,
+    }
   },
 
   toLexAs(
     source: string,
     tokens: Array<SourceToken>
   ): jest.CustomMatcherResult {
-    const actual = lex(source).toArray();
+    const actual = lex(source).toArray()
 
     return {
       pass: this.equals(actual, tokens),
@@ -49,7 +49,7 @@ expect.extend({
         `tokens for ${inspect(source)} did not match:\n${this.utils.diff(
           tokens,
           actual
-        )}`
-    };
-  }
-});
+        )}`,
+    }
+  },
+})

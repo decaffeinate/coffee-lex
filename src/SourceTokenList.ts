@@ -1,50 +1,50 @@
-import SourceToken from './SourceToken';
-import SourceTokenListIndex from './SourceTokenListIndex';
-import SourceType from './SourceType';
+import SourceToken from './SourceToken'
+import SourceTokenListIndex from './SourceTokenListIndex'
+import SourceType from './SourceType'
 
 export type SourceTokenListIndexRange = [
   SourceTokenListIndex,
   SourceTokenListIndex
-];
+]
 
 /**
  * Represents a list of tokens and provides various utility functions for
  * finding tokens within it.
  */
 export default class SourceTokenList {
-  private _tokens: Array<SourceToken>;
-  private _indexCache: Array<SourceTokenListIndex>;
-  private _indexBySourceIndex: Array<SourceTokenListIndex>;
-  private _indexByStartSourceIndex: Array<SourceTokenListIndex>;
-  private _indexByEndSourceIndex: Array<SourceTokenListIndex>;
-  readonly length: number;
-  readonly startIndex: SourceTokenListIndex;
-  readonly endIndex: SourceTokenListIndex;
+  private _tokens: Array<SourceToken>
+  private _indexCache: Array<SourceTokenListIndex>
+  private _indexBySourceIndex: Array<SourceTokenListIndex>
+  private _indexByStartSourceIndex: Array<SourceTokenListIndex>
+  private _indexByEndSourceIndex: Array<SourceTokenListIndex>
+  readonly length: number
+  readonly startIndex: SourceTokenListIndex
+  readonly endIndex: SourceTokenListIndex
 
   constructor(tokens: Array<SourceToken>) {
-    this._validateTokens(tokens);
-    this._tokens = tokens;
-    this._indexCache = new Array(tokens.length);
-    this.length = tokens.length;
-    this.startIndex = this._getIndex(0);
-    this.endIndex = this._getIndex(tokens.length);
+    this._validateTokens(tokens)
+    this._tokens = tokens
+    this._indexCache = new Array(tokens.length)
+    this.length = tokens.length
+    this.startIndex = this._getIndex(0)
+    this.endIndex = this._getIndex(tokens.length)
 
     // Precompute sparse arrays to do source-to-token mappings later. Iterate
     // backwards through the tokens so that earlier tokens win ties.
-    this._indexBySourceIndex = [];
-    this._indexByStartSourceIndex = [];
-    this._indexByEndSourceIndex = [];
+    this._indexBySourceIndex = []
+    this._indexByStartSourceIndex = []
+    this._indexByEndSourceIndex = []
     for (let tokenIndex = tokens.length - 1; tokenIndex >= 0; tokenIndex--) {
-      const token = tokens[tokenIndex];
+      const token = tokens[tokenIndex]
       for (
         let sourceIndex = token.start;
         sourceIndex < token.end;
         sourceIndex++
       ) {
-        this._indexBySourceIndex[sourceIndex] = this._getIndex(tokenIndex);
+        this._indexBySourceIndex[sourceIndex] = this._getIndex(tokenIndex)
       }
-      this._indexByStartSourceIndex[token.start] = this._getIndex(tokenIndex);
-      this._indexByEndSourceIndex[token.end] = this._getIndex(tokenIndex);
+      this._indexByStartSourceIndex[token.start] = this._getIndex(tokenIndex)
+      this._indexByEndSourceIndex[token.end] = this._getIndex(tokenIndex)
     }
   }
 
@@ -58,9 +58,7 @@ export default class SourceTokenList {
       list: SourceTokenList
     ) => void
   ): void {
-    this._tokens.forEach((token, i) =>
-      iterator(token, this._getIndex(i), this)
-    );
+    this._tokens.forEach((token, i) => iterator(token, this._getIndex(i), this))
   }
 
   /**
@@ -73,11 +71,11 @@ export default class SourceTokenList {
       list: SourceTokenList
     ) => T
   ): Array<T> {
-    const result: Array<T> = [];
+    const result: Array<T> = []
     this.forEach((token, index, list) => {
-      result.push(mapper(token, index, list));
-    });
-    return result;
+      result.push(mapper(token, index, list))
+    })
+    return result
   }
 
   /**
@@ -90,13 +88,13 @@ export default class SourceTokenList {
       list: SourceTokenList
     ) => boolean
   ): SourceTokenList {
-    const result: Array<SourceToken> = [];
+    const result: Array<SourceToken> = []
     this.forEach((token, index, list) => {
       if (predicate(token, index, list)) {
-        result.push(token);
+        result.push(token)
       }
-    });
-    return new SourceTokenList(result);
+    })
+    return new SourceTokenList(result)
   }
 
   /**
@@ -110,11 +108,11 @@ export default class SourceTokenList {
       start['_sourceTokenList'] !== this ||
       end['_sourceTokenList'] !== this
     ) {
-      throw new Error('cannot slice a list using indexes from another list');
+      throw new Error('cannot slice a list using indexes from another list')
     }
     return new SourceTokenList(
       this._tokens.slice(start['_index'], end['_index'])
-    );
+    )
   }
 
   /**
@@ -124,8 +122,8 @@ export default class SourceTokenList {
    * `endIndex`.
    */
   tokenAtIndex(index: SourceTokenListIndex): SourceToken | null {
-    this._validateIndex(index);
-    return this._tokens[index['_index']] || null;
+    this._validateIndex(index)
+    return this._tokens[index['_index']] || null
   }
 
   /**
@@ -136,17 +134,17 @@ export default class SourceTokenList {
   rangeOfInterpolatedStringTokensContainingTokenIndex(
     index: SourceTokenListIndex
   ): SourceTokenListIndexRange | null {
-    let bestRange: SourceTokenListIndexRange | null = null;
+    let bestRange: SourceTokenListIndexRange | null = null
     for (const [startType, endType] of [
       [SourceType.DSTRING_START, SourceType.DSTRING_END],
       [SourceType.TDSTRING_START, SourceType.TDSTRING_END],
-      [SourceType.HEREGEXP_START, SourceType.HEREGEXP_END]
+      [SourceType.HEREGEXP_START, SourceType.HEREGEXP_END],
     ]) {
       const range = this.rangeOfMatchingTokensContainingTokenIndex(
         startType,
         endType,
         index
-      );
+      )
       if (
         bestRange === null ||
         bestRange === undefined ||
@@ -154,10 +152,10 @@ export default class SourceTokenList {
           range !== undefined &&
           range[0].distance(range[1]) < bestRange[0].distance(bestRange[1]))
       ) {
-        bestRange = range;
+        bestRange = range
       }
     }
-    return bestRange;
+    return bestRange
   }
 
   /**
@@ -172,91 +170,91 @@ export default class SourceTokenList {
     endType: SourceType,
     index: SourceTokenListIndex
   ): SourceTokenListIndexRange | null {
-    this._validateIndex(index);
+    this._validateIndex(index)
 
-    const token = this.tokenAtIndex(index);
+    const token = this.tokenAtIndex(index)
     if (!token) {
-      return null;
+      return null
     }
 
     switch (token.type) {
       case startType: {
-        let level = 0;
-        const start = index;
+        let level = 0
+        const start = index
 
-        const endIndex = this.indexOfTokenMatchingPredicate(token => {
+        const endIndex = this.indexOfTokenMatchingPredicate((token) => {
           if (token.type === startType) {
-            level += 1;
+            level += 1
           } else if (token.type === endType) {
-            level -= 1;
+            level -= 1
             if (level === 0) {
-              return true;
+              return true
             }
           }
-          return false;
-        }, start);
+          return false
+        }, start)
 
         if (!endIndex) {
-          return null;
+          return null
         } else {
-          const rangeEnd = endIndex.next();
+          const rangeEnd = endIndex.next()
           if (!rangeEnd) {
-            return null;
+            return null
           }
-          return [start, rangeEnd];
+          return [start, rangeEnd]
         }
       }
 
       case endType: {
-        let level = 0;
-        const endIndex = index;
+        let level = 0
+        const endIndex = index
 
-        const startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
+        const startIndex = this.lastIndexOfTokenMatchingPredicate((token) => {
           if (token.type === startType) {
-            level -= 1;
+            level -= 1
             if (level === 0) {
-              return true;
+              return true
             }
           } else if (token.type === endType) {
-            level += 1;
+            level += 1
           }
-          return false;
-        }, endIndex);
+          return false
+        }, endIndex)
 
         if (!startIndex) {
-          return null;
+          return null
         } else {
-          const rangeEnd = endIndex.next();
+          const rangeEnd = endIndex.next()
           if (!rangeEnd) {
-            return null;
+            return null
           } else {
-            return [startIndex, rangeEnd];
+            return [startIndex, rangeEnd]
           }
         }
       }
 
       default: {
-        let level = 0;
-        const startIndex = this.lastIndexOfTokenMatchingPredicate(token => {
+        let level = 0
+        const startIndex = this.lastIndexOfTokenMatchingPredicate((token) => {
           if (token.type === startType) {
             if (level === 0) {
-              return true;
+              return true
             }
-            level -= 1;
+            level -= 1
           } else if (token.type === endType) {
-            level += 1;
+            level += 1
           }
-          return false;
-        }, index);
+          return false
+        }, index)
 
         if (!startIndex) {
-          return null;
+          return null
         } else {
           return this.rangeOfMatchingTokensContainingTokenIndex(
             startType,
             endType,
             startIndex
-          );
+          )
         }
       }
     }
@@ -270,8 +268,8 @@ export default class SourceTokenList {
   indexOfTokenContainingSourceIndex(
     index: number
   ): SourceTokenListIndex | null {
-    this._validateSourceIndex(index);
-    return this._indexBySourceIndex[index] || null;
+    this._validateSourceIndex(index)
+    return this._indexBySourceIndex[index] || null
   }
 
   /**
@@ -280,14 +278,14 @@ export default class SourceTokenList {
    * the first token if there is no previous token.
    */
   indexOfTokenNearSourceIndex(index: number): SourceTokenListIndex {
-    this._validateSourceIndex(index);
+    this._validateSourceIndex(index)
     for (let searchIndex = index; searchIndex >= 0; searchIndex--) {
-      const tokenIndex = this._indexBySourceIndex[searchIndex];
+      const tokenIndex = this._indexBySourceIndex[searchIndex]
       if (tokenIndex) {
-        return tokenIndex;
+        return tokenIndex
       }
     }
-    return this.startIndex;
+    return this.startIndex
   }
 
   /**
@@ -296,16 +294,16 @@ export default class SourceTokenList {
   indexOfTokenStartingAtSourceIndex(
     index: number
   ): SourceTokenListIndex | null {
-    this._validateSourceIndex(index);
-    return this._indexByStartSourceIndex[index] || null;
+    this._validateSourceIndex(index)
+    return this._indexByStartSourceIndex[index] || null
   }
 
   /**
    * Finds the index of the token whose source range ends at the given index.
    */
   indexOfTokenEndingAtSourceIndex(index: number): SourceTokenListIndex | null {
-    this._validateSourceIndex(index);
-    return this._indexByEndSourceIndex[index] || null;
+    this._validateSourceIndex(index)
+    return this._indexByEndSourceIndex[index] || null
   }
 
   /**
@@ -317,28 +315,28 @@ export default class SourceTokenList {
     end: SourceTokenListIndex | null = null
   ): SourceTokenListIndex | null {
     if (!start) {
-      start = this.startIndex;
+      start = this.startIndex
     }
     if (!end) {
-      end = this.endIndex;
+      end = this.endIndex
     }
-    this._validateIndex(start);
-    this._validateIndex(end);
+    this._validateIndex(start)
+    this._validateIndex(end)
 
     for (
       let i: SourceTokenListIndex | null = start;
       i && i !== end;
       i = i.next()
     ) {
-      const token = this.tokenAtIndex(i);
+      const token = this.tokenAtIndex(i)
       if (!token) {
-        break;
+        break
       } else if (predicate(token)) {
-        return i;
+        return i
       }
     }
 
-    return null;
+    return null
   }
 
   /**
@@ -351,54 +349,54 @@ export default class SourceTokenList {
     end: SourceTokenListIndex | null = null
   ): SourceTokenListIndex | null {
     if (!start) {
-      start = this.endIndex.previous();
+      start = this.endIndex.previous()
       if (!start) {
-        return null;
+        return null
       }
     }
-    this._validateIndex(start);
+    this._validateIndex(start)
     if (end) {
-      this._validateIndex(end);
+      this._validateIndex(end)
     }
 
-    let i: SourceTokenListIndex | null = start;
+    let i: SourceTokenListIndex | null = start
     do {
-      const token = this.tokenAtIndex(i);
+      const token = this.tokenAtIndex(i)
       if (!token) {
-        break;
+        break
       } else if (predicate(token)) {
-        return i;
+        return i
       } else {
-        i = i.previous();
+        i = i.previous()
       }
-    } while (i && i !== end);
+    } while (i && i !== end)
 
-    return null;
+    return null
   }
 
   /**
    * Allow iterating over the tokens in this list using e.g. `for (… of …)`.
    */
   [Symbol.iterator](): Iterator<SourceToken> {
-    let index = this.startIndex;
-    const { endIndex } = this;
+    let index = this.startIndex
+    const { endIndex } = this
     return {
       next(): IteratorResult<SourceToken> {
         if (index === endIndex) {
-          return { done: true, value: undefined };
+          return { done: true, value: undefined }
         } else {
-          const result = { done: false, value: this.tokenAtIndex(index) };
-          const nextIndex = index.next();
+          const result = { done: false, value: this.tokenAtIndex(index) }
+          const nextIndex = index.next()
 
           if (!nextIndex) {
-            throw new Error(`unexpected null index before the end index`);
+            throw new Error(`unexpected null index before the end index`)
           }
 
-          index = nextIndex;
-          return result;
+          index = nextIndex
+          return result
         }
-      }
-    };
+      },
+    }
   }
 
   /**
@@ -410,7 +408,7 @@ export default class SourceTokenList {
         throw new Error(
           `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` +
             `${JSON.stringify(tokens[i + 1])}`
-        );
+        )
       }
     }
   }
@@ -423,18 +421,18 @@ export default class SourceTokenList {
       throw new Error(
         `unexpected 'null' index, perhaps you forgot to check the result of ` +
           `'indexOfTokenContainingSourceIndex'?`
-      );
+      )
     }
     if (typeof index === 'number') {
       throw new Error(
         `to get a token at index ${index}, ` +
           `use list.tokenAtIndex(list.startIndex.advance(${index}))`
-      );
+      )
     }
     if (index['_sourceTokenList'] !== this) {
       throw new Error(
         'cannot get token in one list using an index from another'
-      );
+      )
     }
   }
 
@@ -443,7 +441,7 @@ export default class SourceTokenList {
    */
   private _validateSourceIndex(index: number): void {
     if (typeof index !== 'number') {
-      throw new Error(`expected source index to be a number, got: ${index}`);
+      throw new Error(`expected source index to be a number, got: ${index}`)
     }
   }
 
@@ -451,20 +449,20 @@ export default class SourceTokenList {
    * @internal
    */
   private _getIndex(index: number): SourceTokenListIndex {
-    let cached = this._indexCache[index];
+    let cached = this._indexCache[index]
 
     if (!cached) {
-      cached = new SourceTokenListIndex(this, index);
-      this._indexCache[index] = cached;
+      cached = new SourceTokenListIndex(this, index)
+      this._indexCache[index] = cached
     }
 
-    return cached;
+    return cached
   }
 
   /**
    * Get the list of tokens.
    */
   toArray(): Array<SourceToken> {
-    return this._tokens.slice();
+    return this._tokens.slice()
   }
 }

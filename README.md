@@ -16,19 +16,19 @@ $ npm install coffee-lex
 The main `lex` function simply returns a list of tokens:
 
 ```js
-import lex, { SourceType } from 'coffee-lex';
+import lex, { SourceType } from 'coffee-lex'
 
-const source = 'a?(b: c)';
-const tokens = lex(source);
+const source = 'a?(b: c)'
+const tokens = lex(source)
 
 // Print tokens along with their source.
-tokens.forEach(token =>
+tokens.forEach((token) =>
   console.log(
     SourceType[token.type],
     JSON.stringify(source.slice(token.start, token.end)),
     `${token.start}→${token.end}`
   )
-);
+)
 // IDENTIFIER "a" 0→1
 // EXISTENCE "?" 1→2
 // CALL_START "(" 2→3
@@ -82,17 +82,17 @@ official lexer turns it into a series of string tokens separated by (virtual)
 the official lexer generates for `"a#{b}c"`:
 
 ```js
-[
+;[
   [
     'STRING_START',
     '(',
     { first_line: 0, first_column: 0, last_line: 0, last_column: 0 },
-    (origin: ['STRING', null, [Object]])
+    (origin: ['STRING', null, [Object]]),
   ],
   [
     'STRING',
     '"a"',
-    { first_line: 0, first_column: 0, last_line: 0, last_column: 1 }
+    { first_line: 0, first_column: 0, last_line: 0, last_column: 1 },
   ],
   ['+', '+', { first_line: 0, first_column: 3, last_line: 0, last_column: 3 }],
   ['(', '(', { first_line: 0, first_column: 3, last_line: 0, last_column: 3 }],
@@ -100,31 +100,31 @@ the official lexer generates for `"a#{b}c"`:
     'IDENTIFIER',
     'b',
     { first_line: 0, first_column: 4, last_line: 0, last_column: 4 },
-    (variable: true)
+    (variable: true),
   ],
   [
     ')',
     ')',
     { first_line: 0, first_column: 5, last_line: 0, last_column: 5 },
-    (origin: ['', 'end of interpolation', [Object]])
+    (origin: ['', 'end of interpolation', [Object]]),
   ],
   ['+', '+', { first_line: 0, first_column: 6, last_line: 0, last_column: 6 }],
   [
     'STRING',
     '"c"',
-    { first_line: 0, first_column: 6, last_line: 0, last_column: 7 }
+    { first_line: 0, first_column: 6, last_line: 0, last_column: 7 },
   ],
   [
     'STRING_END',
     ')',
-    { first_line: 0, first_column: 7, last_line: 0, last_column: 7 }
+    { first_line: 0, first_column: 7, last_line: 0, last_column: 7 },
   ],
   [
     'TERMINATOR',
     '\n',
-    { first_line: 0, first_column: 8, last_line: 0, last_column: 8 }
-  ]
-];
+    { first_line: 0, first_column: 8, last_line: 0, last_column: 8 },
+  ],
+]
 ```
 
 Here's what coffee-lex generates for the same source:
