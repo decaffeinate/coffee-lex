@@ -1619,7 +1619,7 @@ __metadata:
     prettier: ^2.0.2
     prettier-check: 2.0.0
     sort-package-json: ^1.40.0
-    ts-jest: ^25.2.1
+    ts-jest: ^25.3.0
     ts-node: ^8.8.1
     typescript: ^3.8.3
   languageName: unknown
@@ -4488,7 +4488,16 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:0.x, mkdirp@npm:^0.5.0, mkdirp@npm:^0.5.1":
+"mkdirp@npm:1.x":
+  version: 1.0.3
+  resolution: "mkdirp@npm:1.0.3"
+  bin:
+    mkdirp: bin/cmd.js
+  checksum: 2/fd8903ff92d90aae09b8560efb9e718042aef7a36e7e40fec54103f49c40d4d1261e463410157df0a602a1aae974ffc4d9668818e9e9c3ccb636b49e6fd8baa4
+  languageName: node
+  linkType: hard
+
+"mkdirp@npm:^0.5.0, mkdirp@npm:^0.5.1":
   version: 0.5.1
   resolution: "mkdirp@npm:0.5.1"
   dependencies:
@@ -5507,21 +5516,21 @@ resolve@^1.15.1:
   languageName: node
   linkType: hard
 
-"semver@npm:^5.4.1, semver@npm:^5.5, semver@npm:^5.5.0, semver@npm:^5.7.1":
-  version: 5.7.1
-  resolution: "semver@npm:5.7.1"
-  bin:
-    semver: ./bin/semver
-  checksum: 2/06ff0ed753ebf741b7602be8faad620d6e160a2cb3f61019d00d919c8bca141638aa23c34da779b8595afdc9faa3678bfbb5f60366b6a4f65f98cf86605bbcdb
-  languageName: node
-  linkType: hard
-
-"semver@npm:^6.0.0, semver@npm:^6.1.2, semver@npm:^6.3.0":
+"semver@npm:6.x, semver@npm:^6.0.0, semver@npm:^6.1.2, semver@npm:^6.3.0":
   version: 6.3.0
   resolution: "semver@npm:6.3.0"
   bin:
     semver: ./bin/semver.js
   checksum: 2/f0d155c06a67cc7e500c92d929339f1c6efd4ce9fe398aee6acc00a2333489cca0f5b4e76ee7292beba237fcca4b5a3d4a6153471f105f56299801bdab37289f
+  languageName: node
+  linkType: hard
+
+"semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.7.1":
+  version: 5.7.1
+  resolution: "semver@npm:5.7.1"
+  bin:
+    semver: ./bin/semver
+  checksum: 2/06ff0ed753ebf741b7602be8faad620d6e160a2cb3f61019d00d919c8bca141638aa23c34da779b8595afdc9faa3678bfbb5f60366b6a4f65f98cf86605bbcdb
   languageName: node
   linkType: hard
 
@@ -6192,9 +6201,9 @@ resolve@^1.15.1:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^25.2.1":
-  version: 25.2.1
-  resolution: "ts-jest@npm:25.2.1"
+"ts-jest@npm:^25.3.0":
+  version: 25.3.0
+  resolution: "ts-jest@npm:25.3.0"
   dependencies:
     bs-logger: 0.x
     buffer-from: 1.x
@@ -6202,15 +6211,15 @@ resolve@^1.15.1:
     json5: 2.x
     lodash.memoize: 4.x
     make-error: 1.x
-    mkdirp: 0.x
+    mkdirp: 1.x
     resolve: 1.x
-    semver: ^5.5
-    yargs-parser: ^16.1.0
+    semver: 6.x
+    yargs-parser: ^18.1.1
   peerDependencies:
     jest: ">=25 <26"
   bin:
     ts-jest: cli.js
-  checksum: 2/dcd5639f38c52acef8206f640c6659e265aaa3b791969bb5e79ef7fd73b3a18ddf47829f8314efea31744ffab5b8b3591b0417f332e66c229b6930d4d80cdad0
+  checksum: 2/26dce016bdd4283467841941866836f38c7a9cc3f9644dcdc61e8876d237310149425da329845663c343b24d9ae9b9f130090867cbd0cdd14c664fb0a0f7b5e7
   languageName: node
   linkType: hard
 
@@ -6658,16 +6667,6 @@ typescript@^3.8.3:
   dependencies:
     "@babel/runtime": ^7.6.3
   checksum: 2/8b5d70dfff792ef1fa4728a86052d2fa63698535b90bf3cf7c7d56412f08e351c2bb91e20b395225595f9b68ec67f83aaa18d0441a9e771d8a23ff67db44cee4
-  languageName: node
-  linkType: hard
-
-"yargs-parser@npm:^16.1.0":
-  version: 16.1.0
-  resolution: "yargs-parser@npm:16.1.0"
-  dependencies:
-    camelcase: ^5.0.0
-    decamelize: ^1.2.0
-  checksum: 2/c54f779400058d1abe263ade5d51b120c8afc5ada2d24114d20b10a798d70fb8b059a1a5c08675e08c49c3d4c3f4d3528dfacf20bd81be3b0bd4a368ec3e757e
   languageName: node
   linkType: hard
 
