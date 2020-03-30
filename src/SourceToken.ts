@@ -1,4 +1,4 @@
-import SourceType from './SourceType';
+import SourceType from './SourceType'
 
 export default class SourceToken {
   constructor(
@@ -9,7 +9,7 @@ export default class SourceToken {
     if (start > end) {
       throw new Error(
         `Token start may not be after end. Got ${type}, ${start}, ${end}`
-      );
+      )
     }
   }
 }

@@ -1,6 +1,6 @@
-import SourceLocation from '../SourceLocation';
-import SourceType from '../SourceType';
-import BufferedStream from './BufferedStream';
+import SourceLocation from '../SourceLocation'
+import SourceType from '../SourceType'
+import BufferedStream from './BufferedStream'
 
 /**
  * Helper class for defining the padding (characters to remove, typically
@@ -24,128 +24,128 @@ import BufferedStream from './BufferedStream';
  * paddingTracker.computeSourceLocations();
  */
 export default class PaddingTracker {
-  readonly fragments: Array<TrackedFragment>;
-  private _originalLocations: Array<SourceLocation>;
+  readonly fragments: Array<TrackedFragment>
+  private _originalLocations: Array<SourceLocation>
 
   constructor(source: string, stream: BufferedStream, endType: SourceType) {
-    this.fragments = [];
-    this._originalLocations = [];
+    this.fragments = []
+    this._originalLocations = []
 
-    let interpolationLevel = 0;
-    let location;
+    let interpolationLevel = 0
+    let location
     do {
-      location = stream.shift();
-      this._originalLocations.push(location);
+      location = stream.shift()
+      this._originalLocations.push(location)
       if (
         interpolationLevel === 0 &&
         location.type === SourceType.STRING_CONTENT
       ) {
-        const start = location.index;
-        const end = stream.peek().index;
-        const content = source.slice(start, end);
-        const index = this.fragments.length;
-        this.fragments.push(new TrackedFragment(content, start, end, index));
+        const start = location.index
+        const end = stream.peek().index
+        const content = source.slice(start, end)
+        const index = this.fragments.length
+        this.fragments.push(new TrackedFragment(content, start, end, index))
       } else if (location.type === SourceType.INTERPOLATION_START) {
-        interpolationLevel += 1;
+        interpolationLevel += 1
       } else if (location.type === SourceType.INTERPOLATION_END) {
-        interpolationLevel -= 1;
+        interpolationLevel -= 1
       }
-    } while (interpolationLevel > 0 || location.type !== endType);
+    } while (interpolationLevel > 0 || location.type !== endType)
   }
 
   computeSourceLocations(): Array<SourceLocation> {
-    const resultLocations: Array<SourceLocation> = [];
-    let rangeIndex = 0;
+    const resultLocations: Array<SourceLocation> = []
+    let rangeIndex = 0
     for (const location of this._originalLocations) {
-      const currentRange = this.fragments[rangeIndex];
+      const currentRange = this.fragments[rangeIndex]
       if (
         location.type === SourceType.STRING_CONTENT &&
         currentRange &&
         location.index === currentRange.start
       ) {
-        resultLocations.push(...currentRange.computeSourceLocations());
-        rangeIndex++;
+        resultLocations.push(...currentRange.computeSourceLocations())
+        rangeIndex++
       } else {
-        resultLocations.push(location);
+        resultLocations.push(location)
       }
     }
     if (rangeIndex !== this.fragments.length) {
-      throw new Error('Expected ranges to correspond to original locations.');
+      throw new Error('Expected ranges to correspond to original locations.')
     }
-    return resultLocations;
+    return resultLocations
   }
 }
 
 export interface PaddingRange {
-  start: number;
-  end: number;
+  start: number
+  end: number
 }
 type LocationEvent =
   | 'START_PADDING'
   | 'END_PADDING'
   | 'START_LINE_SEPARATOR'
-  | 'END_LINE_SEPARATOR';
+  | 'END_LINE_SEPARATOR'
 
 export class TrackedFragment {
-  content: string;
-  start: number;
-  end: number;
-  index: number;
-  _paddingRanges: Array<PaddingRange>;
-  _lineSeparators: Array<number>;
+  content: string
+  start: number
+  end: number
+  index: number
+  _paddingRanges: Array<PaddingRange>
+  _lineSeparators: Array<number>
 
   constructor(content: string, start: number, end: number, index: number) {
-    this.content = content;
-    this.start = start;
-    this.end = end;
-    this.index = index;
-    this._paddingRanges = [];
-    this._lineSeparators = [];
+    this.content = content
+    this.start = start
+    this.end = end
+    this.index = index
+    this._paddingRanges = []
+    this._lineSeparators = []
   }
 
   markPadding(startIndex: number, endIndex: number): void {
-    this._paddingRanges.push({ start: startIndex, end: endIndex });
+    this._paddingRanges.push({ start: startIndex, end: endIndex })
   }
 
   markLineSeparator(index: number): void {
-    this._lineSeparators.push(index);
+    this._lineSeparators.push(index)
   }
 
   computeSourceLocations(): Array<SourceLocation> {
     if (this.start === this.end) {
-      return [new SourceLocation(SourceType.STRING_CONTENT, this.start)];
+      return [new SourceLocation(SourceType.STRING_CONTENT, this.start)]
     }
 
     // Break the marked ranges down into events, similar to how you might count
     // paren nesting. At each index, we can then know if we're inside padding,
     // a line separator, or neither.
-    const eventsByIndex: Array<Array<LocationEvent>> = [];
+    const eventsByIndex: Array<Array<LocationEvent>> = []
     for (let i = 0; i < this.end - this.start + 1; i++) {
-      eventsByIndex.push([]);
+      eventsByIndex.push([])
     }
     for (const range of this._paddingRanges) {
-      eventsByIndex[range.start].push('START_PADDING');
-      eventsByIndex[range.end].push('END_PADDING');
+      eventsByIndex[range.start].push('START_PADDING')
+      eventsByIndex[range.end].push('END_PADDING')
     }
     for (const separatorIndex of this._lineSeparators) {
-      eventsByIndex[separatorIndex].push('START_LINE_SEPARATOR');
-      eventsByIndex[separatorIndex + 1].push('END_LINE_SEPARATOR');
+      eventsByIndex[separatorIndex].push('START_LINE_SEPARATOR')
+      eventsByIndex[separatorIndex + 1].push('END_LINE_SEPARATOR')
     }
 
-    const resultLocations: Array<SourceLocation> = [];
-    let lastSourceType = null;
-    let paddingDepth = 0;
-    let lineSeparatorDepth = 0;
+    const resultLocations: Array<SourceLocation> = []
+    let lastSourceType = null
+    let paddingDepth = 0
+    let lineSeparatorDepth = 0
     for (let sourceIndex = this.start; sourceIndex < this.end; sourceIndex++) {
       for (const event of eventsByIndex[sourceIndex - this.start]) {
         if (event === 'START_PADDING') {
-          paddingDepth += 1;
+          paddingDepth += 1
         } else if (event === 'END_PADDING') {
-          paddingDepth -= 1;
+          paddingDepth -= 1
         } else if (event === 'START_LINE_SEPARATOR') {
-          lineSeparatorDepth += 1;
+          lineSeparatorDepth += 1
         } else if (event === 'END_LINE_SEPARATOR') {
-          lineSeparatorDepth -= 1;
+          lineSeparatorDepth -= 1
         }
       }
       if (
@@ -155,22 +155,22 @@ export class TrackedFragment {
       ) {
         throw new Error(
           `Illegal padding state: paddingDepth: ${paddingDepth}, lineSeparatorDepth: ${lineSeparatorDepth}`
-        );
+        )
       }
 
-      let sourceType;
+      let sourceType
       if (paddingDepth > 0) {
-        sourceType = SourceType.STRING_PADDING;
+        sourceType = SourceType.STRING_PADDING
       } else if (lineSeparatorDepth > 0) {
-        sourceType = SourceType.STRING_LINE_SEPARATOR;
+        sourceType = SourceType.STRING_LINE_SEPARATOR
       } else {
-        sourceType = SourceType.STRING_CONTENT;
+        sourceType = SourceType.STRING_CONTENT
       }
       if (sourceType !== lastSourceType) {
-        resultLocations.push(new SourceLocation(sourceType, sourceIndex));
-        lastSourceType = sourceType;
+        resultLocations.push(new SourceLocation(sourceType, sourceIndex))
+        lastSourceType = sourceType
       }
     }
-    return resultLocations;
+    return resultLocations
   }
 }

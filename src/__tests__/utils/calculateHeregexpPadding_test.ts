@@ -1,9 +1,9 @@
-import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript';
+import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript'
 
 describe('calculateHeregexpPaddingTest', () => {
   it('removes whitespace from single-line heregexes', () => {
-    verifyStringMatchesCoffeeScript(`///a b///`, ['ab']);
-  });
+    verifyStringMatchesCoffeeScript(`///a b///`, ['ab'])
+  })
 
   it('handles heregexp comments', () => {
     verifyStringMatchesCoffeeScript(
@@ -12,8 +12,8 @@ describe('calculateHeregexpPaddingTest', () => {
     c
     ///`,
       ['bc']
-    );
-  });
+    )
+  })
 
   it('does not treat # as a comment if it is preceded by non-whitespace', () => {
     verifyStringMatchesCoffeeScript(
@@ -22,8 +22,8 @@ describe('calculateHeregexpPaddingTest', () => {
       c
       ///`,
       ['b#fooc']
-    );
-  });
+    )
+  })
 
   it('handles interpolations within heregexes', () => {
     verifyStringMatchesCoffeeScript(
@@ -32,8 +32,8 @@ describe('calculateHeregexpPaddingTest', () => {
     c
     ///`,
       ['a', 'c']
-    );
-  });
+    )
+  })
 
   it('allows interpolations in comments and ends the comment at the interpolation', () => {
     verifyStringMatchesCoffeeScript(
@@ -42,8 +42,8 @@ describe('calculateHeregexpPaddingTest', () => {
       e
       ///`,
       ['a', 'de']
-    );
-  });
+    )
+  })
 
   it('allows escaped spaces in heregexes', () => {
     verifyStringMatchesCoffeeScript(
@@ -52,8 +52,8 @@ describe('calculateHeregexpPaddingTest', () => {
     e
     ///`,
       ['a b', 'de']
-    );
-  });
+    )
+  })
 
   it('does not escape a space on a double backslash', () => {
     verifyStringMatchesCoffeeScript(
@@ -62,8 +62,8 @@ describe('calculateHeregexpPaddingTest', () => {
     e
     ///`,
       ['a\\\\\\\\b', 'de']
-    );
-  });
+    )
+  })
 
   it('escapes a space on a triple backslash', () => {
     verifyStringMatchesCoffeeScript(
@@ -72,8 +72,8 @@ describe('calculateHeregexpPaddingTest', () => {
     e
     ///`,
       ['a\\\\\\\\ b', 'de']
-    );
-  });
+    )
+  })
 
   it('handles a hergexp consisting of only a backslash', () => {
     verifyStringMatchesCoffeeScript(
@@ -81,6 +81,6 @@ describe('calculateHeregexpPaddingTest', () => {
     \\a
     ///`,
       ['\\\\a']
-    );
-  });
-});
+    )
+  })
+})

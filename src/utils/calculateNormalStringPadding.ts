@@ -1,9 +1,9 @@
-import SourceType from '../SourceType';
-import PaddingTracker from './PaddingTracker';
+import SourceType from '../SourceType'
+import PaddingTracker from './PaddingTracker'
 
-import SourceLocation from '../SourceLocation';
-import BufferedStream from './BufferedStream';
-import isNewlineEscaped from './isNewlineEscaped';
+import SourceLocation from '../SourceLocation'
+import BufferedStream from './BufferedStream'
+import isNewlineEscaped from './isNewlineEscaped'
 
 /**
  * Compute the whitespace to remove in a multiline single or double quoted
@@ -17,13 +17,13 @@ export default function calculateNormalStringPadding(
   source: string,
   stream: BufferedStream
 ): Array<SourceLocation> {
-  let paddingTracker;
+  let paddingTracker
   if (stream.hasNext(SourceType.SSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, SourceType.SSTRING_END);
+    paddingTracker = new PaddingTracker(source, stream, SourceType.SSTRING_END)
   } else if (stream.hasNext(SourceType.DSTRING_START)) {
-    paddingTracker = new PaddingTracker(source, stream, SourceType.DSTRING_END);
+    paddingTracker = new PaddingTracker(source, stream, SourceType.DSTRING_END)
   } else {
-    return [];
+    return []
   }
 
   // The general strategy is to find each newline character and mark it as a
@@ -33,17 +33,17 @@ export default function calculateNormalStringPadding(
     fragmentIndex < paddingTracker.fragments.length;
     fragmentIndex++
   ) {
-    const fragment = paddingTracker.fragments[fragmentIndex];
-    const content = fragment.content;
-    let lastNonWhitespace = -1;
-    let pos = 0;
+    const fragment = paddingTracker.fragments[fragmentIndex]
+    const content = fragment.content
+    let lastNonWhitespace = -1
+    let pos = 0
 
     while (pos < content.length) {
       if (content[pos] === '\n') {
-        const startIndex = lastNonWhitespace + 1;
-        fragment.markPadding(lastNonWhitespace + 1, pos);
-        const newlinePos = pos;
-        pos++;
+        const startIndex = lastNonWhitespace + 1
+        fragment.markPadding(lastNonWhitespace + 1, pos)
+        const newlinePos = pos
+        pos++
         // Search forward until the next non-whitespace character. Even skip
         // newlines, so that two or more newlines with only spaces between them
         // will result in a single line separator. Escaped newline characters
@@ -52,15 +52,15 @@ export default function calculateNormalStringPadding(
           (pos < content.length && ' \t\n'.includes(content[pos])) ||
           content.slice(pos, pos + 2) === '\\\n'
         ) {
-          pos++;
+          pos++
         }
-        const endIndex = pos;
+        const endIndex = pos
         if (isNewlineEscaped(content, newlinePos)) {
           // Escaped newlines behave a bit strangely: whitespace is removed from
           // the right side but not the left side, and the newline and its
           // escape character are removed.
-          const backslashPos = content.lastIndexOf('\\', newlinePos);
-          fragment.markPadding(backslashPos, endIndex);
+          const backslashPos = content.lastIndexOf('\\', newlinePos)
+          fragment.markPadding(backslashPos, endIndex)
         } else if (
           (fragmentIndex === 0 && startIndex === 0) ||
           (fragmentIndex === paddingTracker.fragments.length - 1 &&
@@ -69,22 +69,22 @@ export default function calculateNormalStringPadding(
           // We only want spaces between, not around, lines, so if we're up
           // against the left side or right side of the string, mark the newline
           // as padding.
-          fragment.markPadding(startIndex, endIndex);
+          fragment.markPadding(startIndex, endIndex)
         } else {
           // Otherwise, the newline should be a line separator that will become
           // a space and everything else should be padding.
-          fragment.markPadding(startIndex, newlinePos);
-          fragment.markLineSeparator(newlinePos);
-          fragment.markPadding(newlinePos + 1, endIndex);
+          fragment.markPadding(startIndex, newlinePos)
+          fragment.markLineSeparator(newlinePos)
+          fragment.markPadding(newlinePos + 1, endIndex)
         }
-        lastNonWhitespace = pos;
+        lastNonWhitespace = pos
       } else {
         if (content[pos] !== ' ' && content[pos] !== '\t') {
-          lastNonWhitespace = pos;
+          lastNonWhitespace = pos
         }
-        pos++;
+        pos++
       }
     }
   }
-  return paddingTracker.computeSourceLocations();
+  return paddingTracker.computeSourceLocations()
 }

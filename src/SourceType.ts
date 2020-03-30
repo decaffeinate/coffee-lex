@@ -88,7 +88,7 @@ enum SourceType {
   WHILE = 'WHILE',
   IDENTIFIER = 'IDENTIFIER',
   YIELD = 'YIELD',
-  YIELDFROM = 'YIELDFROM'
+  YIELDFROM = 'YIELDFROM',
 }
 
-export default SourceType;
+export default SourceType
