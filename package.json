@@ -40,12 +40,10 @@
   },
   "lint-staged": {
     "*.{ts,md,json}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ],
     "package.json": [
-      "sort-package-json",
-      "git add"
+      "sort-package-json"
     ]
   },
   "devDependencies": {
