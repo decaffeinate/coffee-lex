@@ -1,4 +1,4 @@
-# coffee-lex [![Build Status](https://circleci.com/gh/decaffeinate/coffee-lex/tree/master.svg?style=svg)](https://circleci.com/gh/decaffeinate/coffee-lex/tree/master) [![package version](https://badge.fury.io/js/coffee-lex.svg)](https://badge.fury.io/js/coffee-lex) [![Greenkeeper badge](https://badges.greenkeeper.io/decaffeinate/coffee-lex.svg)](https://greenkeeper.io/)
+# coffee-lex [![CI](https://github.com/decaffeinate/coffee-lex/actions/workflows/ci.yml/badge.svg)](https://github.com/decaffeinate/coffee-lex/actions/workflows/ci.yml) [![package version](https://badge.fury.io/js/coffee-lex.svg)](https://badge.fury.io/js/coffee-lex)
 
 Stupid lexer for CoffeeScript.
 
