@@ -1,4 +1,4 @@
-import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript'
+import { verifyStringMatchesCoffeeScript } from './verifyStringMatchesCoffeeScript'
 
 describe('calculateNormalStringPaddingTest', () => {
   it('does not strip whitespace in a string with no newlines', () => {

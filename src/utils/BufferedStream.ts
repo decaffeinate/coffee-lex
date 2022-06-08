@@ -1,7 +1,7 @@
-import SourceLocation from '../SourceLocation'
-import SourceType from '../SourceType'
+import { SourceLocation } from '../SourceLocation'
+import { SourceType } from '../SourceType'
 
-export default class BufferedStream {
+export class BufferedStream {
   private _getNextLocation: () => SourceLocation
   private pending: Array<SourceLocation> = []
 

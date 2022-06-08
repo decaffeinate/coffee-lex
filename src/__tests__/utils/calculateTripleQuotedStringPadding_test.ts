@@ -1,8 +1,8 @@
 import { stream, SourceType } from '../../index'
-import SourceLocation from '../../SourceLocation'
-import BufferedStream from '../../utils/BufferedStream'
-import calculateTripleQuotedStringPadding from '../../utils/calculateTripleQuotedStringPadding'
-import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript'
+import { SourceLocation } from '../../SourceLocation'
+import { BufferedStream } from '../../utils/BufferedStream'
+import { calculateTripleQuotedStringPadding } from '../../utils/calculateTripleQuotedStringPadding'
+import { verifyStringMatchesCoffeeScript } from './verifyStringMatchesCoffeeScript'
 
 function bufferedStream(source: string): BufferedStream {
   return new BufferedStream(stream(source))

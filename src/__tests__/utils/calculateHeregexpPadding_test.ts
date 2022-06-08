@@ -1,4 +1,4 @@
-import verifyStringMatchesCoffeeScript from './verifyStringMatchesCoffeeScript'
+import { verifyStringMatchesCoffeeScript } from './verifyStringMatchesCoffeeScript'
 
 describe('calculateHeregexpPaddingTest', () => {
   it('removes whitespace from single-line heregexes', () => {

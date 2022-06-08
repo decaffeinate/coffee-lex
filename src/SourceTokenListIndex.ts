@@ -1,9 +1,9 @@
-import SourceTokenList from './SourceTokenList'
+import { SourceTokenList } from './SourceTokenList'
 
 /**
  * Represents a token at a particular index within a list of tokens.
  */
-export default class SourceTokenListIndex {
+export class SourceTokenListIndex {
   private _sourceTokenList: SourceTokenList
   private _index: number
 

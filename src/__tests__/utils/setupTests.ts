@@ -1,12 +1,13 @@
 import { inspect } from 'util'
-import SourceLocation from '../../SourceLocation'
-import SourceToken from '../../SourceToken'
-import SourceType from '../../SourceType'
+import { SourceLocation } from '../../SourceLocation'
+import { SourceToken } from '../../SourceToken'
+import { SourceType } from '../../SourceType'
 import lex from '../..'
 
 declare global {
   // eslint-disable-next-line no-redeclare, @typescript-eslint/no-namespace
   namespace jest {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R, T> {
       toEqualSourceLocations(expected: Array<SourceLocation>): R
       toHaveSourceType(expected: SourceType): R

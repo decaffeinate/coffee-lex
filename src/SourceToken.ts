@@ -1,6 +1,6 @@
-import SourceType from './SourceType'
+import { SourceType } from './SourceType'
 
-export default class SourceToken {
+export class SourceToken {
   constructor(
     readonly type: SourceType,
     readonly start: number,

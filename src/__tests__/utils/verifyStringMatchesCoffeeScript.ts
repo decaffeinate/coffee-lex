@@ -2,7 +2,7 @@ import { deepEqual } from 'assert'
 import * as CoffeeScript from 'decaffeinate-coffeescript'
 
 import lex from '../../index'
-import SourceType from '../../SourceType'
+import { SourceType } from '../../SourceType'
 
 /**
  * Given code containing a string, herestring, or heregex, verify that the
@@ -16,7 +16,7 @@ import SourceType from '../../SourceType'
  * coffee-lex and the CoffeeScript lexer. It can always be made more advanced if
  * more complicated cases are useful to test.
  */
-export default function verifyStringMatchesCoffeeScript(
+export function verifyStringMatchesCoffeeScript(
   code: string,
   expectedQuasis: Array<string>
 ): void {

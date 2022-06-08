@@ -1,7 +1,7 @@
 /**
  * Represents a particular type of CoffeeScript code.
  */
-enum SourceType {
+export enum SourceType {
   AT = 'AT',
   BOOL = 'BOOL',
   BREAK = 'BREAK',
@@ -90,5 +90,3 @@ enum SourceType {
   YIELD = 'YIELD',
   YIELDFROM = 'YIELDFROM',
 }
-
-export default SourceType
