@@ -1,8 +1,8 @@
 import { stream } from '../../index'
-import SourceLocation from '../../SourceLocation'
-import SourceType from '../../SourceType'
-import BufferedStream from '../../utils/BufferedStream'
-import PaddingTracker from '../../utils/PaddingTracker'
+import { SourceLocation } from '../../SourceLocation'
+import { SourceType } from '../../SourceType'
+import { BufferedStream } from '../../utils/BufferedStream'
+import { PaddingTracker } from '../../utils/PaddingTracker'
 
 describe('paddingTrackerTest', () => {
   it('exposes the fragments in a string and allows marking padding', () => {

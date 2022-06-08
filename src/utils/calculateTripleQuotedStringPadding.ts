@@ -1,8 +1,8 @@
-import SourceLocation from '../SourceLocation'
-import SourceType from '../SourceType'
-import BufferedStream from './BufferedStream'
-import isNewlineEscaped from './isNewlineEscaped'
-import PaddingTracker from './PaddingTracker'
+import { SourceLocation } from '../SourceLocation'
+import { SourceType } from '../SourceType'
+import { BufferedStream } from './BufferedStream'
+import { isNewlineEscaped } from './isNewlineEscaped'
+import { PaddingTracker } from './PaddingTracker'
 import { TrackedFragment } from './PaddingTracker'
 
 /**
@@ -29,7 +29,7 @@ import { TrackedFragment } from './PaddingTracker'
  * See the stringToken function in lexer.coffee in the CoffeeScript source code
  * for CoffeeScript's implementation of this.
  */
-export default function calculateTripleQuotedStringPadding(
+export function calculateTripleQuotedStringPadding(
   source: string,
   stream: BufferedStream
 ): Array<SourceLocation> {

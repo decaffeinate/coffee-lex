@@ -1,6 +1,6 @@
-import SourceToken from './SourceToken'
-import SourceTokenListIndex from './SourceTokenListIndex'
-import SourceType from './SourceType'
+import { SourceToken } from './SourceToken'
+import { SourceTokenListIndex } from './SourceTokenListIndex'
+import { SourceType } from './SourceType'
 
 export type SourceTokenListIndexRange = [
   SourceTokenListIndex,
@@ -11,7 +11,7 @@ export type SourceTokenListIndexRange = [
  * Represents a list of tokens and provides various utility functions for
  * finding tokens within it.
  */
-export default class SourceTokenList {
+export class SourceTokenList {
   private _tokens: Array<SourceToken>
   private _indexCache: Array<SourceTokenListIndex>
   private _indexBySourceIndex: Array<SourceTokenListIndex>

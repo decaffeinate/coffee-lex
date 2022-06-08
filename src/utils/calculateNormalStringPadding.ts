@@ -1,9 +1,9 @@
-import SourceType from '../SourceType'
-import PaddingTracker from './PaddingTracker'
+import { SourceType } from '../SourceType'
+import { PaddingTracker } from './PaddingTracker'
 
-import SourceLocation from '../SourceLocation'
-import BufferedStream from './BufferedStream'
-import isNewlineEscaped from './isNewlineEscaped'
+import { SourceLocation } from '../SourceLocation'
+import { BufferedStream } from './BufferedStream'
+import { isNewlineEscaped } from './isNewlineEscaped'
 
 /**
  * Compute the whitespace to remove in a multiline single or double quoted
@@ -13,7 +13,7 @@ import isNewlineEscaped from './isNewlineEscaped'
  * spaces, and extra whitespace at the start and end of each line (except the
  * start of the first line and the end of the last line) is ignored.
  */
-export default function calculateNormalStringPadding(
+export function calculateNormalStringPadding(
   source: string,
   stream: BufferedStream
 ): Array<SourceLocation> {

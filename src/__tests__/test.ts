@@ -1,7 +1,7 @@
 import lex, { consumeStream, stream, SourceType } from '../index'
-import SourceLocation from '../SourceLocation'
-import SourceToken from '../SourceToken'
-import SourceTokenList from '../SourceTokenList'
+import { SourceLocation } from '../SourceLocation'
+import { SourceToken } from '../SourceToken'
+import { SourceTokenList } from '../SourceTokenList'
 
 function checkLocations(
   stream: () => SourceLocation,
@@ -323,7 +323,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('one + two')
     const oneIndex = list.startIndex
     const plusIndex = oneIndex.next()
-    const twoIndex = plusIndex && plusIndex.next()
+    const twoIndex = plusIndex?.next()
     expect(list.indexOfTokenContainingSourceIndex(0)).toBe(oneIndex) // o
     expect(list.indexOfTokenContainingSourceIndex(1)).toBe(oneIndex) // n
     expect(list.indexOfTokenContainingSourceIndex(2)).toBe(oneIndex) // e
@@ -340,7 +340,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('one + two')
     const oneIndex = list.startIndex
     const plusIndex = oneIndex.next()
-    const twoIndex = plusIndex && plusIndex.next()
+    const twoIndex = plusIndex?.next()
     expect(list.indexOfTokenNearSourceIndex(0)).toBe(oneIndex) // o
     expect(list.indexOfTokenNearSourceIndex(1)).toBe(oneIndex) // n
     expect(list.indexOfTokenNearSourceIndex(2)).toBe(oneIndex) // e
@@ -357,7 +357,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('one + two')
     const oneIndex = list.startIndex
     const plusIndex = oneIndex.next()
-    const twoIndex = plusIndex && plusIndex.next()
+    const twoIndex = plusIndex?.next()
     expect(list.indexOfTokenStartingAtSourceIndex(0)).toBe(oneIndex) // o
     expect(list.indexOfTokenStartingAtSourceIndex(1)).toBeNull() // n
     expect(list.indexOfTokenStartingAtSourceIndex(2)).toBeNull() // e
@@ -374,7 +374,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('one + two')
     const oneIndex = list.startIndex
     const plusIndex = oneIndex.next()
-    const twoIndex = plusIndex && plusIndex.next()
+    const twoIndex = plusIndex?.next()
     expect(list.indexOfTokenEndingAtSourceIndex(0)).toBeNull() // o
     expect(list.indexOfTokenEndingAtSourceIndex(1)).toBeNull() // n
     expect(list.indexOfTokenEndingAtSourceIndex(2)).toBeNull() // e
@@ -391,7 +391,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('one + two')
     const oneIndex = list.startIndex
     const plusIndex = oneIndex.next()
-    const twoIndex = plusIndex && plusIndex.next()
+    const twoIndex = plusIndex?.next()
     expect(
       list.indexOfTokenMatchingPredicate(
         (token) => token.type === SourceType.IDENTIFIER
@@ -416,7 +416,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('one + two')
     const oneIndex = list.startIndex
     const plusIndex = oneIndex.next()
-    const twoIndex = plusIndex && plusIndex.next()
+    const twoIndex = plusIndex?.next()
     expect(
       list.lastIndexOfTokenMatchingPredicate(
         (token) => token.type === SourceType.IDENTIFIER
@@ -520,11 +520,12 @@ describe('sourceTokenListTest', () => {
       SourceType.INTERPOLATION_START
     )
 
-    const range = list.rangeOfInterpolatedStringTokensContainingTokenIndex(
-      interpolationStart
-    )
-    expect(range && range[0]).toBe(expectedStart)
-    expect(range && range[1]).toBe(expectedEnd)
+    const range =
+      list.rangeOfInterpolatedStringTokensContainingTokenIndex(
+        interpolationStart
+      )
+    expect(range?.[0]).toBe(expectedStart)
+    expect(range?.[1]).toBe(expectedEnd)
   })
 
   it('can determine the interpolated string range with an interior string', () => {
@@ -591,7 +592,7 @@ describe('sourceTokenListTest', () => {
     const list = lex('a b')
     const { startIndex, endIndex } = list
 
-    expect(startIndex.compare(startIndex)).toStrictEqual(0)
+    expect(startIndex.compare(startIndex)).toBe(0)
     expect(startIndex.compare(endIndex)).toBeGreaterThan(0)
     expect(endIndex.compare(startIndex)).toBeLessThan(0)
     expect(startIndex.isBefore(endIndex)).toBe(true)

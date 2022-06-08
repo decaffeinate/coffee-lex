@@ -21,15 +21,23 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "yarn lint --fix",
-    "prepare": "script/build.ts",
-    "reformat": "yarn lint --fix",
-    "pretest": "yarn lint",
+    "lint:fix": "pnpm lint --fix",
+    "build": "tsup",
+    "prepublishOnly": "pnpm build",
+    "reformat": "pnpm lint --fix",
+    "pretest": "pnpm lint",
     "test": "jest",
     "test:ci": "jest --ci"
   },
@@ -47,30 +55,23 @@
     ]
   },
   "devDependencies": {
-    "@rushstack/node-core-library": "^3.19.6",
-    "@types/fs-extra": "^8.1.0",
-    "@types/globby": "^9.1.0",
-    "@types/jest": "^25.1.4",
-    "@types/node": "^13.9.8",
-    "@typescript-eslint/eslint-plugin": "^2.26.0",
-    "@typescript-eslint/parser": "^2.26.0",
-    "@yarnpkg/pnpify": "^2.0.0-rc.20",
+    "@types/jest": "^28.1.1",
+    "@types/node": "14",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.1",
-    "eslint-plugin-jest": "^23.8.2",
-    "eslint-plugin-prettier": "^3.1.2",
-    "fs-extra": "^9.0.0",
-    "globby": "^11.0.0",
-    "husky": "^4.2.3",
-    "jest": "^25.2.4",
-    "lint-staged": "^10.0.10",
-    "prettier": "^2.0.4",
-    "prettier-check": "2.0.0",
-    "sort-package-json": "^1.40.0",
-    "ts-jest": "^25.3.0",
-    "ts-node": "^8.8.1",
-    "typescript": "^3.8.3"
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jest": "^26.5.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "jest": "^28.1.1",
+    "lint-staged": "^13.0.0",
+    "prettier": "^2.6.2",
+    "sort-package-json": "^1.57.0",
+    "ts-jest": "^28.0.4",
+    "tsup": "^6.1.0",
+    "typescript": "^4.7.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

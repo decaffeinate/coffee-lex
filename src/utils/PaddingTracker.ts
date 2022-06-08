@@ -1,6 +1,6 @@
-import SourceLocation from '../SourceLocation'
-import SourceType from '../SourceType'
-import BufferedStream from './BufferedStream'
+import { SourceLocation } from '../SourceLocation'
+import { SourceType } from '../SourceType'
+import { BufferedStream } from './BufferedStream'
 
 /**
  * Helper class for defining the padding (characters to remove, typically
@@ -23,7 +23,7 @@ import BufferedStream from './BufferedStream'
  * // Compute the replacement source locations for the entire string/heregexp.
  * paddingTracker.computeSourceLocations();
  */
-export default class PaddingTracker {
+export class PaddingTracker {
   readonly fragments: Array<TrackedFragment>
   private _originalLocations: Array<SourceLocation>
 
@@ -77,8 +77,8 @@ export default class PaddingTracker {
 }
 
 export interface PaddingRange {
-  start: number
-  end: number
+  readonly start: number
+  readonly end: number
 }
 type LocationEvent =
   | 'START_PADDING'
@@ -87,12 +87,12 @@ type LocationEvent =
   | 'END_LINE_SEPARATOR'
 
 export class TrackedFragment {
-  content: string
-  start: number
-  end: number
-  index: number
-  _paddingRanges: Array<PaddingRange>
-  _lineSeparators: Array<number>
+  readonly content: string
+  readonly start: number
+  readonly end: number
+  readonly index: number
+  readonly _paddingRanges: Array<PaddingRange>
+  readonly _lineSeparators: Array<number>
 
   constructor(content: string, start: number, end: number, index: number) {
     this.content = content

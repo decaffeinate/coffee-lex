@@ -1,14 +1,14 @@
-import SourceType from '../SourceType'
-import PaddingTracker from './PaddingTracker'
+import { SourceType } from '../SourceType'
+import { PaddingTracker } from './PaddingTracker'
 
-import SourceLocation from '../SourceLocation'
-import BufferedStream from './BufferedStream'
+import { SourceLocation } from '../SourceLocation'
+import { BufferedStream } from './BufferedStream'
 
 /**
  * Compute the whitespace to remove in a heregexp. All unescaped whitespace
  * characters are removed, and comments are respected.
  */
-export default function calculateHeregexpPadding(
+export function calculateHeregexpPadding(
   source: string,
   stream: BufferedStream
 ): Array<SourceLocation> {

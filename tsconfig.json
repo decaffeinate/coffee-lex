@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2018",
+    "noEmit": true,
     "strictNullChecks": true,
     "module": "commonjs",
     "declaration": true,
