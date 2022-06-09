@@ -90,3 +90,5 @@ export enum SourceType {
   YIELD = 'YIELD',
   YIELDFROM = 'YIELDFROM',
 }
+
+export default SourceType

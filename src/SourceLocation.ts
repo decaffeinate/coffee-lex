@@ -6,3 +6,5 @@ import { SourceType } from './SourceType'
 export class SourceLocation {
   constructor(readonly type: SourceType, readonly index: number) {}
 }
+
+export default SourceLocation

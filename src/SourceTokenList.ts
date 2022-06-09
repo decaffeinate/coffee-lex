@@ -466,3 +466,5 @@ export class SourceTokenList {
     return this._tokens.slice()
   }
 }
+
+export default SourceTokenList

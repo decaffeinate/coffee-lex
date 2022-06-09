@@ -72,3 +72,5 @@ export class SourceTokenListIndex {
     return other._index - this._index
   }
 }
+
+export default SourceTokenListIndex

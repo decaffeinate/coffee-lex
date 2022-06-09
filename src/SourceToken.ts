@@ -13,3 +13,5 @@ export class SourceToken {
     }
   }
 }
+
+export default SourceToken
