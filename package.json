@@ -26,6 +26,31 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./dist/SourceLocation": {
+      "types": "./dist/SourceLocation.d.ts",
+      "import": "./dist/SourceLocation.mjs",
+      "require": "./dist/SourceLocation.js"
+    },
+    "./dist/SourceToken": {
+      "types": "./dist/SourceToken.d.ts",
+      "import": "./dist/SourceToken.mjs",
+      "require": "./dist/SourceToken.js"
+    },
+    "./dist/SourceTokenList": {
+      "types": "./dist/SourceTokenList.d.ts",
+      "import": "./dist/SourceTokenList.mjs",
+      "require": "./dist/SourceTokenList.js"
+    },
+    "./dist/SourceTokenListIndex": {
+      "types": "./dist/SourceTokenListIndex.d.ts",
+      "import": "./dist/SourceTokenListIndex.mjs",
+      "require": "./dist/SourceTokenListIndex.js"
+    },
+    "./dist/SourceType": {
+      "types": "./dist/SourceType.d.ts",
+      "import": "./dist/SourceType.mjs",
+      "require": "./dist/SourceType.js"
     }
   },
   "files": [
