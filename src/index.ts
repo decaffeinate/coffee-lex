@@ -1,2 +1,7 @@
 export * from './lex'
 export { lex as default } from './lex'
+export { SourceLocation } from './SourceLocation'
+export { SourceToken } from './SourceToken'
+export { SourceTokenList } from './SourceTokenList'
+export { SourceTokenListIndex } from './SourceTokenListIndex'
+export { SourceType } from './SourceType'
