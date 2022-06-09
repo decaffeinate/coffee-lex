@@ -134,8 +134,6 @@ function combinedLocationsForNegatedOperators(
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'u', 'y']
 
-export { SourceType }
-
 /**
  * Borrowed, with tweaks, from CoffeeScript's lexer.coffee.
  */
