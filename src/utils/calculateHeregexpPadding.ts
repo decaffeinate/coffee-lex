@@ -1,8 +1,7 @@
-import { SourceType } from '../SourceType'
-import { PaddingTracker } from './PaddingTracker'
-
 import { SourceLocation } from '../SourceLocation'
+import { SourceType } from '../SourceType'
 import { BufferedStream } from './BufferedStream'
+import { PaddingTracker } from './PaddingTracker'
 
 /**
  * Compute the whitespace to remove in a heregexp. All unescaped whitespace

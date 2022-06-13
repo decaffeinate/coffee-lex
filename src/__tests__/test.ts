@@ -1,7 +1,8 @@
-import lex, { consumeStream, stream, SourceType } from '../index'
+import lex, { consumeStream, SourceType, stream } from '../index'
 import { SourceLocation } from '../SourceLocation'
 import { SourceToken } from '../SourceToken'
 import { SourceTokenList } from '../SourceTokenList'
+import { assert } from '../utils/assert'
 
 function checkLocations(
   stream: () => SourceLocation,
@@ -451,11 +452,11 @@ describe('sourceTokenListTest', () => {
         // No token contains this index, so of course it'll be null.
         return
       }
-      if (
-        list.rangeOfInterpolatedStringTokensContainingTokenIndex(index) !== null
-      ) {
-        throw new Error(`expected no range for source index ${sourceIndex}`)
-      }
+      assert(
+        list.rangeOfInterpolatedStringTokensContainingTokenIndex(index) ===
+          null,
+        `expected no range for source index ${sourceIndex}`
+      )
     }
 
     function assertMatchesAtSourceIndex(sourceIndex: number): void {
@@ -463,21 +464,19 @@ describe('sourceTokenListTest', () => {
       const range =
         index && list.rangeOfInterpolatedStringTokensContainingTokenIndex(index)
 
-      if (!range) {
-        throw new Error(
-          `range should not be null for source index ${sourceIndex}`
-        )
-      }
+      assert(range, `range should not be null for source index ${sourceIndex}`)
 
       const [start, end] = range
 
-      if (list.tokenAtIndex(start) !== expectedStart) {
-        throw new Error(`wrong start token for source index ${sourceIndex}`)
-      }
+      assert(
+        list.tokenAtIndex(start) === expectedStart,
+        `wrong start token for source index ${sourceIndex}`
+      )
 
-      if (list.tokenAtIndex(end) !== expectedEnd) {
-        throw new Error(`wrong end token for source index ${sourceIndex}`)
-      }
+      assert(
+        list.tokenAtIndex(end) === expectedEnd,
+        `wrong end token for source index ${sourceIndex}`
+      )
     }
 
     assertNullAtSourceIndex(0) // a
@@ -512,9 +511,7 @@ describe('sourceTokenListTest', () => {
     const interpolationStartToken =
       interpolationStart && list.tokenAtIndex(interpolationStart)
 
-    if (!interpolationStart || !interpolationStartToken) {
-      throw new Error(`unable to find interpolation start token`)
-    }
+    assert(interpolationStartToken, `unable to find interpolation start token`)
 
     expect(interpolationStartToken).toHaveSourceType(
       SourceType.INTERPOLATION_START
@@ -551,9 +548,7 @@ describe('sourceTokenListTest', () => {
         interpolationStart
       )
 
-    if (!range) {
-      throw new Error(`unable to determine range of interpolation start`)
-    }
+    assert(range, `unable to determine range of interpolation start`)
 
     expect(range[0]).toBe(list.startIndex)
     expect(range[1]).toBe(list.endIndex)
@@ -580,9 +575,7 @@ describe('sourceTokenListTest', () => {
         interpolationStart
       )
 
-    if (!range) {
-      throw new Error(`unable to determine range of interpolation start`)
-    }
+    assert(range, `unable to determine range of interpolation start`)
 
     expect(range[0]).toBe(list.startIndex)
     expect(range[1]).toBe(list.endIndex)

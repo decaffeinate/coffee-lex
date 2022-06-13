@@ -1,4 +1,5 @@
 import { SourceTokenList } from './SourceTokenList'
+import { assert } from './utils/assert'
 
 /**
  * Represents a token at a particular index within a list of tokens.
@@ -66,9 +67,10 @@ export class SourceTokenListIndex {
    * earlier).
    */
   distance(other: SourceTokenListIndex): number {
-    if (other._sourceTokenList !== this._sourceTokenList) {
-      throw new Error('cannot compare indexes from different lists')
-    }
+    assert(
+      other._sourceTokenList === this._sourceTokenList,
+      'cannot compare indexes from different lists'
+    )
     return other._index - this._index
   }
 }

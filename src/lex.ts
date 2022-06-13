@@ -2,7 +2,7 @@ import { SourceLocation } from './SourceLocation'
 import { SourceToken } from './SourceToken'
 import { SourceTokenList } from './SourceTokenList'
 import { SourceType } from './SourceType'
-import { assertNever } from './utils/assertNever'
+import { assertNever } from './utils/assert'
 import { BufferedStream } from './utils/BufferedStream'
 import { calculateHeregexpPadding } from './utils/calculateHeregexpPadding'
 import { calculateNormalStringPadding } from './utils/calculateNormalStringPadding'
@@ -41,6 +41,19 @@ export interface Options {
 
 export const DEFAULT_OPTIONS: Options = {
   useCS2: false,
+}
+
+/**
+ * A lexer error at a specific location.
+ */
+export class CoffeeLexError extends SyntaxError {
+  constructor(
+    message: string,
+    readonly index: number,
+    readonly context?: Context
+  ) {
+    super(message)
+  }
 }
 
 /**
@@ -259,6 +272,13 @@ export function stream(
     const context = currentContext()
     return context ? context.type : null
   }
+  function lexError(message: string): void {
+    throw new CoffeeLexError(
+      `${message} at ${index}`,
+      index,
+      currentContext() ?? undefined
+    )
+  }
 
   return function step(): SourceLocation {
     const lastLocation = location
@@ -413,7 +433,7 @@ export function stream(
           } else if (consume(')')) {
             const context = contextStack.pop()
             if (!context || context.type !== ContextType.PAREN) {
-              throw new Error(`unexpected ')' at ${start}`)
+              throw lexError(`unexpected ')'`)
             }
             const { sourceType } = context
             switch (sourceType) {
@@ -426,8 +446,8 @@ export function stream(
                 break
 
               default:
-                throw new Error(
-                  `unexpected token type for '(' matching ')' at ${start}: ${
+                throw lexError(
+                  `unexpected token type for '(' matching ')': ${
                     sourceType ? sourceType.toString() : '??'
                   }`
                 )
@@ -446,9 +466,7 @@ export function stream(
               contextStack.pop()
               setType(SourceType.RBRACE)
             } else {
-              throw new Error(
-                `Unexpected context type: ${currentContextType()}`
-              )
+              throw lexError(`Unexpected context type: ${currentContextType()}`)
             }
           } else if (consumeCSXOpenTagStart()) {
             contextStack.push({ type: ContextType.CSX_OPEN_TAG })
@@ -694,7 +712,7 @@ export function stream(
         case SourceType.STRING_CONTENT: {
           const context = currentContext()
           if (!context || context.type !== ContextType.STRING) {
-            throw new Error(
+            throw lexError(
               'Unexpected STRING_CONTENT without anything on the string stack.'
             )
           }
@@ -752,7 +770,7 @@ export function stream(
         case SourceType.INTERPOLATION_END: {
           const context = contextStack.pop()
           if (!context || context.type !== ContextType.INTERPOLATION) {
-            throw new Error(
+            throw lexError(
               `found interpolation end without any interpolation start`
             )
           }
@@ -820,7 +838,7 @@ export function stream(
         case SourceType.EOF: {
           const context = currentContext()
           if (context !== null) {
-            throw new Error(`unexpected EOF while in context ${context.type}`)
+            throw lexError(`unexpected EOF while in context ${context.type}`)
           }
           break
         }
@@ -832,7 +850,7 @@ export function stream(
 
         case SourceType.STRING_LINE_SEPARATOR:
         case SourceType.STRING_PADDING:
-          throw new Error(
+          throw lexError(
             `unexpected source type at offset ${location.index}: ${location.type}`
           )
 
@@ -890,7 +908,7 @@ export function stream(
       }
     }
     if (!closed) {
-      throw new Error('missing / (unclosed regex)')
+      throw lexError('missing / (unclosed regex)')
     }
     index += regex.length
     while (consumeAny(REGEXP_FLAGS)) {
@@ -961,7 +979,7 @@ export function stream(
 
   function popInterpolation(): void {
     if (currentContextType() !== ContextType.INTERPOLATION) {
-      throw new Error(
+      throw lexError(
         `unexpected '}' found in string at ${index}: ${JSON.stringify(source)}`
       )
     }

@@ -1,6 +1,7 @@
 import { SourceToken } from './SourceToken'
 import { SourceTokenListIndex } from './SourceTokenListIndex'
 import { SourceType } from './SourceType'
+import { assert } from './utils/assert'
 
 export type SourceTokenListIndexRange = [
   SourceTokenListIndex,
@@ -104,12 +105,10 @@ export class SourceTokenList {
     start: SourceTokenListIndex,
     end: SourceTokenListIndex
   ): SourceTokenList {
-    if (
-      start['_sourceTokenList'] !== this ||
-      end['_sourceTokenList'] !== this
-    ) {
-      throw new Error('cannot slice a list using indexes from another list')
-    }
+    assert(
+      start['_sourceTokenList'] !== this || end['_sourceTokenList'] !== this,
+      'cannot slice a list using indexes from another list'
+    )
     return new SourceTokenList(
       this._tokens.slice(start['_index'], end['_index'])
     )
@@ -388,9 +387,7 @@ export class SourceTokenList {
           const result = { done: false, value: this.tokenAtIndex(index) }
           const nextIndex = index.next()
 
-          if (!nextIndex) {
-            throw new Error(`unexpected null index before the end index`)
-          }
+          assert(nextIndex, `unexpected null index before the end index`)
 
           index = nextIndex
           return result
@@ -404,12 +401,11 @@ export class SourceTokenList {
    */
   private _validateTokens(tokens: Array<SourceToken>): void {
     for (let i = 0; i < tokens.length - 1; i++) {
-      if (tokens[i].end > tokens[i + 1].start) {
-        throw new Error(
-          `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` +
-            `${JSON.stringify(tokens[i + 1])}`
-        )
-      }
+      assert(
+        tokens[i].end <= tokens[i + 1].start,
+        `Tokens not in order. Expected ${JSON.stringify(tokens[i])} before ` +
+          `${JSON.stringify(tokens[i + 1])}`
+      )
     }
   }
 
@@ -417,32 +413,30 @@ export class SourceTokenList {
    * @internal
    */
   private _validateIndex(index: SourceTokenListIndex | null): void {
-    if (!index) {
-      throw new Error(
-        `unexpected 'null' index, perhaps you forgot to check the result of ` +
-          `'indexOfTokenContainingSourceIndex'?`
-      )
-    }
-    if (typeof index === 'number') {
-      throw new Error(
-        `to get a token at index ${index}, ` +
-          `use list.tokenAtIndex(list.startIndex.advance(${index}))`
-      )
-    }
-    if (index['_sourceTokenList'] !== this) {
-      throw new Error(
-        'cannot get token in one list using an index from another'
-      )
-    }
+    assert(
+      index,
+      `unexpected 'null' index, perhaps you forgot to check the result of ` +
+        `'indexOfTokenContainingSourceIndex'?`
+    )
+    assert(
+      typeof index !== 'number',
+      `to get a token at index ${index}, ` +
+        `use list.tokenAtIndex(list.startIndex.advance(${index}))`
+    )
+    assert(
+      index['_sourceTokenList'] === this,
+      'cannot get token in one list using an index from another'
+    )
   }
 
   /**
    * @internal
    */
   private _validateSourceIndex(index: number): void {
-    if (typeof index !== 'number') {
-      throw new Error(`expected source index to be a number, got: ${index}`)
-    }
+    assert(
+      typeof index === 'number',
+      `expected source index to be a number, got: ${index}`
+    )
   }
 
   /**

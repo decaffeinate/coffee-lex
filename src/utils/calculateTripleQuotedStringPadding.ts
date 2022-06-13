@@ -2,8 +2,7 @@ import { SourceLocation } from '../SourceLocation'
 import { SourceType } from '../SourceType'
 import { BufferedStream } from './BufferedStream'
 import { isNewlineEscaped } from './isNewlineEscaped'
-import { PaddingTracker } from './PaddingTracker'
-import { TrackedFragment } from './PaddingTracker'
+import { PaddingTracker, TrackedFragment } from './PaddingTracker'
 
 /**
  * Compute the padding (the extra spacing to remove) for the given herestring.

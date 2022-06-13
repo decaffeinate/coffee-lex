@@ -1,9 +1,8 @@
-import { SourceType } from '../SourceType'
-import { PaddingTracker } from './PaddingTracker'
-
 import { SourceLocation } from '../SourceLocation'
+import { SourceType } from '../SourceType'
 import { BufferedStream } from './BufferedStream'
 import { isNewlineEscaped } from './isNewlineEscaped'
+import { PaddingTracker } from './PaddingTracker'
 
 /**
  * Compute the whitespace to remove in a multiline single or double quoted
