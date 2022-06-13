@@ -1,8 +1,8 @@
 import { inspect } from 'util'
+import lex from '../..'
 import { SourceLocation } from '../../SourceLocation'
 import { SourceToken } from '../../SourceToken'
 import { SourceType } from '../../SourceType'
-import lex from '../..'
 
 declare global {
   // eslint-disable-next-line no-redeclare, @typescript-eslint/no-namespace

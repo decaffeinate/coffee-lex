@@ -1,4 +1,4 @@
-import { stream, SourceType } from '../../index'
+import { SourceType, stream } from '../../index'
 import { SourceLocation } from '../../SourceLocation'
 import { BufferedStream } from '../../utils/BufferedStream'
 import { calculateTripleQuotedStringPadding } from '../../utils/calculateTripleQuotedStringPadding'

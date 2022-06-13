@@ -1,5 +1,6 @@
 import { SourceLocation } from '../SourceLocation'
 import { SourceType } from '../SourceType'
+import { assert } from './assert'
 import { BufferedStream } from './BufferedStream'
 
 /**
@@ -69,9 +70,10 @@ export class PaddingTracker {
         resultLocations.push(location)
       }
     }
-    if (rangeIndex !== this.fragments.length) {
-      throw new Error('Expected ranges to correspond to original locations.')
-    }
+    assert(
+      rangeIndex === this.fragments.length,
+      'Expected ranges to correspond to original locations.'
+    )
     return resultLocations
   }
 }
@@ -148,15 +150,12 @@ export class TrackedFragment {
           lineSeparatorDepth -= 1
         }
       }
-      if (
-        paddingDepth < 0 ||
-        lineSeparatorDepth < 0 ||
-        (paddingDepth > 0 && lineSeparatorDepth > 0)
-      ) {
-        throw new Error(
-          `Illegal padding state: paddingDepth: ${paddingDepth}, lineSeparatorDepth: ${lineSeparatorDepth}`
-        )
-      }
+      assert(
+        paddingDepth >= 0 &&
+          lineSeparatorDepth >= 0 &&
+          (paddingDepth <= 0 || lineSeparatorDepth <= 0),
+        `Illegal padding state: paddingDepth: ${paddingDepth}, lineSeparatorDepth: ${lineSeparatorDepth}`
+      )
 
       let sourceType
       if (paddingDepth > 0) {

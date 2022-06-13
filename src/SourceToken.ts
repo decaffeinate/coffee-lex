@@ -1,4 +1,5 @@
 import { SourceType } from './SourceType'
+import { assert } from './utils/assert'
 
 export class SourceToken {
   constructor(
@@ -6,10 +7,6 @@ export class SourceToken {
     readonly start: number,
     readonly end: number
   ) {
-    if (start > end) {
-      throw new Error(
-        `Token start may not be after end. Got ${type}, ${start}, ${end}`
-      )
-    }
+    assert(start <= end, `Token start may not be after end. Got ${type}, ${start}, ${end}`)
   }
 }

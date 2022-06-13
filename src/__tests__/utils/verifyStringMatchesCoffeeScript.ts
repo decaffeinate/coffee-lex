@@ -1,6 +1,4 @@
-import { deepEqual } from 'assert'
 import * as CoffeeScript from 'decaffeinate-coffeescript'
-
 import lex from '../../index'
 import { SourceType } from '../../SourceType'
 
@@ -22,16 +20,8 @@ export function verifyStringMatchesCoffeeScript(
 ): void {
   const coffeeLexResult = getCoffeeLexQuasis(code)
   const coffeeScriptResult = getCoffeeScriptQuasis(code)
-  deepEqual(
-    coffeeLexResult,
-    coffeeScriptResult,
-    'coffee-lex output and CoffeeScript output disagreed.'
-  )
-  deepEqual(
-    coffeeLexResult,
-    expectedQuasis,
-    'coffee-lex output and expected output disagreed.'
-  )
+  expect(coffeeLexResult).toStrictEqual(coffeeScriptResult)
+  expect(coffeeLexResult).toStrictEqual(expectedQuasis)
 }
 
 function getCoffeeLexQuasis(code: string): Array<string> {
