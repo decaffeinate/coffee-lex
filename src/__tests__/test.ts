@@ -1738,4 +1738,9 @@ else(0)`),
       'unexpected EOF while in context INTERPOLATION'
     )
   })
+
+  it('can slice', () => {
+    const tokens = lex('a = "abc"');
+    expect(() => tokens.slice(tokens.startIndex, tokens.endIndex)).not.toThrow();
+  });
 })

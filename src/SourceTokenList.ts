@@ -106,7 +106,7 @@ export class SourceTokenList {
     end: SourceTokenListIndex
   ): SourceTokenList {
     assert(
-      start['_sourceTokenList'] !== this || end['_sourceTokenList'] !== this,
+      start['_sourceTokenList'] === this && end['_sourceTokenList'] === this,
       'cannot slice a list using indexes from another list'
     )
     return new SourceTokenList(
