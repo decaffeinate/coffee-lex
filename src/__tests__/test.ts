@@ -1682,6 +1682,17 @@ else(0)`),
     ])
   })
 
+  it('handles non-CSX after a close paren', () => {
+    checkLocations(stream('a()<b'), [
+      new SourceLocation(SourceType.IDENTIFIER, 0),
+      new SourceLocation(SourceType.CALL_START, 1),
+      new SourceLocation(SourceType.CALL_END, 2),
+      new SourceLocation(SourceType.OPERATOR, 3),
+      new SourceLocation(SourceType.IDENTIFIER, 4),
+      new SourceLocation(SourceType.EOF, 5),
+    ])
+  })
+
   it('does not ignore heregex comments when in CS1 mode', () => {
     checkLocations(stream('r = ///\na # #{b}c\n///'), [
       new SourceLocation(SourceType.IDENTIFIER, 0),
@@ -1740,7 +1751,7 @@ else(0)`),
   })
 
   it('can slice', () => {
-    const tokens = lex('a = "abc"');
-    expect(() => tokens.slice(tokens.startIndex, tokens.endIndex)).not.toThrow();
-  });
+    const tokens = lex('a = "abc"')
+    expect(() => tokens.slice(tokens.startIndex, tokens.endIndex)).not.toThrow()
+  })
 })

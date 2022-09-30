@@ -942,6 +942,7 @@ export function stream(
       [
         SourceType.IDENTIFIER,
         SourceType.RPAREN,
+        SourceType.CALL_END,
         SourceType.RBRACKET,
         SourceType.NUMBER,
       ].includes(location.type)
